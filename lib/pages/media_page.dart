@@ -61,7 +61,7 @@ class _MediaPageState extends State<MediaPage> {
         _documentUrls = documentUrls;
       });
     } catch (e) {
-      print("Error fetching document URLssss: $e");
+      print("Error fetching document URLs: $e");
     }
   }
 
