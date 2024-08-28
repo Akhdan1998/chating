@@ -253,7 +253,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController emailController = TextEditingController(text: '@gmail.com');
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GetIt _getIt = GetIt.instance;
   late AuthService _authService;
