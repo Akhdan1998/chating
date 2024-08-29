@@ -127,6 +127,12 @@ class _SplashScreenState extends State<SplashScreen> {
   final GetIt _getIt = GetIt.instance;
   late AuthService _authService;
   late NavigationService _navigationService;
+  double topPosition1 = -30;
+  double rightPosition2 = -30;
+  double topPosition3 = 150;
+  double bottomPosition4 = 150;
+  double leftPosition5 = -30;
+  double bottomPosition6 = 140;
 
   @override
   void initState() {
@@ -138,6 +144,17 @@ class _SplashScreenState extends State<SplashScreen> {
       _authService.user != null
           ? _navigationService.pushReplacementNamed("/navigasi")
           : _navigationService.pushReplacementNamed("/login");
+    });
+
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        topPosition1 = 400;
+        rightPosition2 = 400;
+        topPosition3 = -150;
+        bottomPosition4 = 330;
+        leftPosition5 = 300;
+        bottomPosition6 = -200;
+      });
     });
   }
 
@@ -161,9 +178,10 @@ class _SplashScreenState extends State<SplashScreen> {
         backgroundColor: Colors.transparent,
         body: Stack(
           children: [
-            Positioned(
-              top: -30,
+            AnimatedPositioned(
+              top: topPosition1,
               right: 130,
+              duration: Duration(seconds: 3),
               child: Container(
                 width: 100,
                 height: 100,
@@ -173,21 +191,23 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            Positioned(
-                top: -30,
-                right: -40,
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.deepPurple,
-                  ),
+            AnimatedPositioned(
+              top: -30,
+              right: rightPosition2,
+              duration: Duration(seconds: 3),
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.deepPurple,
                 ),
+              ),
             ),
-            Positioned(
-              top: 150,
+            AnimatedPositioned(
+              top: topPosition3,
               right: -60,
+              duration: Duration(seconds: 3),
               child: Container(
                 width: 150,
                 height: 150,
@@ -203,9 +223,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 scale: 6,
               ),
             ),
-            Positioned(
-              bottom: -40,
+            AnimatedPositioned(
+              bottom: bottomPosition4,
               right: -30,
+              duration: Duration(seconds: 3),
               child: Container(
                 width: 150,
                 height: 150,
@@ -215,9 +236,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            Positioned(
+            AnimatedPositioned(
               bottom: -60,
-              left: -30,
+              left: leftPosition5,
+              duration: Duration(seconds: 3),
               child: Container(
                 width: 250,
                 height: 250,
@@ -227,9 +249,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            Positioned(
-              bottom: 140,
+            AnimatedPositioned(
+              bottom: bottomPosition6,
               left: -80,
+              duration: Duration(seconds: 3),
               child: Container(
                 width: 200,
                 height: 200,
