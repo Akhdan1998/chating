@@ -105,7 +105,6 @@ class _SplashScreenState extends State<SplashScreen> {
     _authService = _getIt<AuthService>();
     _navigationService = _getIt<NavigationService>();
 
-    // Simulasi loading (misalnya 3 detik)
     Future.delayed(Duration(seconds: 3), () {
       if (_authService.user != null) {
         print("User terdeteksi, navigasi ke /navigasi");
@@ -122,22 +121,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(color: Colors.white),
-            SizedBox(height: 20),
-            Text(
-              'Loading...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        child: Image.asset(
+          'assets/splash.png',
+          scale: 6,
         ),
       ),
     );
