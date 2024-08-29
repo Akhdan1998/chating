@@ -41,7 +41,6 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
   Widget build(BuildContext context) {
     return TextFormField(
       focusNode: widget.focusNode,
-      textCapitalization: TextCapitalization.sentences,
       keyboardType: TextInputType.emailAddress,
       obscureText: _obscureText,
       readOnly: widget.readOnly,

@@ -6,6 +6,7 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get_it/get_it.dart';
 
 import '../consts.dart';
+import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 import '../service/auth_service.dart';
 import '../service/database_service.dart';
@@ -109,43 +110,43 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Fungsi untuk mengirim OTP
 
-  Future<void> _verifyPhoneNumber(String phoneNumber) async {
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        // Verifikasi otomatis (hanya untuk beberapa perangkat)
-        await _auth.signInWithCredential(credential);
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        // Gagal memverifikasi
-        if (e.code == 'invalid-phone-number') {
-          print('Nomor telepon tidak valid.');
-        } else {
-          print('Verifikasi gagal: ${e.message}');
-        }
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        // Kode OTP terkirim
-        setState(() {
-          _verificationId = verificationId;
-          otpe = true;  // Menampilkan OtpTextField
-        });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        _verificationId = verificationId;
-      },
-    );
-  }
+  // Future<void> _verifyPhoneNumber(String phoneNumber) async {
+  //   await _auth.verifyPhoneNumber(
+  //     phoneNumber: phoneNumber,
+  //     verificationCompleted: (PhoneAuthCredential credential) async {
+  //       // Verifikasi otomatis (hanya untuk beberapa perangkat)
+  //       await _auth.signInWithCredential(credential);
+  //     },
+  //     verificationFailed: (FirebaseAuthException e) {
+  //       // Gagal memverifikasi
+  //       if (e.code == 'invalid-phone-number') {
+  //         print('Nomor telepon tidak valid.');
+  //       } else {
+  //         print('Verifikasi gagal: ${e.message}');
+  //       }
+  //     },
+  //     codeSent: (String verificationId, int? resendToken) {
+  //       // Kode OTP terkirim
+  //       setState(() {
+  //         _verificationId = verificationId;
+  //         otpe = true;  // Menampilkan OtpTextField
+  //       });
+  //     },
+  //     codeAutoRetrievalTimeout: (String verificationId) {
+  //       _verificationId = verificationId;
+  //     },
+  //   );
+  // }
 
-  Future<void> _submitOTP(String otpCode) async {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-      verificationId: _verificationId,
-      smsCode: otpCode,
-    );
-
-    // Login dengan credential
-    await _auth.signInWithCredential(credential);
-  }
+  // Future<void> _submitOTP(String otpCode) async {
+  //   PhoneAuthCredential credential = PhoneAuthProvider.credential(
+  //     verificationId: _verificationId,
+  //     smsCode: otpCode,
+  //   );
+  //
+  //   // Login dengan credential
+  //   await _auth.signInWithCredential(credential);
+  // }
 
   @override
   void initState() {
@@ -361,9 +362,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     // ),
                   ],
                 ),
-                SizedBox(height: 10),
-                (otpe == true)
-                    ?
+                // SizedBox(height: 10),
+                // (otpe == true)
+                //     ?
                 // OtpTextField(
                 //         numberOfFields: 6,
                 //         onSubmit: (String otpCode) {
@@ -379,30 +380,30 @@ class _RegisterPageState extends State<RegisterPage> {
                 //           });
                 //         },
                 //       )
-                    OtpTextField(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            keyboardType: TextInputType.number,
-                            numberOfFields: 6,
-                            enabledBorderColor: Colors.grey,
-                            borderColor: Theme.of(context).colorScheme.primary,
-                            focusedBorderColor:
-                                Theme.of(context).colorScheme.primary,
-                            showFieldAsBox: true,
-                            onCodeChanged: (String code) {},
-                            onSubmit: (String otpCode) {
-                              _submitOTP(otpCode).whenComplete(() {
-                                showDialog(context: context, builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Text('BERHASIL')
-                                  );
-                                });
-                                setState(() {
-                                  otpe = false;
-                                });
-                              });
-                            },
-                          )
-                    : Container(),
+                //     OtpTextField(
+                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //             keyboardType: TextInputType.number,
+                //             numberOfFields: 6,
+                //             enabledBorderColor: Colors.grey,
+                //             borderColor: Theme.of(context).colorScheme.primary,
+                //             focusedBorderColor:
+                //                 Theme.of(context).colorScheme.primary,
+                //             showFieldAsBox: true,
+                //             onCodeChanged: (String code) {},
+                //             onSubmit: (String otpCode) {
+                //               _submitOTP(otpCode).whenComplete(() {
+                //                 showDialog(context: context, builder: (BuildContext context) {
+                //                   return AlertDialog(
+                //                     content: Text('BERHASIL')
+                //                   );
+                //                 });
+                //                 setState(() {
+                //                   otpe = false;
+                //                 });
+                //               });
+                //             },
+                //           )
+                //     : Container(),
                 SizedBox(height: 10),
                 TextFieldCustom(
                   controller: emailController,
@@ -713,112 +714,112 @@ class _RegisterPageState extends State<RegisterPage> {
                 'Register',
                 style: TextStyle(color: Colors.white),
               ),
-              onPressed: () => _registerWithEmailAndPhone(),
-              // onPressed: () async {
-              //   if (nameController.text.isEmpty) {
-              //     _alertService.showToast(
-              //       text: 'Name cannot be empty.',
-              //       icon: Icons.error,
-              //       color: Colors.redAccent,
-              //     );
-              //     return;
-              //   }
-              //
-              //   if (numberController.text.isEmpty) {
-              //     _alertService.showToast(
-              //       text: 'Phone number cannot be empty.',
-              //       icon: Icons.error,
-              //       color: Colors.redAccent,
-              //     );
-              //     return;
-              //   }
-              //
-              //   if (emailController.text.isEmpty) {
-              //     _alertService.showToast(
-              //       text: 'Email cannot be empty.',
-              //       icon: Icons.error,
-              //       color: Colors.redAccent,
-              //     );
-              //     return;
-              //   }
-              //
-              //   if (passwordController.text.isEmpty) {
-              //     _alertService.showToast(
-              //       text: 'Password cannot be empty.',
-              //       icon: Icons.error,
-              //       color: Colors.redAccent,
-              //     );
-              //     return;
-              //   }
-              //
-              //   if (!_registerFormKey.currentState!.validate()) {
-              //     _alertService.showToast(
-              //       text: 'Please fill in all fields correctly.',
-              //       icon: Icons.error,
-              //       color: Colors.redAccent,
-              //     );
-              //     return;
-              //   }
-              //
-              //   try {
-              //     setState(() {
-              //       isLoading = true;
-              //     });
-              //     String email = emailController.text;
-              //     String password = passwordController.text;
-              //
-              //     UserCredential userCredential =
-              //         await _authService.signup(email, password);
-              //
-              //     if (userCredential.user != null) {
-              //       await userCredential.user!.sendEmailVerification();
-              //
-              //       String? pfpURL;
-              //       if (selectedImage != null) {
-              //         pfpURL = await _storageService.uploadUserPfp(
-              //           file: selectedImage!,
-              //           uid: userCredential.user!.uid,
-              //         );
-              //       }
-              //
-              //       await _databaseService.createUserProfile(
-              //         userProfile: UserProfile(
-              //           uid: userCredential.user!.uid,
-              //           name: nameController.text,
-              //           pfpURL: pfpURL ?? PLACEHOLDER_PFP,
-              //           phoneNumber: numberController.text,
-              //           email: emailController.text,
-              //           hasUploadedStory: false,
-              //           isViewed: false,
-              //         ),
-              //       );
-              //
-              //       _alertService.showToast(
-              //         text:
-              //             'Registration successful. Please verify your email.',
-              //         icon: Icons.check,
-              //         color: Colors.green,
-              //       );
-              //       _navigationService.goBack();
-              //     } else {
-              //       _alertService.showToast(
-              //         text: 'Registration failed.',
-              //         icon: Icons.error,
-              //         color: Colors.redAccent,
-              //       );
-              //     }
-              //   } catch (e) {
-              //     _alertService.showToast(
-              //       text: 'Phone Number or Email has already been used.',
-              //       icon: Icons.error,
-              //       color: Colors.redAccent,
-              //     );
-              //   } finally {
-              //     setState(() {
-              //       isLoading = false;
-              //     });
-              //   }
-              // },
+              // onPressed: () => _registerWithEmailAndPhone(),
+              onPressed: () async {
+                if (nameController.text.isEmpty) {
+                  _alertService.showToast(
+                    text: 'Name cannot be empty.',
+                    icon: Icons.error,
+                    color: Colors.redAccent,
+                  );
+                  return;
+                }
+
+                if (numberController.text.isEmpty) {
+                  _alertService.showToast(
+                    text: 'Phone number cannot be empty.',
+                    icon: Icons.error,
+                    color: Colors.redAccent,
+                  );
+                  return;
+                }
+
+                if (emailController.text.isEmpty) {
+                  _alertService.showToast(
+                    text: 'Email cannot be empty.',
+                    icon: Icons.error,
+                    color: Colors.redAccent,
+                  );
+                  return;
+                }
+
+                if (passwordController.text.isEmpty) {
+                  _alertService.showToast(
+                    text: 'Password cannot be empty.',
+                    icon: Icons.error,
+                    color: Colors.redAccent,
+                  );
+                  return;
+                }
+
+                if (!_registerFormKey.currentState!.validate()) {
+                  _alertService.showToast(
+                    text: 'Please fill in all fields correctly.',
+                    icon: Icons.error,
+                    color: Colors.redAccent,
+                  );
+                  return;
+                }
+
+                try {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  String email = emailController.text;
+                  String password = passwordController.text;
+
+                  UserCredential userCredential =
+                      await _authService.signup(email, password);
+
+                  if (userCredential.user != null) {
+                    await userCredential.user!.sendEmailVerification();
+
+                    String? pfpURL;
+                    if (selectedImage != null) {
+                      pfpURL = await _storageService.uploadUserPfp(
+                        file: selectedImage!,
+                        uid: userCredential.user!.uid,
+                      );
+                    }
+
+                    await _databaseService.createUserProfile(
+                      userProfile: UserProfile(
+                        uid: userCredential.user!.uid,
+                        name: nameController.text,
+                        pfpURL: pfpURL ?? PLACEHOLDER_PFP,
+                        phoneNumber: numberController.text,
+                        email: emailController.text,
+                        hasUploadedStory: false,
+                        isViewed: false,
+                      ),
+                    );
+
+                    _alertService.showToast(
+                      text:
+                          'Registration successful. Please verify your email.',
+                      icon: Icons.check,
+                      color: Colors.green,
+                    );
+                    _navigationService.goBack();
+                  } else {
+                    _alertService.showToast(
+                      text: 'Registration failed.',
+                      icon: Icons.error,
+                      color: Colors.redAccent,
+                    );
+                  }
+                } catch (e) {
+                  _alertService.showToast(
+                    text: 'Phone Number or Email has already been used.',
+                    icon: Icons.error,
+                    color: Colors.redAccent,
+                  );
+                } finally {
+                  setState(() {
+                    isLoading = false;
+                  });
+                }
+              },
             ),
           );
   }
@@ -846,105 +847,105 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Future<void> _registerWithEmailAndPhone() async {
-    if (_registerFormKey.currentState?.validate() ?? false) {
-      try {
-        setState(() {
-          isLoading = true;
-        });
+  // Future<void> _registerWithEmailAndPhone() async {
+  //   if (_registerFormKey.currentState?.validate() ?? false) {
+  //     try {
+  //       setState(() {
+  //         isLoading = true;
+  //       });
+  //
+  //       // 1. Registrasi dengan Email dan Password
+  //       UserCredential userCredential =
+  //       await _auth.createUserWithEmailAndPassword(
+  //         email: emailController.text.trim(),
+  //         password: passwordController.text.trim(),
+  //       );
+  //
+  //       // 2. Verifikasi nomor telepon
+  //       await _verifyPhoneNumber(numberController.text.trim());
+  //
+  //
+  //       _alertService.showToast(
+  //         text: 'Verification code sent. Enter OTP to complete registration.',
+  //         icon: Icons.check,
+  //         color: Colors.green,
+  //       );
+  //       // _showToast('Verification code sent. Enter OTP to complete registration.');
+  //
+  //     } catch (e) {
+  //       _alertService.showToast(
+  //         text: e.toString(),
+  //         icon: Icons.error,
+  //         color: Colors.redAccent,
+  //       );
+  //       // _showToast('Registration failed: $e');
+  //     } finally {
+  //       setState(() {
+  //         isLoading = false;
+  //       });
+  //     }
+  //   } else {
+  //     _alertService.showToast(
+  //       text: 'Please fill in all fields.',
+  //       icon: Icons.error,
+  //       color: Colors.redAccent,
+  //     );
+  //     // _showToast('Please fill in all fields.');
+  //   }
+  // }
 
-        // 1. Registrasi dengan Email dan Password
-        UserCredential userCredential =
-        await _auth.createUserWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        );
+  // Future<void> _verifyNumber(String phoneNumber) async {
+  //   await _auth.verifyPhoneNumber(
+  //     phoneNumber: phoneNumber,
+  //     verificationCompleted: (PhoneAuthCredential credential) async {
+  //       // Verifikasi otomatis
+  //       await _auth.signInWithCredential(credential);
+  //     },
+  //     verificationFailed: (FirebaseAuthException e) {
+  //       // Gagal verifikasi
+  //       _alertService.showToast(
+  //         text: e.message!,
+  //         icon: Icons.check,
+  //         color: Colors.green,
+  //       );
+  //       // _showToast('Verification failed: ${e.message}');
+  //     },
+  //     codeSent: (String verificationId, int? resendToken) {
+  //       // Kode OTP terkirim
+  //       setState(() {
+  //         _verificationId = verificationId;
+  //         otpe = true;
+  //       });
+  //     },
+  //     codeAutoRetrievalTimeout: (String verificationId) {
+  //       _verificationId = verificationId;
+  //     },
+  //   );
+  // }
 
-        // 2. Verifikasi nomor telepon
-        await _verifyPhoneNumber(numberController.text.trim());
-
-
-        _alertService.showToast(
-          text: 'Verification code sent. Enter OTP to complete registration.',
-          icon: Icons.check,
-          color: Colors.green,
-        );
-        // _showToast('Verification code sent. Enter OTP to complete registration.');
-
-      } catch (e) {
-        _alertService.showToast(
-          text: e.toString(),
-          icon: Icons.error,
-          color: Colors.redAccent,
-        );
-        // _showToast('Registration failed: $e');
-      } finally {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    } else {
-      _alertService.showToast(
-        text: 'Please fill in all fields.',
-        icon: Icons.error,
-        color: Colors.redAccent,
-      );
-      // _showToast('Please fill in all fields.');
-    }
-  }
-
-  Future<void> _verifyNumber(String phoneNumber) async {
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        // Verifikasi otomatis
-        await _auth.signInWithCredential(credential);
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        // Gagal verifikasi
-        _alertService.showToast(
-          text: e.message!,
-          icon: Icons.check,
-          color: Colors.green,
-        );
-        // _showToast('Verification failed: ${e.message}');
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        // Kode OTP terkirim
-        setState(() {
-          _verificationId = verificationId;
-          otpe = true;
-        });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        _verificationId = verificationId;
-      },
-    );
-  }
-
-  Future<void> _submitOTPE(String otpCode) async {
-    try {
-      PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
-        verificationId: _verificationId!,
-        smsCode: otpCode,
-      );
-
-      // 3. Hubungkan akun email dengan nomor telepon
-      await FirebaseAuth.instance.currentUser?.linkWithCredential(phoneAuthCredential);
-
-      _alertService.showToast(
-        text: 'Registration and phone verification successful.',
-        icon: Icons.check,
-        color: Colors.green,
-      );
-      // _showToast('Registration and phone verification successful.');
-    } catch (e) {
-      _alertService.showToast(
-        text: e.toString(),
-        icon: Icons.error,
-        color: Colors.redAccent,
-      );
-      // _showToast('Failed to link phone number: $e');
-    }
-  }
+  // Future<void> _submitOTPE(String otpCode) async {
+  //   try {
+  //     PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
+  //       verificationId: _verificationId!,
+  //       smsCode: otpCode,
+  //     );
+  //
+  //     // 3. Hubungkan akun email dengan nomor telepon
+  //     await FirebaseAuth.instance.currentUser?.linkWithCredential(phoneAuthCredential);
+  //
+  //     _alertService.showToast(
+  //       text: 'Registration and phone verification successful.',
+  //       icon: Icons.check,
+  //       color: Colors.green,
+  //     );
+  //     // _showToast('Registration and phone verification successful.');
+  //   } catch (e) {
+  //     _alertService.showToast(
+  //       text: e.toString(),
+  //       icon: Icons.error,
+  //       color: Colors.redAccent,
+  //     );
+  //     // _showToast('Failed to link phone number: $e');
+  //   }
+  // }
 }
