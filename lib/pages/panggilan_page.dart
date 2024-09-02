@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+import '../consts.dart';
 
 class PanggilanPage extends StatefulWidget {
   const PanggilanPage({super.key});
@@ -8,23 +12,317 @@ class PanggilanPage extends StatefulWidget {
 }
 
 class _PanggilanPageState extends State<PanggilanPage> {
+  int _selectedIndex = 0;
+  PageController controller = PageController(initialPage: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(initialPage: _selectedIndex);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void _navigateBottomBar(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    controller.animateToPage(
+      _selectedIndex,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        centerTitle: false,
-        title: Text(
-          'Calling',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        titleSpacing: 15,
+        toolbarHeight: 100,
         backgroundColor: Theme.of(context).colorScheme.primary,
+        centerTitle: true,
+        title: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.more_horiz,
+                    color: Colors.white,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(7),
+                    color: Colors.white,
+                  ),
+                  width: 207,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(2),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _navigateBottomBar(0);
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 35,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(7),
+                            color: _selectedIndex == 0
+                                ? Colors.purple.shade200
+                                : Colors.grey.shade200,
+                          ),
+                          child: Text(
+                            'All',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 2),
+                      GestureDetector(
+                        onTap: () {
+                          _navigateBottomBar(1);
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 35,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(7),
+                            color: _selectedIndex == 1
+                                ? Colors.purple.shade200
+                                : Colors.grey.shade200,
+                          ),
+                          child: Text(
+                            'Missed',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.add_circle,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Calling',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-      body: Container(color: Colors.white,child: Center(child: Text('Calling'),)),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        child: PageView(
+          physics: NeverScrollableScrollPhysics(),
+          controller: controller,
+          children: [
+            AllCallsPage(),
+            MissedCallsPage(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AllCallsPage extends StatelessWidget {
+  const AllCallsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        children: [
+          CallItem(
+            name: 'Sadelih',
+            date: 'Friday',
+            callType: 'Outgoing',
+            avatarUrl: 'PLACEHOLDER_PFP',
+          ),
+          SizedBox(height: 10),
+          CallItem(
+            name: 'Dadan',
+            date: 'Wednesday',
+            callType: 'Outgoing',
+            avatarUrl: 'PLACEHOLDER_PFP',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CallItem extends StatelessWidget {
+  final String name;
+  final String date;
+  final String callType;
+  final String avatarUrl;
+
+  const CallItem({
+    required this.name,
+    required this.date,
+    required this.callType,
+    required this.avatarUrl,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey.shade200,
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundImage: NetworkImage(avatarUrl),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name),
+                    SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Icon(Icons.missed_video_call_outlined, size: 20),
+                        SizedBox(width: 5),
+                        Text(callType, style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      date,
+                      style: TextStyle(fontSize: 10),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.info_outline, size: 20),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MissedCallsPage extends StatelessWidget {
+  const MissedCallsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 15, right: 15, top: 15),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey.shade200,
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(PLACEHOLDER_PFP),
+                ),
+                SizedBox(width: 10),
+                Container(
+                  width: MediaQuery.of(context).size.width - 110,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Sadelih'),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.missed_video_call_outlined,
+                                size: 20,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Unanswered',
+                                style: TextStyle(fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Sunday',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.info_outline,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

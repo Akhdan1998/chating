@@ -297,12 +297,35 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    showDialog(context: context, builder: (BuildContext context) {
-                      return AlertDialog(
-                        contentPadding: EdgeInsets.zero,
-                        content: Image.network(widget.grup.imageUrl),
-                      );
-                    });
+                    showGeneralDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      barrierLabel: '',
+                      barrierColor: Colors.black54,
+                      transitionDuration:
+                      Duration(milliseconds: 300),
+                      pageBuilder: (context, anim1, anim2) {
+                        return AlertDialog(
+                          elevation: 0,
+                          backgroundColor: Colors.transparent,
+                          content:
+                          Image.network(widget.grup.imageUrl),
+                        );
+                      },
+                      transitionBuilder:
+                          (context, anim1, anim2, child) {
+                        return Transform.scale(
+                          scale: anim1.value,
+                          child: child,
+                        );
+                      },
+                    );
+                    // showDialog(context: context, builder: (BuildContext context) {
+                    //   return AlertDialog(
+                    //     contentPadding: EdgeInsets.zero,
+                    //     content: Image.network(widget.grup.imageUrl),
+                    //   );
+                    // });
                   },
                   child: Container(
                     margin: EdgeInsets.only(top: 20),

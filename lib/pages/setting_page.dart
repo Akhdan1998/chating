@@ -2,6 +2,7 @@ import 'package:chating/pages/edit_page.dart';
 import 'package:chating/pages/updatePassword_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -337,10 +338,37 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: MediaQuery.of(context).size.width,
                           child: Row(
                             children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundImage:
-                                    NetworkImage(userProfile.pfpURL!),
+                              GestureDetector(
+                                onTap: () {
+                                  showGeneralDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    barrierLabel: '',
+                                    barrierColor: Colors.black54,
+                                    transitionDuration:
+                                        Duration(milliseconds: 300),
+                                    pageBuilder: (context, anim1, anim2) {
+                                      return AlertDialog(
+                                        elevation: 0,
+                                        backgroundColor: Colors.transparent,
+                                        content:
+                                            Image.network(userProfile.pfpURL!),
+                                      );
+                                    },
+                                    transitionBuilder:
+                                        (context, anim1, anim2, child) {
+                                      return Transform.scale(
+                                        scale: anim1.value,
+                                        child: child,
+                                      );
+                                    },
+                                  );
+                                },
+                                child: CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage:
+                                      NetworkImage(userProfile.pfpURL!),
+                                ),
                               ),
                               SizedBox(width: 10),
                               Container(

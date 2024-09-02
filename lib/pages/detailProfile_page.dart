@@ -69,14 +69,37 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
           children: [
             GestureDetector(
               onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        contentPadding: EdgeInsets.zero,
-                        content: Image.network(widget.chatUser.pfpURL!),
-                      );
-                    });
+                showGeneralDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  barrierLabel: '',
+                  barrierColor: Colors.black54,
+                  transitionDuration:
+                  Duration(milliseconds: 300),
+                  pageBuilder: (context, anim1, anim2) {
+                    return AlertDialog(
+                      elevation: 0,
+                      backgroundColor: Colors.transparent,
+                      content:
+                      Image.network(widget.chatUser.pfpURL!),
+                    );
+                  },
+                  transitionBuilder:
+                      (context, anim1, anim2, child) {
+                    return Transform.scale(
+                      scale: anim1.value,
+                      child: child,
+                    );
+                  },
+                );
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) {
+                //       return AlertDialog(
+                //         contentPadding: EdgeInsets.zero,
+                //         content: Image.network(widget.chatUser.pfpURL!),
+                //       );
+                //     });
               },
               child: Container(
                 width: 150,
@@ -249,23 +272,23 @@ class _ButtonFiturState extends State<ButtonFitur> {
     return userDoc.data()?['phoneNumber'] ?? '';
   }
 
-  void _startVideoCall() async {
-    String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VideoCallScreen(phoneNumber: phoneNumber),
-      ),
-    );
-  }
+  // void _startVideoCall() async {
+  //   String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+  //
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => VideoCallScreen(phoneNumber: phoneNumber),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double buttonSize = screenWidth * 0.27;
     return GestureDetector(
-      onTap: _startVideoCall,
+      onTap: () {},
       child: Container(
         width: buttonSize,
         height: buttonSize,

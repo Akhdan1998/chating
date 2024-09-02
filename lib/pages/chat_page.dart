@@ -71,20 +71,36 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> messages = [];
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-  Future<String> _getPhoneNumber(String userId) async {
-    // Replace this with your Firestore service instance
-    var firestore = FirebaseFirestore.instance;
-    var userDoc = await firestore.collection('users').doc(userId).get();
-    return userDoc.data()?['phoneNumber'] ?? '';
+  // Future<String> _getPhoneNumber(String userId) async {
+  //   // Replace this with your Firestore service instance
+  //   var firestore = FirebaseFirestore.instance;
+  //   var userDoc = await firestore.collection('users').doc(userId).get();
+  //   return userDoc.data()?['phoneNumber'] ?? '';
+  // }
+  //
+  // void _startVideoCall() async {
+  //   String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+  //
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => VideoCallScreen(phoneNumber: phoneNumber),
+  //     ),
+  //   );
+  // }
+
+  Future<String> _getChannelName(String userId) async {
+    // Mengambil channel name (dalam hal ini, menggunakan userId sebagai channel name)
+    return userId;
   }
 
   void _startVideoCall() async {
-    String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+    String channelName = await _getChannelName(widget.chatUser.uid!);
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VideoCallScreen(phoneNumber: phoneNumber),
+        builder: (context) => VideoCallScreen(channelName: channelName),
       ),
     );
   }
@@ -443,27 +459,6 @@ class _ChatPageState extends State<ChatPage> {
     await recorder.openRecorder();
     recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
   }
-
-  // void _showNotification(String message) async {
-  //   const AndroidNotificationDetails androidPlatformChannelSpecifics =
-  //   AndroidNotificationDetails(
-  //     playSound: true,
-  //     'your_channel_id',
-  //     'your_channel_name',
-  //     channelDescription: 'your_channel_description',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //   );
-  //   const NotificationDetails platformChannelSpecifics =
-  //   NotificationDetails(android: androidPlatformChannelSpecifics);
-  //   await flutterLocalNotificationsPlugin.show(
-  //     0,
-  //     widget.chatUser.name,
-  //     message,
-  //     platformChannelSpecifics,
-  //     payload: 'item x',
-  //   );
-  // }
 
   void _showNotification(String message) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =

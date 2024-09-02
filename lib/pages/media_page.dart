@@ -109,69 +109,122 @@ class _MediaPageState extends State<MediaPage> {
                     Navigator.pop(context);
                   },
                 ),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        _navigateBottomBar(0);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 30,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == 0
-                              ? Colors.deepPurple.shade100
-                              : Colors.grey.shade300,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(5),
-                            bottomLeft: Radius.circular(5),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(7),
+                    color: Colors.white,
+                  ),
+                  width: 247,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(2),
+                  child: Row(
+                    children: [
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     _navigateBottomBar(0);
+                      //   },
+                      //   child: Container(
+                      //     alignment: Alignment.center,
+                      //     height: 30,
+                      //     width: 100,
+                      //     decoration: BoxDecoration(
+                      //       color: _selectedIndex == 0
+                      //           ? Colors.deepPurple.shade100
+                      //           : Colors.grey.shade300,
+                      //       borderRadius: BorderRadius.only(
+                      //         topLeft: Radius.circular(5),
+                      //         bottomLeft: Radius.circular(5),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Media',
+                      //       style: TextStyle(
+                      //         color: Theme.of(context).colorScheme.primary,
+                      //         fontWeight: _selectedIndex == 0
+                      //             ? FontWeight.bold
+                      //             : FontWeight.normal,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      GestureDetector(
+                        onTap: () {
+                          _navigateBottomBar(0);
+                        },
+                        child: Container(
+                          width: 120,
+                          height: 35,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(7),
+                            color: _selectedIndex == 0
+                                ? Colors.purple.shade200
+                                : Colors.grey.shade200,
                           ),
-                        ),
-                        child: Text(
-                          'Media',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: _selectedIndex == 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                          child: Text(
+                            'Media',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    VerticalDivider(
-                      thickness: 3,
-                      width: 3,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _navigateBottomBar(1);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 30,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == 1
-                              ? Colors.deepPurple.shade100
-                              : Colors.grey.shade300,
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(5),
-                            bottomRight: Radius.circular(5),
+                      VerticalDivider(
+                        thickness: 2,
+                        width: 3,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          _navigateBottomBar(1);
+                        },
+                        child: Container(
+                          width: 120,
+                          height: 35,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(7),
+                            color: _selectedIndex == 1
+                                ? Colors.purple.shade200
+                                : Colors.grey.shade200,
                           ),
-                        ),
-                        child: Text(
-                          'Document',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: _selectedIndex == 1
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                          child: Text(
+                            'Document',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     _navigateBottomBar(1);
+                      //   },
+                      //   child: Container(
+                      //     alignment: Alignment.center,
+                      //     height: 30,
+                      //     width: 100,
+                      //     decoration: BoxDecoration(
+                      //       color: _selectedIndex == 1
+                      //           ? Colors.deepPurple.shade100
+                      //           : Colors.grey.shade300,
+                      //       borderRadius: BorderRadius.only(
+                      //         topRight: Radius.circular(5),
+                      //         bottomRight: Radius.circular(5),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Document',
+                      //       style: TextStyle(
+                      //         color: Theme.of(context).colorScheme.primary,
+                      //         fontWeight: _selectedIndex == 1
+                      //             ? FontWeight.bold
+                      //             : FontWeight.normal,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
                 ),
                 IconButton(
                   icon: Icon(
