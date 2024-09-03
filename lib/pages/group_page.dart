@@ -12,6 +12,7 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,6 +20,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as p;
+import 'package:video_player/video_player.dart' as vp;
+import 'package:video_player/video_player.dart';
 import '../main.dart';
 import '../models/group.dart';
 import '../models/user_profile.dart';
@@ -119,44 +122,6 @@ class _GroupPageState extends State<GroupPage> {
     _storageService = _getIt.get<StorageService>();
   }
 
-  // void _loadMessages() {
-  //   _firestore
-  //       .collection('messagesGroup')
-  //       .where('groupId', isEqualTo: widget.group.id)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots()
-  //       .listen((snapshot) {
-  //     List<ChatMessage> newMessages = [];
-  //     for (var doc in snapshot.docs) {
-  //       newMessages.add(ChatMessage.fromJson(doc.data()));
-  //     }
-  //     setState(() {
-  //       if (newMessages.length > _messages.length) {
-  //         final lastMessage = newMessages.first.text;
-  //         // Display notification if there are new messages
-  //         flutterLocalNotificationsPlugin.show(
-  //           0,
-  //           widget.group.name,
-  //           lastMessage,
-  //           const NotificationDetails(
-  //             android: AndroidNotificationDetails(
-  //               'Awokawok',
-  //               'AwokAwokAwok',
-  //               importance: Importance.high,
-  //               priority: Priority.high,
-  //             ),
-  //           ),
-  //         );
-  //
-  //         // Play sound
-  //         audioPlayer.play(AssetSource('ting.mp3'));
-  //       }
-  //       _messages = newMessages;
-  //     });
-  //     _scrollToBottom();
-  //   });
-  // }
-
   void _loadMessages() {
     _firestore
         .collection('messagesGroup')
@@ -207,24 +172,6 @@ class _GroupPageState extends State<GroupPage> {
       print("Failed to send message: $error");
     });
   }
-
-  // void _loadMessages() {
-  //   _firestore
-  //       .collection('messagesGroup')
-  //       .where('groupId', isEqualTo: widget.group.id)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots()
-  //       .listen((snapshot) {
-  //     List<ChatMessage> messages = [];
-  //     for (var doc in snapshot.docs) {
-  //       messages.add(ChatMessage.fromJson(doc.data()));
-  //     }
-  //     setState(() {
-  //       _messages = messages;
-  //     });
-  //     _scrollToBottom();
-  //   });
-  // }
 
   void _setCurrentAndOtherUser() {
     currentUser = ChatUser(
@@ -358,57 +305,6 @@ class _GroupPageState extends State<GroupPage> {
       print('Error saat mengupload file: $e');
     }
   }
-
-  // Future<void> uploadToFirebase(
-  //     File file, MessageTypeGroup messageType, List<String> uids) async {
-  //   try {
-  //     FirebaseStorage storage = FirebaseStorage.instance;
-  //     String fileName =
-  //         'mediaGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}.pdf';
-  //     Reference ref = storage.ref().child(fileName);
-  //     UploadTask uploadTask = ref.putFile(file);
-  //
-  //     uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-  //       print(
-  //           'Progres upload: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
-  //     });
-  //
-  //     TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-  //
-  //     String downloadURL = await taskSnapshot.ref.getDownloadURL();
-  //
-  //     ChatMessage message;
-  //     if (messageType == MessageTypeGroup.Document) {
-  //       message = ChatMessage(
-  //         user: _chatUser,
-  //         createdAt: DateTime.now(),
-  //         medias: [
-  //           ChatMedia(
-  //             url: downloadURL,
-  //             fileName: 'File',
-  //             type: MediaType.file,
-  //           ),
-  //         ],
-  //       );
-  //     } else {
-  //       message = ChatMessage(
-  //         user: _chatUser,
-  //         createdAt: DateTime.now(),
-  //         medias: [
-  //           ChatMedia(
-  //             url: downloadURL,
-  //             fileName: '',
-  //             type: MediaType.image,
-  //           ),
-  //         ],
-  //       );
-  //     }
-  //
-  //     _sendMessage(message);
-  //   } catch (e) {
-  //     print('Error saat mengupload file: $e');
-  //   }
-  // }
 
   Future<void> launchPhoneCall(String phoneNumber) async {
     String url = 'tel:$phoneNumber';
@@ -900,6 +796,17 @@ class _GroupPageState extends State<GroupPage> {
                 String fileName = media.fileName ?? 'File';
                 DateTime dateTime = media.uploadedDate ?? DateTime.now();
                 await _downloadAndOpenPDF(url.toString(), fileName, dateTime);
+              } else if (media.type == MediaType.video) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FullScreenVideoPlayer(
+                      videoUrl: media.url,
+                      chatUser: otherUser!,
+                      dateTime: media.uploadedDate ?? DateTime.now(),
+                    ),
+                  ),
+                );
               }
             },
           ),
@@ -962,7 +869,6 @@ class _GroupPageState extends State<GroupPage> {
         );
       },
     );
-
 
     // return StreamBuilder(
     //   stream: _firestore
@@ -1268,7 +1174,292 @@ class _GroupPageState extends State<GroupPage> {
   }
 }
 
-class FullScreenImage extends StatelessWidget {
+class FullScreenVideoPlayer extends StatefulWidget {
+  final String videoUrl;
+  final ChatUser chatUser;
+  final DateTime dateTime;
+
+  const FullScreenVideoPlayer({
+    required this.videoUrl,
+    required this.chatUser,
+    required this.dateTime,
+  });
+
+  @override
+  _FullScreenVideoPlayerState createState() => _FullScreenVideoPlayerState();
+}
+
+class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
+  late vp.VideoPlayerController _controller;
+  vp.VideoPlayerValue? _videoValue;
+  final GetIt _getIt = GetIt.instance;
+  late AlertService _alertService;
+  double _progress = 0.0;
+  bool _isDownloading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = vp.VideoPlayerController.network(widget.videoUrl)
+      ..initialize().then((_) {
+        setState(() {
+          _controller.play();
+          _videoValue = _controller.value;
+        });
+      });
+
+    _controller.addListener(() {
+      setState(() {
+        _videoValue = _controller.value;
+      });
+    });
+
+    _alertService = _getIt.get<AlertService>();
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(() {});
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _downloadVideo(String url) async {
+    try {
+      var dio = Dio();
+      var tempDir = await getTemporaryDirectory();
+      String fullPath = '${tempDir.path}/video.mp4';
+      setState(() {
+        _isDownloading = true;
+      });
+      await dio.download(
+        url,
+        fullPath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            double progress = (received / total * 100);
+            print("Download progress: $progress%");
+            setState(() {
+              _progress = progress;
+            });
+          }
+        },
+      );
+      File file = File(fullPath);
+      if (await file.exists()) {
+        final result = await ImageGallerySaver.saveFile(file.path);
+        if (result['isSuccess']) {
+          setState(() {
+            _alertService.showToast(
+              text: 'Video downloaded successfully',
+              icon: Icons.check,
+              color: Colors.green,
+            );
+          });
+        } else {
+          setState(() {
+            _alertService.showToast(
+              text: 'Failed to save video to gallery',
+              icon: Icons.error,
+              color: Colors.red,
+            );
+          });
+        }
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        _alertService.showToast(
+          text: 'Failed to download video $e',
+          icon: Icons.error,
+          color: Colors.red,
+        );
+      });
+    } finally {
+      setState(() {
+        _isDownloading = false;
+        _progress = 0.0;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final duration = _videoValue?.duration ?? Duration.zero;
+    final position = _videoValue?.position ?? Duration.zero;
+    final isPlaying = _videoValue?.isPlaying ?? false;
+    DateTime date =
+    DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
+    String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        centerTitle: false,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.chatUser.firstName!,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              day,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await _downloadVideo(widget.videoUrl);
+            },
+            icon: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: _isDownloading
+                  ? Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 27,
+                    height: 27,
+                    child: CircularProgressIndicator(
+                      value: _progress / 100,
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2.0,
+                      key: ValueKey<int>(1),
+                    ),
+                  ),
+                  Text(
+                    '${_progress.toStringAsFixed(0)}%',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 7,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+                  : Icon(
+                Icons.file_download_outlined,
+                color: Colors.white,
+                key: ValueKey<int>(0),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: _controller.value.isInitialized
+                  ? Stack(
+                children: [
+                  vp.VideoPlayer(_controller),
+
+                  if (_controller.value.isInitialized)
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isPlaying ? _controller.pause() : _controller.play();
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isPlaying ? Colors.white.withOpacity(0.3) : Colors.white,
+                          ),
+                          padding: const EdgeInsets.all(16.0),
+                          child: Icon(
+                            isPlaying ? Icons.pause : Icons.play_arrow,
+                            color: Colors.black,
+                            size: 40.0,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  if (_controller.value.isInitialized)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _formatDuration(position),
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              Text(
+                                _formatDuration(duration),
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ValueListenableBuilder(
+                          valueListenable: _controller,
+                          builder: (context, VideoPlayerValue value, child) {
+                            return Slider(
+                              value: value.position.inSeconds.toDouble().clamp(0.0, value.duration.inSeconds.toDouble()),
+                              min: 0.0,
+                              max: value.duration.inSeconds.toDouble(),
+                              onChanged: (newValue) {
+                                _controller.seekTo(Duration(seconds: newValue.toInt()));
+                              },
+                            );
+                          },
+                        ),
+                        // Slider(
+                        //   value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
+                        //   min: 0.0,
+                        //   max: duration.inSeconds.toDouble(),
+                        //   onChanged: (value) {
+                        //     _controller.seekTo(Duration(seconds: value.toInt()));
+                        //   },
+                        // ),
+                      ],
+                    ),
+                ],
+              )
+                  : CircularProgressIndicator(), // Show loading indicator
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDuration(Duration duration) {
+    final int minutes = duration.inMinutes;
+    final int seconds = duration.inSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+}
+
+class FullScreenImage extends StatefulWidget {
   final ChatUser chatUser;
   final String imageUrl;
   final DateTime dateTime;
@@ -1280,8 +1471,82 @@ class FullScreenImage extends StatelessWidget {
   });
 
   @override
+  State<FullScreenImage> createState() => _FullScreenImageState();
+}
+
+class _FullScreenImageState extends State<FullScreenImage> {
+  final GetIt _getIt = GetIt.instance;
+  late AlertService _alertService;
+  double _progress = 0.0;
+  bool _isDownloading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _alertService = _getIt.get<AlertService>();
+  }
+
+  Future<void> downloadImage(String url) async {
+    try {
+      var dio = Dio();
+      var tempDir = await getTemporaryDirectory();
+      String fullPath = tempDir.path + "/image.jpg";
+      setState(() {
+        _isDownloading = true;
+      });
+      await dio.download(
+        url,
+        fullPath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            double progress = (received / total * 100);
+            print("Download progress: $progress%");
+            setState(() {
+              _progress = progress;
+            });
+          }
+        },
+      );
+      File file = File(fullPath);
+      if (await file.exists()) {
+        final result = await ImageGallerySaver.saveFile(file.path);
+        if (result['isSuccess']) {
+          setState(() {
+            _alertService.showToast(
+              text: 'Image downloaded successfully',
+              icon: Icons.check,
+              color: Colors.green,
+            );
+          });
+        } else {
+          setState(() {
+            _alertService.showToast(
+              text: 'Failed to save image to gallery',
+              icon: Icons.error,
+              color: Colors.red,
+            );
+          });
+        }
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        _alertService.showToast(
+          text: 'Failed to download image $e',
+          icon: Icons.error,
+          color: Colors.red,
+        );
+      });
+    } finally {
+      setState(() {
+        _isDownloading = false;
+        _progress = 0.0;
+      });
+    }
+  }
+  @override
   Widget build(BuildContext context) {
-    DateTime date = DateFormat('yyyy-MM-dd hh:mm').parse(dateTime.toString());
+    DateTime date = DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
     String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
     return Scaffold(
       appBar: AppBar(
@@ -1301,7 +1566,7 @@ class FullScreenImage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              chatUser.firstName.toString(),
+              widget.chatUser.firstName.toString(),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -1317,10 +1582,50 @@ class FullScreenImage extends StatelessWidget {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await downloadImage(widget.imageUrl);
+            },
+            icon: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: _isDownloading
+                  ? Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 27,
+                    height: 27,
+                    child: CircularProgressIndicator(
+                      value: _progress / 100,
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2.0,
+                      key: ValueKey<int>(1),
+                    ),
+                  ),
+                  Text(
+                    '${_progress.toStringAsFixed(0)}%',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 7,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+                  : Icon(
+                Icons.file_download_outlined,
+                color: Colors.white,
+                key: ValueKey<int>(0),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: PhotoView(
-          imageProvider: NetworkImage(imageUrl),
+          imageProvider: NetworkImage(widget.imageUrl),
           backgroundDecoration: BoxDecoration(
             color: Colors.white,
           ),
@@ -1332,7 +1637,7 @@ class FullScreenImage extends StatelessWidget {
   }
 }
 
-class PDFViewPage extends StatelessWidget {
+class PDFViewPage extends StatefulWidget {
   final String filePath;
   final String fileName;
   final DateTime dateTime;
@@ -1344,8 +1649,77 @@ class PDFViewPage extends StatelessWidget {
   });
 
   @override
+  State<PDFViewPage> createState() => _PDFViewPageState();
+}
+
+class _PDFViewPageState extends State<PDFViewPage> {
+  final GetIt _getIt = GetIt.instance;
+  late AlertService _alertService;
+  double _progress = 0.0;
+  bool _isDownloading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _alertService = _getIt.get<AlertService>();
+  }
+
+  Future<void> _downloadAndSaveFile(String url, String fileName) async {
+    try {
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      }
+
+      Dio dio = Dio();
+      String savePath = await _getFilePath(fileName);
+
+      await dio.download(
+        url,
+        savePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            print((received / total * 100).toStringAsFixed(0) + "%");
+          }
+        },
+      );
+
+      setState(() {
+        _alertService.showToast(
+          text: 'Image downloaded successfully',
+          icon: Icons.check,
+          color: Colors.green,
+        );
+      });
+      print('File berhasil diunduh dan disimpan ke $savePath');
+    } catch (e) {
+      print('--------- $e');
+      setState(() {
+        _alertService.showToast(
+          text: 'Error downloading file',
+          icon: Icons.error,
+          color: Colors.red,
+        );
+      });
+    }
+  }
+
+  Future<String> _getFilePath(String fileName) async {
+    Directory directory;
+
+    if (Platform.isAndroid) {
+      directory = (await getExternalStorageDirectory())!;
+    } else {
+      directory = await getApplicationDocumentsDirectory();
+    }
+
+    return '${directory.path}/$fileName';
+  }
+
+  @override
   Widget build(BuildContext context) {
-    DateTime date = DateFormat('yyyy-MM-dd hh:mm').parse(dateTime.toString());
+    DateTime date =
+    DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
     String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
     return Scaffold(
       appBar: AppBar(
@@ -1365,7 +1739,7 @@ class PDFViewPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              fileName.toString(),
+              widget.fileName.toString(),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -1381,6 +1755,48 @@ class PDFViewPage extends StatelessWidget {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              setState(() {
+                _isDownloading = true;
+              });
+              await _downloadAndSaveFile(widget.filePath, widget.fileName);
+              setState(() {
+                _isDownloading = false;
+              });
+            },
+            icon: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: _isDownloading
+                  ? Stack(
+                alignment: Alignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    value: _progress / 100,
+                    valueColor:
+                    AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 2.0,
+                    key: ValueKey<int>(1),
+                  ),
+                  Text(
+                    '${_progress.toStringAsFixed(0)}%',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+                  : Icon(
+                Icons.file_download_outlined,
+                color: Colors.white,
+                key: ValueKey<int>(0),
+              ),
+            ),
+          ),
+        ],
       ),
       body: PDFView(
         enableSwipe: true,
@@ -1396,7 +1812,7 @@ class PDFViewPage extends StatelessWidget {
         onPageError: (page, error) {
           print('$page: ${error.toString()}');
         },
-        filePath: filePath,
+        filePath: widget.filePath,
       ),
     );
   }
