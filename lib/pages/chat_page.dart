@@ -71,39 +71,40 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> messages = [];
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-  // Future<String> _getPhoneNumber(String userId) async {
-  //   // Replace this with your Firestore service instance
-  //   var firestore = FirebaseFirestore.instance;
-  //   var userDoc = await firestore.collection('users').doc(userId).get();
-  //   return userDoc.data()?['phoneNumber'] ?? '';
-  // }
-  //
-  // void _startVideoCall() async {
-  //   String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
-  //
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => VideoCallScreen(phoneNumber: phoneNumber),
-  //     ),
-  //   );
-  // }
-
-  Future<String> _getChannelName(String userId) async {
-    // Mengambil channel name (dalam hal ini, menggunakan userId sebagai channel name)
-    return userId;
+  Future<String> _getPhoneNumber(String userId) async {
+    // Replace this with your Firestore service instance
+    var firestore = FirebaseFirestore.instance;
+    var userDoc = await firestore.collection('users').doc(userId).get();
+    return userDoc.data()?['phoneNumber'] ?? '';
   }
 
   void _startVideoCall() async {
+    String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
     String channelName = await _getChannelName(widget.chatUser.uid!);
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VideoCallScreen(channelName: channelName),
+        builder: (context) => VideoCallScreen(channelName: channelName, phoneNumber: phoneNumber),
       ),
     );
   }
+
+  Future<String> _getChannelName(String userId) async {
+    // Mengambil channel name (dalam hal ini, menggunakan userId sebagai channel name)
+    return userId;
+  }
+  //
+  // void _startVideoCall() async {
+  //   String channelName = await _getChannelName(widget.chatUser.uid!);
+  //
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => VideoCallScreen(channelName: channelName),
+  //     ),
+  //   );
+  // }
 
   @override
   void initState() {

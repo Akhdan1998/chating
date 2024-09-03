@@ -7,8 +7,8 @@ const String token = '5f51651473204af393e12e0617bb6dd1';
 
 class VideoCallScreen extends StatefulWidget {
   final String channelName;
-
-  VideoCallScreen({required this.channelName});
+  final String phoneNumber;
+  VideoCallScreen({required this.channelName, required this.phoneNumber});
 
   @override
   _VideoCallScreenState createState() => _VideoCallScreenState();
@@ -26,6 +26,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   void initState() {
     super.initState();
     _initAgora();
+    print('PHONE NUMBERRRRRRRRRRRRR ${widget.phoneNumber}');
+    print('CHANNEL NAMEEEEEEEE ${widget.channelName}');
     // _initializeAgora();
   }
 
@@ -74,7 +76,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
       await _engine.joinChannel(
         token: token,
-        channelId: widget.channelName,
+        // channelId: widget.channelName,
+        channelId: widget.phoneNumber,
         options: const ChannelMediaOptions(
           autoSubscribeVideo: true,
           autoSubscribeAudio: true,
@@ -249,7 +252,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         controller: VideoViewController.remote(
           rtcEngine: _engine,
           canvas: VideoCanvas(uid: _remoteUid, renderMode: RenderModeType.renderModeFit),
-          connection: RtcConnection(channelId: widget.channelName),
+          connection: RtcConnection(
+            // channelId: widget.channelName,
+            channelId: widget.phoneNumber,
+          ),
         ),
       );
     } else {
