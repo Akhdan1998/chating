@@ -302,14 +302,12 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                       barrierDismissible: true,
                       barrierLabel: '',
                       barrierColor: Colors.black54,
-                      transitionDuration:
-                      Duration(milliseconds: 300),
+                      transitionDuration: Duration(milliseconds: 300),
                       pageBuilder: (context, anim1, anim2) {
                         return AlertDialog(
                           elevation: 0,
                           backgroundColor: Colors.transparent,
-                          content:
-                          Image.network(widget.grup.imageUrl),
+                          content: Image.network(widget.grup.imageUrl),
                         );
                       },
                       transitionBuilder:

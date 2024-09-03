@@ -190,73 +190,152 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             GestureDetector(
                               onTap: () async {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        actionsPadding: EdgeInsets.only(
-                                            top: 5, bottom: 5, right: 10),
-                                        // titlePadding: EdgeInsets.only(bottom: 5),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text(
-                                              'No',
-                                              style: GoogleFonts.poppins()
-                                                  .copyWith(
-                                                color: Colors.redAccent,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                showGeneralDialog(
+                                  context: context,
+                                  barrierDismissible: true,
+                                  barrierLabel: '',
+                                  barrierColor: Colors.black54,
+                                  transitionDuration: Duration(milliseconds: 300),
+                                  pageBuilder: (context, anim1, anim2) {
+                                    return AlertDialog(
+                                      actionsPadding: EdgeInsets.only(
+                                          top: 5, bottom: 5, right: 10),
+                                      // titlePadding: EdgeInsets.only(bottom: 5),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(
+                                            'No',
+                                            style: GoogleFonts.poppins()
+                                                .copyWith(
+                                              color: Colors.redAccent,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          TextButton(
-                                            onPressed: () async {
-                                              // bool result =
-                                              //     await _authService.logout();
-                                              // if (result) {
-                                              //   _alertService.showToast(
-                                              //     text:
-                                              //         'Successfully logged out!',
-                                              //     icon: Icons.check,
-                                              //     color: Colors.green,
-                                              //   );
-                                              //   _navigationService
-                                              //       .pushReplacementNamed(
-                                              //           "/login");
-                                              // }
-                                              bool result = await _authService.logout();
-                                              if (result) {
-                                                SharedPreferences prefs = await SharedPreferences.getInstance();
-                                                await prefs.remove('isLoggedIn');
-                                                await prefs.remove('email');
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            // bool result =
+                                            //     await _authService.logout();
+                                            // if (result) {
+                                            //   _alertService.showToast(
+                                            //     text:
+                                            //         'Successfully logged out!',
+                                            //     icon: Icons.check,
+                                            //     color: Colors.green,
+                                            //   );
+                                            //   _navigationService
+                                            //       .pushReplacementNamed(
+                                            //           "/login");
+                                            // }
+                                            bool result = await _authService.logout();
+                                            if (result) {
+                                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                                              await prefs.remove('isLoggedIn');
+                                              await prefs.remove('email');
 
-                                                _alertService.showToast(
-                                                  text: 'Successfully logged out!',
-                                                  icon: Icons.check,
-                                                  color: Colors.green,
-                                                );
-                                                _navigationService.pushReplacementNamed("/login");
-                                              }
-                                            },
-                                            child: Text(
-                                              'Yes',
-                                              style: GoogleFonts.poppins()
-                                                  .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                              _alertService.showToast(
+                                                text: 'Successfully logged out!',
+                                                icon: Icons.check,
+                                                color: Colors.green,
+                                              );
+                                              _navigationService.pushReplacementNamed("/login");
+                                            }
+                                          },
+                                          child: Text(
+                                            'Yes',
+                                            style: GoogleFonts.poppins()
+                                                .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                        ],
-                                        title: Text(
-                                            'You need to log in again if you want to continue previous activities.',
-                                            style: TextStyle(fontSize: 15)),
-                                      );
-                                    });
+                                        ),
+                                      ],
+                                      title: Text(
+                                          'You need to log in again if you want to continue previous activities.',
+                                          style: TextStyle(fontSize: 15)),
+                                    );
+                                  },
+                                  transitionBuilder:
+                                      (context, anim1, anim2, child) {
+                                    return Transform.scale(
+                                      scale: anim1.value,
+                                      child: child,
+                                    );
+                                  },
+                                );
+                                // showDialog(
+                                //     context: context,
+                                //     builder: (BuildContext context) {
+                                //       return AlertDialog(
+                                //         actionsPadding: EdgeInsets.only(
+                                //             top: 5, bottom: 5, right: 10),
+                                //         // titlePadding: EdgeInsets.only(bottom: 5),
+                                //         actions: [
+                                //           TextButton(
+                                //             onPressed: () {
+                                //               Navigator.pop(context);
+                                //             },
+                                //             child: Text(
+                                //               'No',
+                                //               style: GoogleFonts.poppins()
+                                //                   .copyWith(
+                                //                 color: Colors.redAccent,
+                                //                 fontWeight: FontWeight.bold,
+                                //               ),
+                                //             ),
+                                //           ),
+                                //           TextButton(
+                                //             onPressed: () async {
+                                //               // bool result =
+                                //               //     await _authService.logout();
+                                //               // if (result) {
+                                //               //   _alertService.showToast(
+                                //               //     text:
+                                //               //         'Successfully logged out!',
+                                //               //     icon: Icons.check,
+                                //               //     color: Colors.green,
+                                //               //   );
+                                //               //   _navigationService
+                                //               //       .pushReplacementNamed(
+                                //               //           "/login");
+                                //               // }
+                                //               bool result = await _authService.logout();
+                                //               if (result) {
+                                //                 SharedPreferences prefs = await SharedPreferences.getInstance();
+                                //                 await prefs.remove('isLoggedIn');
+                                //                 await prefs.remove('email');
+                                //
+                                //                 _alertService.showToast(
+                                //                   text: 'Successfully logged out!',
+                                //                   icon: Icons.check,
+                                //                   color: Colors.green,
+                                //                 );
+                                //                 _navigationService.pushReplacementNamed("/login");
+                                //               }
+                                //             },
+                                //             child: Text(
+                                //               'Yes',
+                                //               style: GoogleFonts.poppins()
+                                //                   .copyWith(
+                                //                 color: Theme.of(context)
+                                //                     .colorScheme
+                                //                     .primary,
+                                //                 fontWeight: FontWeight.bold,
+                                //               ),
+                                //             ),
+                                //           ),
+                                //         ],
+                                //         title: Text(
+                                //             'You need to log in again if you want to continue previous activities.',
+                                //             style: TextStyle(fontSize: 15)),
+                                //       );
+                                //     });
                               },
                               child: Container(
                                 color: Colors.transparent,
@@ -264,8 +343,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     left: 20, right: 20, top: 10, bottom: 5),
                                 // margin: EdgeInsets.only(top: 20, left: 20, right: 20),
                                 child: Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
                                         padding: EdgeInsets.all(5),

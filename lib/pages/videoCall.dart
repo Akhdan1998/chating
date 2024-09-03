@@ -1,7 +1,6 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 const String appId = 'de71d649f3e24489b4b66acd07983a96';
 const String token = '5f51651473204af393e12e0617bb6dd1';
@@ -19,11 +18,15 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   int? _remoteUid;
   late final RtcEngine _engine;
   bool _localUserJoined = false;
+  // int? _localUserId;
+  // String appId = 'de71d649f3e24489b4b66acd07983a96';
+  // String token = '5f51651473204af393e12e0617bb6dd1';
 
   @override
   void initState() {
     super.initState();
     _initAgora();
+    // _initializeAgora();
   }
 
   Future<void> _initAgora() async {
@@ -86,6 +89,27 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       debugPrint("Error initializing Agora: $e");
     }
   }
+
+  // Future<void> _initializeAgora() async {
+  //   await AgoraRtcEngine.create(appId);
+  //   await AgoraRtcEngine.enableVideo();
+  //
+  //   AgoraRtcEngine.setEventHandler(RtcEngineEventHandler(
+  //     joinChannelSuccess: (channel, uid, elapsed) {
+  //       setState(() {
+  //         _localUserId = uid;
+  //       });
+  //     },
+  //     onUserJoined: (uid, elapsed) {
+  //       // Aksi saat pengguna lain bergabung
+  //     },
+  //     onUserOffline: (uid, reason) {
+  //       // Aksi saat pengguna lain offline
+  //     },
+  //   ));
+  //
+  //   await AgoraRtcEngine.joinChannel(null, channelName, null, 0);
+  // }
 
   // Future<void> _initAgora() async {
   //   try {
