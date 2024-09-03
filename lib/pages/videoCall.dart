@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 const String appId = 'de71d649f3e24489b4b66acd07983a96';
-const String token = '5f51651473204af393e12e0617bb6dd1';
+const String token = '007eJxTYPA8ZLN/482MfYX3zC7IfOb/+LWwW/pOzuuna16wFZ+96/RJgSEl1dwwxczEMs041cjExMIyySTJzCwxOcXA3NLCONHSzEvxelpDICNDiow1KyMDBIL4fAzaZkYWhkaWBuZmxpYWJgwMAKDnIww=';
 
 class VideoCallScreen extends StatefulWidget {
   final String channelName;
@@ -74,23 +74,78 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         ),
       );
 
-      await _engine.joinChannel(
-        token: token,
-        // channelId: widget.channelName,
-        channelId: widget.phoneNumber,
-        options: const ChannelMediaOptions(
-          autoSubscribeVideo: true,
-          autoSubscribeAudio: true,
-          publishCameraTrack: true,
-          publishMicrophoneTrack: true,
-          clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        ),
-        uid: 1234, // Gunakan UID unik untuk pengguna
-      );
+      // await _engine.joinChannel(
+      //   token: token,
+      //   // channelId: widget.channelName,
+      //   channelId: '+6281290763984',
+      //   options: const ChannelMediaOptions(
+      //     autoSubscribeVideo: true,
+      //     autoSubscribeAudio: true,
+      //     publishCameraTrack: true,
+      //     publishMicrophoneTrack: true,
+      //     clientRoleType: ClientRoleType.clientRoleBroadcaster,
+      //   ),
+      //   uid: int.parse(widget.phoneNumber.substring(1)), // Gunakan UID unik untuk pengguna
+      // );
+
+      print('TOKENNNNN ${token}');
+      print('NUMBERRR ${widget.phoneNumber.substring(1)}');
 
     } catch (e) {
       debugPrint("Error initializing Agora: $e");
     }
+  }
+
+  Future<void> joinChannel() async {
+    await _engine.joinChannel(
+      token: token,
+      // channelId: widget.channelName,
+      channelId: '+6281290763984',
+      options: const ChannelMediaOptions(
+        autoSubscribeVideo: true,
+        autoSubscribeAudio: true,
+        publishCameraTrack: true,
+        publishMicrophoneTrack: true,
+        clientRoleType: ClientRoleType.clientRoleBroadcaster,
+      ),
+      uid: int.parse(widget.phoneNumber.substring(1)),
+    );
+
+    print('TOKENNNNN ${token}');
+    print('NUMBERRR ${widget.phoneNumber.substring(1)}');
+
+    // Aktifkan modul video
+    await _engine.enableVideo();
+
+    // Mulai preview video lokal
+    await _engine.startPreview();
+
+    _engine.registerEventHandler(
+      RtcEngineEventHandler(
+        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+          debugPrint("local user ${connection.localUid} joined");
+          setState(() {
+            _localUserJoined = true;
+          });
+        },
+        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+          debugPrint("Remote user $remoteUid joined");
+          setState(() {
+            _remoteUid = remoteUid;
+          });
+        },
+        onError: (ErrorCodeType err, String msg) {
+          print('[onError] err: $err, msg: $msg');
+        },
+        onUserOffline: (RtcConnection connection, int remoteUid,
+            UserOfflineReasonType reason) {
+          debugPrint("Remote user $remoteUid left channel");
+          setState(() {
+            _remoteUid = null;
+          });
+        },
+      ),
+    );
   }
 
   // Future<void> _initializeAgora() async {
@@ -243,6 +298,11 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          joinChannel();
+        },
+      ),
     );
   }
 
@@ -265,21 +325,4 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       );
     }
   }
-
-  // Widget _remoteVideo() {
-  //   if (_remoteUid != null) {
-  //     return AgoraVideoView(
-  //       controller: VideoViewController.remote(
-  //         rtcEngine: _engine,
-  //         canvas: VideoCanvas(uid: _remoteUid, renderMode: RenderModeType.renderModeFit),
-  //         connection: RtcConnection(channelId: widget.phoneNumber),
-  //       ),
-  //     );
-  //   } else {
-  //     return const Text(
-  //       'Waiting for other users to join',
-  //       textAlign: TextAlign.center,
-  //     );
-  //   }
-  // }
 }
