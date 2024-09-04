@@ -80,31 +80,25 @@ class _ChatPageState extends State<ChatPage> {
 
   void _startVideoCall() async {
     String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
-    String channelName = await _getChannelName(widget.chatUser.uid!);
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VideoCallScreen(channelName: channelName, phoneNumber: phoneNumber),
+        builder: (context) => VideoCallScreen(phoneNumber: phoneNumber),
       ),
     );
   }
 
-  Future<String> _getChannelName(String userId) async {
-    // Mengambil channel name (dalam hal ini, menggunakan userId sebagai channel name)
-    return userId;
+  void _startAudioCall() async {
+    String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AudioCallScreen(phoneNumber: phoneNumber),
+      ),
+    );
   }
-  //
-  // void _startVideoCall() async {
-  //   String channelName = await _getChannelName(widget.chatUser.uid!);
-  //
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => VideoCallScreen(channelName: channelName),
-  //     ),
-  //   );
-  // }
 
   @override
   void initState() {
@@ -572,18 +566,7 @@ class _ChatPageState extends State<ChatPage> {
               Icons.call,
               color: Colors.white,
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      AudioCallScreen(meetingId: 'YOUR_MEETING_ID'),
-                ),
-              );
-              // String phoneNumber = await _databaseService
-              //     .getPhoneNumberFromFirestore(otherUser!.id);
-              // await launchPhoneCall(phoneNumber);
-            },
+            onPressed: _startAudioCall,
           ),
         ],
       ),
