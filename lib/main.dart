@@ -53,7 +53,9 @@ import 'package:chating/service/auth_service.dart';
 import 'package:chating/service/navigation_service.dart';
 import 'package:chating/utils.dart';
 import 'package:chating/widgets/navigasi.dart';
+import 'package:chating/wkwk_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -103,19 +105,24 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final NavigationService navigationService = _getIt<NavigationService>();
-    return MaterialApp(
-      navigatorKey: navigationService.navigatorKey,
-      color: Theme.of(context).colorScheme.primary,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        textTheme: GoogleFonts.montserratTextTheme(),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return MultiBlocProvider(
+        providers: [
+        BlocProvider(create: (_) => VCCubit()),
+      ],
+      child: MaterialApp(
+        navigatorKey: navigationService.navigatorKey,
+        color: Theme.of(context).colorScheme.primary,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          textTheme: GoogleFonts.montserratTextTheme(),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        routes: _navigationService.routes,
+        home: _initialPage,
+        // routes: navigationService.routes,
+        // home: SplashScreen(),
       ),
-      routes: _navigationService.routes,
-      home: _initialPage,
-      // routes: navigationService.routes,
-      // home: SplashScreen(),
     );
   }
 }
