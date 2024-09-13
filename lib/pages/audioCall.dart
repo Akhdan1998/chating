@@ -1,18 +1,20 @@
+import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 
-const String appId = 'de71d649f3e24489b4b66acd07983a96';
-const String token = '007eJxTYPA8ZLN/482MfYX3zC7IfOb/+LWwW/pOzuuna16wFZ+96/RJgSEl1dwwxczEMs041cjExMIyySTJzCwxOcXA3NLCONHSzEvxelpDICNDiow1KyMDBIL4fAzaZkYWhkaWBuZmxpYWJgwMAKDnIww=';
-
+const String appId = 'be76645285084ce7a1d7d4cd2bd94dd0';
+const String token = '007eJxTYFCJunLO4zATfz7nqR2BN3aE+dd6Pr6nd3/FSdaL1z7uTPBXYEhJNTdMMTOxTDNONTIxsbBMMkkyM0tMTjEwt7QwTrQ0U9r8OK0hkJFBavUsZkYGCATx2RhKi1OLPFMYGADazSFJ';
+const String channel = "userId";
 
 class AudioCallScreen extends StatefulWidget {
-  final String phoneNumber;
+  final UserProfile userProfile;
 
-  AudioCallScreen({required this.phoneNumber});
+  AudioCallScreen({required this.userProfile});
 
   @override
   _AudioCallScreenState createState() => _AudioCallScreenState();
@@ -20,151 +22,212 @@ class AudioCallScreen extends StatefulWidget {
 
 class _AudioCallScreenState extends State<AudioCallScreen> {
   late final RtcEngine _engine;
-  final GetIt _getIt = GetIt.instance;
-  late AlertService _alertService;
+  final _alertService = GetIt.instance<AlertService>();
   bool _localUserJoined = false;
   bool _isMuted = false;
   int? _remoteUid;
+  Timer? _callTimer;
+  int _secondsElapsed = 0;
 
   @override
   void initState() {
     super.initState();
-    _initAgoraEngine();
+    _initAgora();
   }
 
-  Future<void> _initAgoraEngine() async {
+  void _startCallTimer() {
+    _callTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _secondsElapsed++;
+      });
+    });
+  }
+
+  void _stopCallTimer() {
+    _callTimer?.cancel();
+    _secondsElapsed = 0;
+  }
+
+  String _formatDuration(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString()
+        .padLeft(2, '0')}';
+  }
+
+  Future<void> _initAgora() async {
     try {
       await _requestPermissions();
 
       _engine = await createAgoraRtcEngine();
-      await _engine.initialize(RtcEngineContext(appId: appId));
-      await _engine.enableVideo();
-      await _engine.startPreview();
+      await _engine.enableAudio();
+
+      await _engine.initialize(RtcEngineContext(appId: appId,
+          channelProfile: ChannelProfileType.channelProfileCommunication));
 
       _engine.registerEventHandler(RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          setState(() {
-            _localUserJoined = true;
-          });
+          setState(() => _localUserJoined = true);
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           setState(() {
             _remoteUid = remoteUid;
+            _startCallTimer(); // Mulai durasi panggilan saat user bergabung
           });
         },
-        onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
+        onUserOffline: (RtcConnection connection, int remoteUid,
+            UserOfflineReasonType reason) {
           setState(() {
             _remoteUid = null;
+            _stopCallTimer(); // Hentikan timer jika user offline
           });
+          _leaveChannel();
         },
         onError: (ErrorCodeType err, String msg) {
-          debugPrint('[onError] err: $err, msg: $msg');
+          _alertService.showToast(
+              text: 'Error: $err - $msg', icon: Icons.error, color: Colors.red);
         },
       ));
 
       await _engine.joinChannel(
         token: token,
-        channelId: '+6281290763984',
-        options: ChannelMediaOptions(
-          autoSubscribeVideo: true,
+        channelId: channel,
+        options: const ChannelMediaOptions(
           autoSubscribeAudio: true,
-          publishCameraTrack: true,
           publishMicrophoneTrack: true,
           clientRoleType: ClientRoleType.clientRoleBroadcaster,
         ),
-        uid: int.parse(widget.phoneNumber.substring(1)),
+        uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
       );
     } catch (e) {
       debugPrint("Error initializing Agora: $e");
     }
   }
 
-  Future<void> _joinChannel() async {
-    await _engine.joinChannel(
-      token: token,
-      channelId: '+6281290763984',
-      options: const ChannelMediaOptions(
-        autoSubscribeVideo: true,
-        autoSubscribeAudio: true,
-        publishCameraTrack: true,
-        publishMicrophoneTrack: true,
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      ),
-      uid: int.parse(widget.phoneNumber.substring(1)),
-    );
-
-    print('TOKENNNNN ${token}');
-    print('NUMBERRR ${widget.phoneNumber.substring(1)}');
-
-    await _engine.enableVideo();
-
-    await _engine.startPreview();
-
-    _engine.registerEventHandler(
-      RtcEngineEventHandler(
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          debugPrint("local user ${connection.localUid} joined");
-          setState(() {
-            _localUserJoined = true;
-          });
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          debugPrint("Remote user $remoteUid joined");
-          setState(() {
-            _remoteUid = remoteUid;
-          });
-        },
-        onError: (ErrorCodeType err, String msg) {
-          print('[onError] err: $err, msg: $msg');
-        },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          debugPrint("Remote user $remoteUid left channel");
-          setState(() {
-            _remoteUid = null;
-          });
-        },
-      ),
-    );
+  Future<void> _requestPermissions() async {
+    final status = await [Permission.microphone].request();
+    if (status[Permission.microphone] != PermissionStatus.granted) {
+      _alertService.showToast(text: 'Izin mikrofon dibutuhkan.',
+          icon: Icons.warning,
+          color: Colors.yellowAccent);
+    }
   }
 
   Future<void> _leaveChannel() async {
     await _engine.leaveChannel();
+    _stopCallTimer();
+    // Navigator.of(context).pop();
+    setState(() => _localUserJoined = false);
   }
 
-  Future<void> _requestPermissions() async {
-    final cameraStatus = await Permission.camera.request();
-    final microphoneStatus = await Permission.microphone.request();
+  Future<void> _toggleMute() async {
+    _isMuted = !_isMuted;
+    await _engine.muteLocalAudioStream(_isMuted);
+    setState(() {});
+  }
 
-    if (cameraStatus != PermissionStatus.granted || microphoneStatus != PermissionStatus.granted) {
-      _alertService.showToast(
-        text: 'Microphone permissions are required.',
-        icon: Icons.warning,
-        color: Colors.yellowAccent,
-      );
-      return;
-    }
-
-    // _initializeCameras();
+  @override
+  void dispose() {
+    _stopCallTimer();
+    _engine.release();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ElevatedButton(
-              onPressed: _joinChannel,
-              child: const Text('Join Call'),
+            _buildHeader(),
+            CircleAvatar(
+              backgroundImage: NetworkImage(widget.userProfile.pfpURL!),
+              radius: 100,
             ),
-            ElevatedButton(
-              onPressed: _leaveChannel,
-              child: const Text('Leave Call'),
-            ),
+            _buildControlPanel(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: EdgeInsets.only(top: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.grey.shade800,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.flip_camera_ios_rounded,
+                  color: Colors.white),
+              onPressed: () {},
+            ),
+          ),
+          Column(
+            children: [
+              Text(widget.userProfile.name!, style: TextStyle(color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold)),
+              Text(_remoteUid != null
+                  ? _formatDuration(_secondsElapsed)
+                  : 'Berdering...'),
+            ],
+          ),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.grey.shade800,
+            ),
+            child: IconButton(
+              icon:
+              Icon(Icons.person_add_alt_1_sharp, color: Colors.white),
+              onPressed: () {},
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlPanel() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.grey.shade800,
+      ),
+      padding: EdgeInsets.all(10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildControlButton(Icons.more_horiz, () {}),
+          _buildControlButton(Icons.videocam, () {}),
+          _buildControlButton(Icons.volume_up, () {}),
+          _buildControlButton(_isMuted ? Icons.mic_off : Icons.mic, _toggleMute),
+          _buildControlButton(
+              Icons.call_end, _leaveChannel, color: Colors.redAccent),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlButton(IconData icon, VoidCallback onPressed,
+      {Color color = Colors.white}) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: Colors.black.withOpacity(0.2),
+        ),
+        child: Icon(icon, color: color),
       ),
     );
   }

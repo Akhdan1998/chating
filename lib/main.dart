@@ -105,24 +105,19 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final NavigationService navigationService = _getIt<NavigationService>();
-    return MultiBlocProvider(
-        providers: [
-        BlocProvider(create: (_) => VCCubit()),
-      ],
-      child: MaterialApp(
-        navigatorKey: navigationService.navigatorKey,
-        color: Theme.of(context).colorScheme.primary,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          textTheme: GoogleFonts.montserratTextTheme(),
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        routes: _navigationService.routes,
-        home: _initialPage,
-        // routes: navigationService.routes,
-        // home: SplashScreen(),
+    return MaterialApp(
+      navigatorKey: navigationService.navigatorKey,
+      color: Theme.of(context).colorScheme.primary,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        textTheme: GoogleFonts.montserratTextTheme(),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
+      routes: _navigationService.routes,
+      home: _initialPage,
+      // routes: navigationService.routes,
+      // home: SplashScreen(),
     );
   }
 }

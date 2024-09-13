@@ -84,7 +84,7 @@ class _ChatPageState extends State<ChatPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VideoCallScreen(phoneNumber: phoneNumber),
+        builder: (context) => VideoCallScreen(userProfile: widget.chatUser),
       ),
     );
   }
@@ -95,7 +95,7 @@ class _ChatPageState extends State<ChatPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AudioCallScreen(phoneNumber: phoneNumber),
+        builder: (context) => AudioCallScreen(userProfile: widget.chatUser),
       ),
     );
   }
