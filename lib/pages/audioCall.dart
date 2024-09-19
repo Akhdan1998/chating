@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -8,7 +9,7 @@ import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 
 const String appId = 'be76645285084ce7a1d7d4cd2bd94dd0';
-const String token = '007eJxTYFCJunLO4zATfz7nqR2BN3aE+dd6Pr6nd3/FSdaL1z7uTPBXYEhJNTdMMTOxTDNONTIxsbBMMkkyM0tMTjEwt7QwTrQ0U9r8OK0hkJFBavUsZkYGCATx2RhKi1OLPFMYGADazSFJ';
+const String token = '007eJxTYJAof6V9jUvHeId12pbZ6XY/pproHWgKnnA70WVlxuPjp5YqMKSkmhummJlYphmnGpmYWFgmmSSZmSUmpxiYW1oYJ1qa8Z55ndYQyMgQwbqAhZEBAkF8NobS4tQizxQGBgCG1iAc';
 const String channel = "userId";
 
 class AudioCallScreen extends StatefulWidget {
@@ -25,6 +26,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   final _alertService = GetIt.instance<AlertService>();
   bool _localUserJoined = false;
   bool _isMuted = false;
+  bool _isSpeakerOn = false;
+
   int? _remoteUid;
   Timer? _callTimer;
   int _secondsElapsed = 0;
@@ -33,6 +36,12 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   void initState() {
     super.initState();
     _initAgora();
+  }
+
+  Future<void> _toggleSpeaker() async {
+    _isSpeakerOn = !_isSpeakerOn;
+    await _engine.setEnableSpeakerphone(_isSpeakerOn);
+    setState(() {});
   }
 
   void _startCallTimer() {
@@ -72,7 +81,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           setState(() {
             _remoteUid = remoteUid;
-            _startCallTimer(); // Mulai durasi panggilan saat user bergabung
+            _startCallTimer();
           });
         },
         onUserOffline: (RtcConnection connection, int remoteUid,
@@ -116,7 +125,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   Future<void> _leaveChannel() async {
     await _engine.leaveChannel();
     _stopCallTimer();
-    // Navigator.of(context).pop();
+    Navigator.of(context).pop();
     setState(() => _localUserJoined = false);
   }
 
@@ -136,6 +145,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.purple.shade900,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -172,12 +182,22 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
           ),
           Column(
             children: [
-              Text(widget.userProfile.name!, style: TextStyle(color: Colors.black,
+              Text(
+                widget.userProfile.name!,
+                style: TextStyle(
+                  color: Colors.white,
                   fontSize: 16,
-                  fontWeight: FontWeight.bold)),
-              Text(_remoteUid != null
-                  ? _formatDuration(_secondsElapsed)
-                  : 'Berdering...'),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                _remoteUid != null
+                    ? _formatDuration(_secondsElapsed)
+                    : 'Berdering...',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             ],
           ),
           Container(
@@ -208,7 +228,11 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
         children: [
           _buildControlButton(Icons.more_horiz, () {}),
           _buildControlButton(Icons.videocam, () {}),
-          _buildControlButton(Icons.volume_up, () {}),
+          _buildControlButton(
+              color: _isSpeakerOn ? Colors.red : Colors.white,
+              Icons.volume_up,
+              _toggleSpeaker
+          ),
           _buildControlButton(_isMuted ? Icons.mic_off : Icons.mic, _toggleMute),
           _buildControlButton(
               Icons.call_end, _leaveChannel, color: Colors.redAccent),

@@ -141,6 +141,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             _remoteUid = null;
             _stopCallTimer();
           });
+          _endCall();
         },
         onError: (ErrorCodeType err, String msg) {
           debugPrint('[onError] err: $err, msg: $msg');
@@ -209,6 +210,14 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   //   _initializeController();
   // }
 
+  void _switchCamera() async {
+    try {
+      await _engine.switchCamera();
+    } catch (e) {
+      print("Error switching camera: $e");
+    }
+  }
+
   Future<void> _toggleMute() async {
     setState(() {
       _isMuted = !_isMuted;
@@ -254,7 +263,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         : Container(
             width: MediaQuery.sizeOf(context).width,
             height: MediaQuery.sizeOf(context).height,
-            color: Colors.green,
+            color: Colors.blueGrey,
           );
   }
 
@@ -604,22 +613,34 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   child: IconButton(
                     icon: Icon(Icons.flip_camera_ios_rounded,
                         color: Colors.white),
-                    onPressed: () {},
+                    onPressed:  _switchCamera,
                   ),
                 ),
                 Column(
                   children: [
                     Text(
+                      widget.userProfile.name!,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
                       widget.userProfile.phoneNumber!,
                       style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
+                        color: Colors.white,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(_remoteUid != null
                         ? _formatDuration(_secondsElapsed)
-                        : 'Berdering...'),
+                        : 'Berdering...',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
                 Container(
