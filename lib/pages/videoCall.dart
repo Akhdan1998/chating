@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:chating/models/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 // import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 import '../service/alert_service.dart';
@@ -23,8 +25,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   int? _remoteUid;
   late RtcEngine _engine;
   bool _localUserJoined = false;
+
   // late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+
   // List<CameraDescription> _cameras = [];
   int _currentCameraIndex = 0;
   bool _isMuted = false;
@@ -34,6 +38,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   late String channelName;
   Timer? _callTimer;
   int _secondsElapsed = 0;
+  Offset _localVideoPosition = Offset(20, 150);
+  final double videoWidth = 130;
+  final double videoHeight = 180;
 
   @override
   void initState() {
@@ -41,8 +48,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     channelName = widget.userProfile.phoneNumber!;
     _alertService = _getIt.get<AlertService>();
     _initAgora();
-    // _initializeCameras();
-    // context.read<VCCubit>().getVC(channelName);
   }
 
   void _startCallTimer() {
@@ -183,33 +188,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     }
   }
 
-  // Future<void> _initializeCameras() async {
-  //   _cameras = await availableCameras();
-  //   _currentCameraIndex = _cameras.indexWhere((camera) => camera.lensDirection == CameraLensDirection.front);
-  //
-  //   _initializeController();
-  // }
-
-  // Future<void> _initializeController() async {
-  //   final camera = _cameras[_currentCameraIndex];
-  //   _controller = CameraController(camera, ResolutionPreset.high);
-  //
-  //   _initializeControllerFuture = _controller.initialize().then((_) async {
-  //     await _controller.initialize();
-  //     await _controller.setExposureMode(ExposureMode.auto);
-  //     await _controller.setFocusMode(FocusMode.auto);
-  //     setState(() {});
-  //   });
-  // }
-
-  // Future<void> _toggleCamera() async {
-  //   if (_cameras.length < 2) return;
-  //
-  //   await _controller.dispose();
-  //   _currentCameraIndex = (_currentCameraIndex + 1) % _cameras.length;
-  //   _initializeController();
-  // }
-
   void _switchCamera() async {
     try {
       await _engine.switchCamera();
@@ -244,7 +222,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     _engine.leaveChannel();
     _engine.release();
     _stopCallTimer();
-    // _controller.dispose();
     super.dispose();
   }
 
@@ -255,7 +232,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
               rtcEngine: _engine,
               canvas: VideoCanvas(
                 uid: _remoteUid,
-                renderMode: RenderModeType.renderModeFit,
+                renderMode: RenderModeType.renderModeHidden,
               ),
               connection: RtcConnection(channelId: 'userId'),
             ),
@@ -267,206 +244,79 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
           );
   }
 
-  // Future<String?> fetchToken(String channelName) async {
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('http://45.130.229.79:5656/vc-token?channelName=$channelName&uid=123'),
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> data = jsonDecode(response.body);
-  //       final token = data['token'];
-  //       print('Token: $token');
-  //       print('RESPONSE : ${response.body}');
-  //       return token;
-  //     } else {
-  //       print('Error: ${response.statusCode} - ${response.reasonPhrase}');
-  //     }
-  //   } catch (e) {
-  //     print('Exception: $e');
-  //   }
-  //   return null;
-  // }
+  void _snapToEdge(Offset position, Size screenSize) {
+    double leftEdge = 0;
+    double rightEdge = screenSize.width - videoWidth;
+    double topEdge = 0;
+    double bottomEdge = screenSize.height - videoHeight;
 
-  // Future<void> _initAgora() async {
-  //   try {
-  //     await _requestPermissions();
-  //
-  //     _engine = await createAgoraRtcEngine();
-  //     await _engine.initialize(RtcEngineContext(appId: appId));
-  //     await _engine.enableVideo();
-  //     await _engine.startPreview();
-  //
-  //     // Mendaftarkan event handler untuk menangani event yang terjadi di channel
-  //     _engine.registerEventHandler(RtcEngineEventHandler(
-  //       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-  //         debugPrint("Local user ${connection.localUid} joined");
-  //         setState(() {
-  //           _localUserJoined = true;
-  //         });
-  //       },
-  //       onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-  //         debugPrint("Remote user $remoteUid joined");
-  //         setState(() {
-  //           _remoteUid = remoteUid;
-  //         });
-  //       },
-  //       onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
-  //         debugPrint("Remote user $remoteUid left channel");
-  //         setState(() {
-  //           _remoteUid = null;
-  //         });
-  //       },
-  //       onError: (ErrorCodeType err, String msg) {
-  //         debugPrint('[onError] err: $err, msg: $msg');
-  //       },
-  //     ));
-  //
-  //     // Ambil token dari server
-  //     String? token = await fetchToken('+6281290763984');
-  //
-  //     if (token != null) {
-  //       debugPrint('Token retrieved: $token');
-  //       // Jika token berhasil diambil, bergabung ke channel
-  //       await joinChannel(token);
-  //     } else {
-  //       debugPrint("Token is null, failed to join channel.");
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Error initializing Agora: $e");
-  //   }
-  // }
+    double deltaLeft = position.dx;
+    double deltaRight = rightEdge - position.dx;
+    double deltaTop = position.dy;
+    double deltaBottom = bottomEdge - position.dy;
 
-  // Future<void> _initAgora() async {
-  //   try {
-  //     await _requestPermissions();
-  //
-  //     _engine = await createAgoraRtcEngine();
-  //     await _engine.initialize(RtcEngineContext(appId: appId));
-  //     await _engine.enableVideo();
-  //     await _engine.startPreview();
-  //
-  //     _engine.registerEventHandler(RtcEngineEventHandler(
-  //       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-  //         setState(() {
-  //           _localUserJoined = true;
-  //         });
-  //       },
-  //       onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-  //         setState(() {
-  //           _remoteUid = remoteUid;
-  //         });
-  //       },
-  //       onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
-  //         setState(() {
-  //           _remoteUid = null;
-  //         });
-  //       },
-  //       onError: (ErrorCodeType err, String msg) {
-  //         debugPrint('[onError] err: $err, msg: $msg');
-  //       },
-  //     ));
-  //
-  //     String? token = await fetchToken('userId');
-  //
-  //     if (token != null) {
-  //       debugPrint('Token berhasil didapatkan: $token');
-  //
-  //       await _engine.joinChannel(
-  //         token: token,
-  //         channelId: 'userId',
-  //         options: ChannelMediaOptions(
-  //           autoSubscribeVideo: true,
-  //           autoSubscribeAudio: true,
-  //           publishCameraTrack: true,
-  //           publishMicrophoneTrack: true,
-  //           clientRoleType: ClientRoleType.clientRoleBroadcaster,
-  //         ),
-  //         uid: int.parse(widget.phoneNumber.substring(1)),
-  //       );
-  //     } else {
-  //       debugPrint('Gagal mendapatkan token');
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Error initializing Agora: $e");
-  //   }
-  // }
+    if (position.dx > screenSize.width / 4 &&
+        position.dx < screenSize.width * 3 / 4) {
+      if (deltaLeft < deltaRight) {
+        position = Offset(leftEdge, position.dy);
+      } else {
+        position = Offset(rightEdge, position.dy);
+      }
+    }
 
-  // Future<String?> fetchToken(String channelName) async {
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('http://45.130.229.79:5656/vc-token?channelName=$channelName&uid=123'),
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> data = jsonDecode(response.body);
-  //       final token = data['token'];
-  //       debugPrint('RESPONSE : ${response.body}');
-  //       debugPrint('STATUS CODE : ${response.statusCode}');
-  //       debugPrint('TOKEN : $token');
-  //       debugPrint('CHANNEL NAME : $channelName');
-  //       return token;
-  //     } else {
-  //       debugPrint('Errorrrrrrrrrr: ${response.statusCode} - ${response.reasonPhrase}');
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Exception: $e');
-  //   }
-  //   return null;
-  // }
+    if (position.dy > screenSize.height / 4 &&
+        position.dy < screenSize.height * 3 / 4) {
+      if (deltaTop < deltaBottom) {
+        position = Offset(position.dx, topEdge);
+      } else {
+        position = Offset(position.dx, bottomEdge);
+      }
+    }
 
-  // Future<void> joinChannel(String token) async {
-  //   try {
-  //     await _engine.joinChannel(
-  //       token: token,
-  //       channelId: '+6281290763984',
-  //       options: const ChannelMediaOptions(
-  //         autoSubscribeVideo: true,
-  //         autoSubscribeAudio: true,
-  //         publishCameraTrack: true,
-  //         publishMicrophoneTrack: true,
-  //         clientRoleType: ClientRoleType.clientRoleBroadcaster,
-  //       ),
-  //       uid: int.parse(widget.phoneNumber.substring(1)),
-  //     );
-  //
-  //     debugPrint('Joined channel with TOKEN: $token');
-  //     debugPrint('Using UID: ${widget.phoneNumber.substring(1)}');
-  //
-  //     // Aktifkan video dan mulai preview setelah bergabung ke channel
-  //     await _engine.enableVideo();
-  //     await _engine.startPreview();
-  //
-  //     // Mendaftarkan ulang event handler setelah bergabung ke channel
-  //     _engine.registerEventHandler(
-  //       RtcEngineEventHandler(
-  //         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-  //           debugPrint("Local user ${connection.localUid} joined");
-  //           setState(() {
-  //             _localUserJoined = true;
-  //           });
-  //         },
-  //         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-  //           debugPrint("Remote user $remoteUid joined");
-  //           setState(() {
-  //             _remoteUid = remoteUid;
-  //           });
-  //         },
-  //         onError: (ErrorCodeType err, String msg) {
-  //           debugPrint('[onError] err: $err, msg: $msg');
-  //         },
-  //         onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
-  //           debugPrint("Remote user $remoteUid left channel");
-  //           setState(() {
-  //             _remoteUid = null;
-  //           });
-  //         },
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     debugPrint("Error joining channel: $e");
-  //   }
-  // }
+    setState(() {
+      _localVideoPosition = position;
+    });
+  }
+
+  Widget _localVideo() {
+    return _localUserJoined
+        ? Positioned(
+            left: _localVideoPosition.dx,
+            top: _localVideoPosition.dy,
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                setState(() {
+                  _localVideoPosition += details.delta;
+
+                  _localVideoPosition = Offset(
+                    _localVideoPosition.dx.clamp(
+                        0.0, MediaQuery.of(context).size.width - videoWidth),
+                    _localVideoPosition.dy.clamp(
+                        0.0, MediaQuery.of(context).size.height - videoHeight),
+                  );
+                });
+              },
+              onPanEnd: (details) {
+                final screenSize = MediaQuery.of(context).size;
+                _snapToEdge(_localVideoPosition, screenSize);
+              },
+              child: Container(
+                width: videoWidth,
+                height: videoHeight,
+                child: AgoraVideoView(
+                  controller: VideoViewController(
+                    rtcEngine: _engine,
+                    canvas: VideoCanvas(
+                      uid: 0,
+                      renderMode: RenderModeType.renderModeHidden,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        : Container();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -475,6 +325,11 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       body: Stack(
         children: [
           Center(child: _remoteVideo()),
+          Positioned(
+            bottom: 120,
+            right: 20,
+            child: _localVideo(),
+          ),
           if (_localUserJoined)
             Align(
               alignment: Alignment.topLeft,
@@ -485,7 +340,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   controller: VideoViewController(
                     rtcEngine: _engine,
                     canvas: VideoCanvas(
-                      uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
+                      uid: int.parse(
+                          widget.userProfile.phoneNumber!.substring(1)),
                       renderMode: RenderModeType.renderModeFit,
                     ),
                   ),
@@ -552,37 +408,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                           color: Colors.white),
                     ),
                   ),
-                  // BlocBuilder<VCCubit, VCState>(builder: (context, state) {
-                  //   if (state is VCLoaded) {
-                  //     if (state.getvc != null) {
-                  //       return GestureDetector(
-                  //         onTap: () async {
-                  //           String? token =
-                  //               await fetchToken(state.getvc!.channelName!);
-                  //           print('CHENNEL ${token}');
-                  //           if (token != null) {
-                  //             await joinChannel(token);
-                  //           } else {
-                  //             debugPrint(
-                  //                 "Failed to get token, cannot join channel.");
-                  //           }
-                  //         },
-                  //         child: Container(
-                  //           padding: EdgeInsets.all(15),
-                  //           decoration: BoxDecoration(
-                  //             borderRadius: BorderRadius.circular(15),
-                  //             color: Colors.black.withOpacity(0.2),
-                  //           ),
-                  //           child: Icon(Icons.call, color: Colors.green),
-                  //         ),
-                  //       );
-                  //     } else {
-                  //       return Container();
-                  //     }
-                  //   } else {
-                  //     return Container();
-                  //   }
-                  // }),
                   GestureDetector(
                     onTap: _endCall,
                     child: Container(
@@ -613,7 +438,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   child: IconButton(
                     icon: Icon(Icons.flip_camera_ios_rounded,
                         color: Colors.white),
-                    onPressed:  _switchCamera,
+                    onPressed: _switchCamera,
                   ),
                 ),
                 Column(
@@ -634,9 +459,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(_remoteUid != null
-                        ? _formatDuration(_secondsElapsed)
-                        : 'Berdering...',
+                    Text(
+                      _remoteUid != null
+                          ? _formatDuration(_secondsElapsed)
+                          : 'Berdering...',
                       style: TextStyle(
                         color: Colors.white,
                       ),
