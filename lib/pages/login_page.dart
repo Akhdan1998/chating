@@ -1,243 +1,8 @@
-// import 'package:chating/consts.dart';
-// import 'package:chating/service/alert_service.dart';
-// import 'package:chating/service/auth_service.dart';
-// import 'package:chating/service/navigation_service.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get_it/get_it.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import '../widgets/textfield.dart';
-//
-// class LoginPage extends StatefulWidget {
-//   const LoginPage({super.key});
-//
-//   @override
-//   State<LoginPage> createState() => _LoginPageState();
-// }
-//
-// class _LoginPageState extends State<LoginPage> {
-//   final TextEditingController emailController =
-//       TextEditingController(text: '@test.com');
-//   final TextEditingController passwordController =
-//       TextEditingController(text: 'Test123!');
-//   final GetIt _getIt = GetIt.instance;
-//   late AuthService _authService;
-//   late NavigationService _navigationService;
-//   late AlertService _alertService;
-//   bool isLoading = false;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _authService = _getIt.get<AuthService>();
-//     _navigationService = _getIt.get<NavigationService>();
-//     _alertService = _getIt.get<AlertService>();
-//     _checkLoginStatus();
-//   }
-//
-//   Future<void> _checkLoginStatus() async {
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-//
-//     if (isLoggedIn) {
-//       _navigationService.pushReplacementNamed("/navigasi");
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       resizeToAvoidBottomInset: false,
-//       body: _buildUI(),
-//     );
-//   }
-//
-//   Widget _buildUI() {
-//     return SafeArea(
-//       child: Container(
-//         padding: EdgeInsets.only(
-//           bottom: MediaQuery.of(context).viewInsets.bottom,
-//           top: 20,
-//           left: 20,
-//           right: 20,
-//         ),
-//         child: SingleChildScrollView(
-//           reverse: true,
-//           child: Column(
-//             children: [
-//               _headerText(),
-//               _loginForm(),
-//               _createAnAccountLink(),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _headerText() {
-//     return SizedBox(
-//       width: MediaQuery.of(context).size.width,
-//       child: Column(
-//         mainAxisSize: MainAxisSize.max,
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         children: [
-//           Text(
-//             'Hi, Welcome back!',
-//             style: TextStyle(fontWeight: FontWeight.bold),
-//           ),
-//           Text('Hello Again you\'ve been missed'),
-//           Icon(
-//             Icons.message,
-//             size: 100,
-//             color: Theme.of(context).colorScheme.primary,
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _loginForm() {
-//     return Container(
-//       height: MediaQuery.of(context).size.height * 0.40,
-//       margin: EdgeInsets.symmetric(
-//         vertical: MediaQuery.of(context).size.height * 0.05,
-//       ),
-//       child: Column(
-//         mainAxisSize: MainAxisSize.max,
-//         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         children: [
-//           TextFieldCustom(
-//             controller: emailController,
-//             onSaved: (value) {
-//               emailController.text = value!;
-//             },
-//             validationRegEx: EMAIL_VALIDATION_REGEX,
-//             height: MediaQuery.of(context).size.height * 0.1,
-//             hintText: 'Email',
-//             obscureText: false,
-//           ),
-//           TextFieldCustom(
-//             controller: passwordController,
-//             onSaved: (value) {
-//               passwordController.text = value!;
-//             },
-//             validationRegEx: PASSWORD_VALIDATION_REGEX,
-//             height: MediaQuery.of(context).size.height * 0.1,
-//             hintText: 'Password',
-//             obscureText: true,
-//           ),
-//           _loginButton(),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _loginButton() {
-//     return (isLoading)
-//         ? CircularProgressIndicator(
-//             color: Theme.of(context).colorScheme.primary,
-//           )
-//         : SizedBox(
-//             width: MediaQuery.of(context).size.width,
-//             child: MaterialButton(
-//               color: Theme.of(context).colorScheme.primary,
-//               child: Text(
-//                 'Login',
-//                 style: TextStyle(color: Colors.white),
-//               ),
-//               onPressed: () async {
-//                 String email = emailController.text.trim();
-//                 String password = passwordController.text;
-//                 print('Email: $email');
-//                 print('Password: $password');
-//
-//                 if (password.isEmpty) {
-//                   _alertService.showToast(
-//                     text: 'Password is empty',
-//                     icon: Icons.error,
-//                     color: Colors.redAccent,
-//                   );
-//                   return;
-//                 }
-//
-//                 if (email.isEmpty) {
-//                   _alertService.showToast(
-//                     text: 'Email is empty',
-//                     icon: Icons.error,
-//                     color: Colors.redAccent,
-//                   );
-//                   return;
-//                 }
-//
-//                 try {
-//                   setState(() {
-//                     isLoading = true;
-//                   });
-//
-//                   bool result = await _authService.login(email, password);
-//
-//                   if (result) {
-//                     print('Login successful $result');
-//                     SharedPreferences prefs = await SharedPreferences.getInstance();
-//                     await prefs.setBool('isLoggedIn', true);
-//                     await prefs.setString('email', email);
-//
-//                     _navigationService.pushReplacementNamed("/navigasi");
-//                   } else {
-//                     setState(() {
-//                       isLoading = false;
-//                     });
-//                     _alertService.showToast(
-//                       text: 'Incorrect email or password!',
-//                       icon: Icons.error,
-//                       color: Colors.redAccent,
-//                     );
-//                   }
-//                 } catch (e) {
-//                   setState(() {
-//                     isLoading = false;
-//                   });
-//                   print('Error during login: $e');
-//                   _alertService.showToast(
-//                     text: e.toString(),
-//                     icon: Icons.error,
-//                     color: Colors.redAccent,
-//                   );
-//                 }
-//               },
-//             ),
-//           );
-//   }
-//
-//   Widget _createAnAccountLink() {
-//     return Row(
-//       mainAxisSize: MainAxisSize.max,
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       crossAxisAlignment: CrossAxisAlignment.end,
-//       children: [
-//         Text('Not a member? '),
-//         GestureDetector(
-//           onTap: () {
-//             _navigationService.pushNamed("/register");
-//           },
-//           child: Text(
-//             'Register now',
-//             style: TextStyle(
-//               fontWeight: FontWeight.bold,
-//               color: Theme.of(context).colorScheme.primary,
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
-
+import 'package:chating/pages/verifikasi_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../consts.dart';
 import '../service/alert_service.dart';
@@ -260,6 +25,8 @@ class _LoginPageState extends State<LoginPage> {
   late NavigationService _navigationService;
   late AlertService _alertService;
   bool isLoading = false;
+  bool cardEmail = false;
+  String phoneNumber = '';
 
   @override
   void initState() {
@@ -279,279 +46,320 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _verifyPhoneNumber() async {
+    await _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) {
+        // Auto-retrieval or instant verification
+        print('Verification completed');
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        // Handle error
+        print('Verification failed: ${e.message}');
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        // Code has been sent to the phone number
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Verifikasi(
+              verificationId: verificationId,
+              phoneNumber: phoneNumber,
+            ),
+          ),
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        // Auto-retrieval timeout
+        print('Code auto-retrieval timeout');
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: _buildUI(),
-    );
-  }
-
-  Widget _buildUI() {
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          top: 20,
-          left: 20,
-          right: 20,
+      body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueGrey.shade900, Colors.blueGrey.shade700],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-        child: SingleChildScrollView(
-          reverse: true,
-          child: Column(
-            children: [
-              _headerText(),
-              _loginForm(),
-              _createAnAccountLink(),
-            ],
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _logo(),
+                SizedBox(height: 20),
+                if (cardEmail == true) _loginCard(),
+                SizedBox(height: 15),
+                (cardEmail == true)
+                    ? GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            cardEmail = !cardEmail;
+                          });
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Sign in with phone number',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      )
+                    : Container(),
+                SizedBox(height: 20),
+                _createAnAccountLink(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _headerText() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'Hi, Welcome back!',
-            style: TextStyle(fontWeight: FontWeight.bold),
+  Widget _logo() {
+    return Column(
+      children: [
+        Image.asset('assets/splash.png', scale: 6),
+        SizedBox(height: 10),
+        Text(
+          'Welcome to AppsKabs!',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          Text('Hello Again you\'ve been missed'),
-          Icon(
-            Icons.message,
-            size: 100,
-            color: Theme.of(context).colorScheme.primary,
+        ),
+        Text(
+          'Connect easily, anytime, anywhere.',
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 16,
+          ),
+        ),
+        (cardEmail == false) ? SizedBox(height: 20) : SizedBox(height: 0),
+        if (cardEmail == false)
+          Column(
+            children: [
+              IntlPhoneField(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                initialCountryCode: 'ID',
+                onChanged: (phone) {
+                  setState(() {
+                    phoneNumber = phone.completeNumber;
+                  });
+                },
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: phoneNumber.isEmpty
+                        ? Colors.grey
+                        : Theme.of(context).primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Next',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  onPressed: phoneNumber.isEmpty
+                      ? null
+                      : _verifyPhoneNumber,
+                ),
+              ),
+            ],
+          ),
+        SizedBox(height: 15),
+        (cardEmail == false)
+            ? GestureDetector(
+                onTap: () {
+                  setState(() {
+                    cardEmail = !cardEmail;
+                  });
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Sign in with email',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              )
+            : Container(),
+      ],
+    );
+  }
+
+  Widget _loginCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.95),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _loginForm() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.40,
-      margin: EdgeInsets.symmetric(
-        vertical: MediaQuery.of(context).size.height * 0.05,
-      ),
       child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextFieldCustom(
-            controller: emailController,
-            onSaved: (value) {
-              emailController.text = value!;
-            },
-            validationRegEx: EMAIL_VALIDATION_REGEX,
-            height: MediaQuery.of(context).size.height * 0.1,
-            hintText: 'Email',
-            obscureText: false,
-          ),
-          TextFieldCustom(
-            controller: passwordController,
-            onSaved: (value) {
-              passwordController.text = value!;
-            },
-            validationRegEx: PASSWORD_VALIDATION_REGEX,
-            height: MediaQuery.of(context).size.height * 0.1,
-            hintText: 'Password',
-            obscureText: true,
-          ),
+          _loginForm(),
+          const SizedBox(height: 20),
           _loginButton(),
         ],
       ),
     );
   }
 
-  Widget _loginButton() {
-    return (isLoading)
-        ? CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary,
-          )
-        : SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: MaterialButton(
-              color: Theme.of(context).colorScheme.primary,
-              child: Text(
-                'Login',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () async {
-                setState(() {
-                  isLoading = true;
-                });
-
-                try {
-                  String email = emailController.text;
-                  String password = passwordController.text;
-
-                  bool result = await _authService.login(email, password);
-
-                  if (result) {
-                    User? user = FirebaseAuth.instance.currentUser;
-                    if (user != null && !user.emailVerified) {
-                      _alertService.showToast(
-                        text: 'Please verify your email before logging in.',
-                        icon: Icons.error,
-                        color: Colors.redAccent,
-                      );
-                      FirebaseAuth.instance.signOut();
-                      return;
-                    }
-
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    await prefs.setBool('isLoggedIn', true);
-                    await prefs.setString('email', email);
-
-                    _navigationService.pushReplacementNamed("/navigasi");
-                  } else {
-                    _alertService.showToast(
-                      text: 'Incorrect email or password!',
-                      icon: Icons.error,
-                      color: Colors.redAccent,
-                    );
-                  }
-                } catch (e) {
-                  _alertService.showToast(
-                    text: 'Login failed. Please try again.',
-                    icon: Icons.error,
-                    color: Colors.redAccent,
-                  );
-                } finally {
-                  setState(() {
-                    isLoading = false;
-                  });
-                }
-
-                // String email = emailController.text.trim();
-                // String password = passwordController.text;
-                //
-                // if (password.isEmpty) {
-                //   _alertService.showToast(
-                //     text: 'Password is empty',
-                //     icon: Icons.error,
-                //     color: Colors.redAccent,
-                //   );
-                //   return;
-                // }
-                //
-                // if (email.isEmpty) {
-                //   _alertService.showToast(
-                //     text: 'Email is empty',
-                //     icon: Icons.error,
-                //     color: Colors.redAccent,
-                //   );
-                //   return;
-                // }
-                //
-                // try {
-                //   setState(() {
-                //     isLoading = true;
-                //   });
-                //
-                //   bool result = await _authService.login(email, password);
-                //
-                //   if (result) {
-                //     SharedPreferences prefs =
-                //         await SharedPreferences.getInstance();
-                //     await prefs.setBool('isLoggedIn', true);
-                //     await prefs.setString('email', email);
-                //
-                //     _navigationService.pushReplacementNamed("/navigasi");
-                //   } else {
-                //     setState(() {
-                //       isLoading = false;
-                //     });
-                //     _alertService.showToast(
-                //       text: 'Incorrect email or password!',
-                //       icon: Icons.error,
-                //       color: Colors.redAccent,
-                //     );
-                //   }
-                // } catch (e) {
-                //   setState(() {
-                //     isLoading = false;
-                //   });
-                //   _alertService.showToast(
-                //     text: e.toString(),
-                //     icon: Icons.error,
-                //     color: Colors.redAccent,
-                //   );
-                // }
-              },
-            ),
-          );
-  }
-
-  Widget _resendVerificationEmailLink() {
-    return GestureDetector(
-      onTap: () async {
-        User? user = FirebaseAuth.instance.currentUser;
-        if (user != null && !user.emailVerified) {
-          await user.sendEmailVerification();
-          _alertService.showToast(
-            text: 'A new verification email has been sent.',
-            icon: Icons.check,
-            color: Colors.green,
-          );
-        }
-      },
-      child: Text(
-        'Resend verification email',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.primary,
+  Widget _loginForm() {
+    return Column(
+      children: [
+        TextFieldCustom(
+          controller: emailController,
+          onSaved: (value) {
+            emailController.text = value!;
+          },
+          validationRegEx: EMAIL_VALIDATION_REGEX,
+          hintText: 'Email',
+          obscureText: false,
+          height: MediaQuery.of(context).size.height * 0.1,
         ),
-      ),
+        const SizedBox(height: 10),
+        TextFieldCustom(
+          controller: passwordController,
+          onSaved: (value) {
+            passwordController.text = value!;
+          },
+          validationRegEx: PASSWORD_VALIDATION_REGEX,
+          hintText: 'Password',
+          obscureText: true,
+          height: MediaQuery.of(context).size.height * 0.1,
+        ),
+      ],
     );
   }
 
-  Widget _createAnAccountLink() {
-    return Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text('Not a member? '),
-            GestureDetector(
-              onTap: () {
-                _navigationService.pushNamed("/register");
-              },
-              child: Text(
-                'Register now',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+  Widget _loginButton() {
+    return isLoading
+        ? const CircularProgressIndicator(
+            color: Colors.blueGrey,
+          )
+        : SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
+              child: const Text(
+                'Login',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: _handleLogin,
             ),
-          ],
-        ),
-        SizedBox(height: 5),
-        // _resendVerificationEmailLink(),
-        // GestureDetector(
-        //   onTap: () {
-        //     _navigationService.pushNamed("/updatePass");
-        //   },
-        //   child: Text(
-        //     'Forgot Password',
-        //     style: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //       color: Theme.of(context).colorScheme.primary,
-        //       fontSize: 15,
-        //     ),
-        //   ),
-        // ),
-      ],
+          );
+  }
+
+  Future<void> _handleLogin() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      String email = emailController.text;
+      String password = passwordController.text;
+
+      bool result = await _authService.login(email, password);
+
+      if (result) {
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null && !user.emailVerified) {
+          _alertService.showToast(
+            text: 'Please verify your email before logging in.',
+            icon: Icons.error,
+            color: Colors.redAccent,
+          );
+          FirebaseAuth.instance.signOut();
+          return;
+        }
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('email', email);
+
+        _navigationService.pushReplacementNamed("/navigasi");
+      } else {
+        _alertService.showToast(
+          text: 'Incorrect email or password!',
+          icon: Icons.error,
+          color: Colors.redAccent,
+        );
+      }
+    } catch (e) {
+      _alertService.showToast(
+        text: 'Login failed. Please try again.',
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Widget _createAnAccountLink() {
+    return GestureDetector(
+      onTap: () {
+        _navigationService.pushNamed("/register");
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Not a member?', style: TextStyle(color: Colors.white70)),
+          const SizedBox(width: 5),
+          const Text(
+            'Register now',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

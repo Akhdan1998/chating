@@ -138,15 +138,15 @@ class _RegisterPageState extends State<RegisterPage> {
   //   );
   // }
 
-  // Future<void> _submitOTP(String otpCode) async {
-  //   PhoneAuthCredential credential = PhoneAuthProvider.credential(
-  //     verificationId: _verificationId,
-  //     smsCode: otpCode,
-  //   );
-  //
-  //   // Login dengan credential
-  //   await _auth.signInWithCredential(credential);
-  // }
+  Future<void> _submitOTP(String otpCode) async {
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      verificationId: _verificationId,
+      smsCode: otpCode,
+    );
+
+    // Login dengan credential
+    await _auth.signInWithCredential(credential);
+  }
 
   @override
   void initState() {

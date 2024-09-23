@@ -3,6 +3,7 @@ import 'package:chating/pages/login_page.dart';
 import 'package:chating/pages/register_page.dart';
 import 'package:flutter/material.dart';
 import '../pages/updatePassword_page.dart';
+import '../pages/verifikasi_page.dart';
 import '../widgets/navigasi.dart';
 
 class NavigationService {
