@@ -1,4 +1,5 @@
 import 'package:chating/pages/verifikasi_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -18,6 +19,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GetIt _getIt = GetIt.instance;
@@ -27,6 +29,84 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
   bool cardEmail = false;
   String phoneNumber = '';
+  bool isButtonEnabled = false;
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  String? verificationId;
+
+  // Fungsi untuk memeriksa apakah kedua field terisi
+  void _checkFields() {
+    setState(() {
+      isButtonEnabled =
+          phoneNumber.isNotEmpty && nameController.text.isNotEmpty;
+    });
+  }
+
+  // Future<void> _verifyPhoneNumber() async {
+  //   try {
+  //     await _auth.verifyPhoneNumber(
+  //       phoneNumber: phoneNumber,
+  //       verificationCompleted: (PhoneAuthCredential credential) async {
+  //
+  //         UserCredential userCredential = await _auth.signInWithCredential(credential);
+  //
+  //         if (userCredential.user != null) {
+  //           await FirebaseFirestore.instance.collection('users').add({
+  //             'name': nameController.text,
+  //             'phone': phoneNumber,
+  //             'uid': userCredential.user!.uid,
+  //           });
+  //         }
+  //       },
+  //       verificationFailed: (FirebaseAuthException e) {
+  //         print('Verifikasi gagal: ${e.message}');
+  //       },
+  //       codeSent: (String verificationId, int? resendToken) {
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) => Verifikasi(
+  //               verificationId: verificationId,
+  //               phoneNumber: phoneNumber,
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //       codeAutoRetrievalTimeout: (String verificationId) {
+  //         print('Timeout');
+  //       },
+  //     );
+  //   } catch (e) {
+  //     print('Gagal menyimpan data atau mengirim OTP: $e');
+  //   }
+  // }
+
+  Future<void> sendOtp() async {
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber, // Gunakan variabel phoneNumber langsung
+        timeout: Duration(seconds: 60),
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Jika verifikasi otomatis berhasil
+          await _auth.signInWithCredential(credential);
+          print('Verifikasi berhasil, login otomatis');
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          print('Verifikasi gagal: ${e.message}');
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          print('Kode OTP dikirim ke $phoneNumber');
+          setState(() {
+            this.verificationId = verificationId; // Simpan verificationId
+          });
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          print('Waktu habis untuk auto-retrieve OTP');
+        },
+      );
+    } catch (e) {
+      print('Gagal mengirim OTP: $e');
+    }
+  }
 
   @override
   void initState() {
@@ -44,38 +124,6 @@ class _LoginPageState extends State<LoginPage> {
     if (isLoggedIn) {
       _navigationService.pushReplacementNamed("/navigasi");
     }
-  }
-
-  FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Future<void> _verifyPhoneNumber() async {
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) {
-        // Auto-retrieval or instant verification
-        print('Verification completed');
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        // Handle error
-        print('Verification failed: ${e.message}');
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        // Code has been sent to the phone number
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Verifikasi(
-              verificationId: verificationId,
-              phoneNumber: phoneNumber,
-            ),
-          ),
-        );
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        // Auto-retrieval timeout
-        print('Code auto-retrieval timeout');
-      },
-    );
   }
 
   @override
@@ -151,6 +199,7 @@ class _LoginPageState extends State<LoginPage> {
           Column(
             children: [
               IntlPhoneField(
+                invalidNumberMessage: '',
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
@@ -163,16 +212,36 @@ class _LoginPageState extends State<LoginPage> {
                 onChanged: (phone) {
                   setState(() {
                     phoneNumber = phone.completeNumber;
+                    _checkFields();
                   });
                 },
               ),
+              TextFieldCustom(
+                controller: nameController,
+                onSaved: (value) {
+                  nameController.text = value!;
+                },
+                onChanged: (value) {
+                  _checkFields();
+                },
+                validationRegEx: NAME_VALIDATION_REGEX,
+                height: MediaQuery.of(context).size.height * 0.1,
+                hintText: 'Name',
+                obscureText: false,
+                borderRadius: 10,
+                fillColor: Colors.grey[200]!,
+                borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                // Border yang terlihat dengan warna biru
+                filled: true,
+              ),
+              SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: phoneNumber.isEmpty
-                        ? Colors.grey
-                        : Theme.of(context).primaryColor,
+                    backgroundColor: isButtonEnabled
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey,
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -185,9 +254,11 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.white,
                     ),
                   ),
-                  onPressed: phoneNumber.isEmpty
-                      ? null
-                      : _verifyPhoneNumber,
+                  onPressed: isButtonEnabled
+                      ? () {
+                          sendOtp();
+                        }
+                      : null,
                 ),
               ),
             ],

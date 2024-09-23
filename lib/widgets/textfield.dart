@@ -10,6 +10,11 @@ class TextFieldCustom extends StatefulWidget {
   final double height;
   final RegExp validationRegEx;
   final void Function(String?) onSaved;
+  final double borderRadius;
+  final Color fillColor;
+  final BorderSide borderSide;
+  final bool filled;
+  final void Function(String)? onChanged;
 
   const TextFieldCustom({
     super.key,
@@ -22,6 +27,11 @@ class TextFieldCustom extends StatefulWidget {
     required this.height,
     required this.validationRegEx,
     required this.onSaved,
+    this.borderRadius = 10.0,
+    this.fillColor = Colors.white,
+    this.borderSide = BorderSide.none,
+    this.filled = true,
+    this.onChanged,
   });
 
   @override
@@ -39,30 +49,39 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      focusNode: widget.focusNode,
-      keyboardType: TextInputType.emailAddress,
-      obscureText: _obscureText,
-      readOnly: widget.readOnly,
-      controller: widget.controller,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: widget.hintText,
-        hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-        suffixIcon: widget.obscureText
-            ? IconButton(
-                icon: Icon(
-                  size: 20,
-                  _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-              )
-            : null,
+    return Container(
+      color: Colors.transparent,
+      child: TextFormField(
+        focusNode: widget.focusNode,
+        keyboardType: TextInputType.emailAddress,
+        obscureText: _obscureText,
+        readOnly: widget.readOnly,
+        controller: widget.controller,
+        onChanged: widget.onChanged,
+        decoration: InputDecoration(
+          filled: widget.filled,
+          fillColor: widget.fillColor,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderSide: widget.borderSide,
+          ),
+          hintText: widget.hintText,
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+          suffixIcon: widget.obscureText
+              ? IconButton(
+                  icon: Icon(
+                    size: 20,
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                )
+              : null,
+        ),
       ),
     );
   }
