@@ -53,7 +53,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                 padding: EdgeInsets.all(10),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade100,
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -63,7 +63,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                   textAlign:
                       (isNotif == true) ? TextAlign.left : TextAlign.center,
                   style: TextStyle(
-                    color: Colors.deepPurple,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -80,7 +80,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                   width: MediaQuery.sizeOf(context).width,
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.shade50,
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -148,7 +148,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
               margin: EdgeInsets.only(top: 20, left: 20, right: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.deepPurple.shade100,
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

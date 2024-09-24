@@ -8,9 +8,10 @@ import 'package:permission_handler/permission_handler.dart';
 import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 
-const String appId = 'be76645285084ce7a1d7d4cd2bd94dd0';
-const String token = '007eJxTYJAof6V9jUvHeId12pbZ6XY/pproHWgKnnA70WVlxuPjp5YqMKSkmhummJlYphmnGpmYWFgmmSSZmSUmpxiYW1oYJ1qa8Z55ndYQyMgQwbqAhZEBAkF8NobS4tQizxQGBgCG1iAc';
-const String channel = "userId";
+String appId = 'be76645285084ce7a1d7d4cd2bd94dd0';
+String token =
+    '007eJxTYJAof6V9jUvHeId12pbZ6XY/pproHWgKnnA70WVlxuPjp5YqMKSkmhummJlYphmnGpmYWFgmmSSZmSUmpxiYW1oYJ1qa8Z55ndYQyMgQwbqAhZEBAkF8NobS4tQizxQGBgCG1iAc';
+String channel = "userId";
 
 class AudioCallScreen extends StatefulWidget {
   final UserProfile userProfile;
@@ -60,8 +61,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   String _formatDuration(int seconds) {
     final minutes = seconds ~/ 60;
     final remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString()
-        .padLeft(2, '0')}';
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   Future<void> _initAgora() async {
@@ -71,7 +71,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       _engine = await createAgoraRtcEngine();
       await _engine.enableAudio();
 
-      await _engine.initialize(RtcEngineContext(appId: appId,
+      await _engine.initialize(RtcEngineContext(
+          appId: appId,
           channelProfile: ChannelProfileType.channelProfileCommunication));
 
       _engine.registerEventHandler(RtcEngineEventHandler(
@@ -88,7 +89,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             UserOfflineReasonType reason) {
           setState(() {
             _remoteUid = null;
-            _stopCallTimer(); // Hentikan timer jika user offline
+            _stopCallTimer();
           });
           _leaveChannel();
         },
@@ -101,7 +102,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       await _engine.joinChannel(
         token: token,
         channelId: channel,
-        options: const ChannelMediaOptions(
+        options: ChannelMediaOptions(
           autoSubscribeAudio: true,
           publishMicrophoneTrack: true,
           clientRoleType: ClientRoleType.clientRoleBroadcaster,
@@ -116,7 +117,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   Future<void> _requestPermissions() async {
     final status = await [Permission.microphone].request();
     if (status[Permission.microphone] != PermissionStatus.granted) {
-      _alertService.showToast(text: 'Izin mikrofon dibutuhkan.',
+      _alertService.showToast(
+          text: 'Microphone permission is required.',
           icon: Icons.warning,
           color: Colors.yellowAccent);
     }
@@ -145,9 +147,9 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.purple.shade900,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      body: Container(
+        padding: EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -175,8 +177,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
               color: Colors.grey.shade800,
             ),
             child: IconButton(
-              icon: Icon(Icons.flip_camera_ios_rounded,
-                  color: Colors.white),
+              icon: Icon(Icons.flip_camera_ios_rounded, color: Colors.white),
               onPressed: () {},
             ),
           ),
@@ -193,7 +194,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
               Text(
                 _remoteUid != null
                     ? _formatDuration(_secondsElapsed)
-                    : 'Berdering...',
+                    : 'Ringing...',
                 style: TextStyle(
                   color: Colors.white,
                 ),
@@ -206,8 +207,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
               color: Colors.grey.shade800,
             ),
             child: IconButton(
-              icon:
-              Icon(Icons.person_add_alt_1_sharp, color: Colors.white),
+              icon: Icon(Icons.person_add_alt_1_sharp, color: Colors.white),
               onPressed: () {},
             ),
           ),
@@ -231,11 +231,11 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
           _buildControlButton(
               color: _isSpeakerOn ? Colors.red : Colors.white,
               Icons.volume_up,
-              _toggleSpeaker
-          ),
-          _buildControlButton(_isMuted ? Icons.mic_off : Icons.mic, _toggleMute),
+              _toggleSpeaker),
           _buildControlButton(
-              Icons.call_end, _leaveChannel, color: Colors.redAccent),
+              _isMuted ? Icons.mic_off : Icons.mic, _toggleMute),
+          _buildControlButton(Icons.call_end, _leaveChannel,
+              color: Colors.redAccent),
         ],
       ),
     );
@@ -246,7 +246,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: const EdgeInsets.all(15),
+        padding: EdgeInsets.all(15),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           color: Colors.black.withOpacity(0.2),

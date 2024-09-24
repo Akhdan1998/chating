@@ -19,9 +19,11 @@ class UpdatePasswordPage extends StatefulWidget {
 
 class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController currentPasswordController = TextEditingController();
+  final TextEditingController currentPasswordController =
+      TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmNewPasswordController = TextEditingController();
+  final TextEditingController confirmNewPasswordController =
+      TextEditingController();
   final GetIt _getIt = GetIt.instance;
   late AuthService _authService;
   late AlertService _alertService;
@@ -84,11 +86,6 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
       setState(() => isLoading = false);
     }
   }
-
-  final ButtonStyle style = ElevatedButton.styleFrom(
-    textStyle: GoogleFonts.poppins().copyWith(fontSize: 14),
-    backgroundColor: Colors.deepPurple
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -162,15 +159,23 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   }
 
   Widget _updatePasswordButton() {
+    // Define the button style within the method
+    final ButtonStyle style = ElevatedButton.styleFrom(
+      textStyle:
+          GoogleFonts.poppins().copyWith(fontSize: 14, color: Colors.white),
+      backgroundColor: Theme.of(context).colorScheme.primary,
+    );
+
     return isLoading
         ? CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary)
-        : SizedBox(
+            color: Theme.of(context).colorScheme.primary,
+          )
+        : Container(
             width: double.infinity,
             child: ElevatedButton(
-              style: style,
+              style: style, // Use the defined style here
               onPressed: _updatePassword,
-              child: const Text('Update Password', style: TextStyle(color: Colors.white),),
+              child: Text('Update Password', style: TextStyle(color: Colors.white),),
             ),
           );
   }

@@ -84,13 +84,15 @@ class _PanggilanPageState extends State<PanggilanPage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(7),
                             color: _selectedIndex == 0
-                                ? Colors.purple.shade200
+                                ? Theme.of(context).colorScheme.primary
                                 : Colors.grey.shade200,
                           ),
                           child: Text(
                             'All',
                             style: TextStyle(
                               fontSize: 16,
+                              color: _selectedIndex == 0
+                                  ? Colors.white : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -107,13 +109,15 @@ class _PanggilanPageState extends State<PanggilanPage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(7),
                             color: _selectedIndex == 1
-                                ? Colors.purple.shade200
+                                ? Theme.of(context).colorScheme.primary
                                 : Colors.grey.shade200,
                           ),
                           child: Text(
                             'Missed',
                             style: TextStyle(
                               fontSize: 16,
+                              color: _selectedIndex == 1
+                                  ? Colors.white : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),

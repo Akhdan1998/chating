@@ -385,7 +385,8 @@ class _GroupPageState extends State<GroupPage> {
       Dio dio = Dio();
       var tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path;
-      String filePath = '$tempPath/${fileName}_${dateTime.toIso8601String()}.pdf';
+      String filePath =
+          '$tempPath/${fileName}_${dateTime.toIso8601String()}.pdf';
       // String filePath = '$tempPath/temp.pdf';
 
       await dio.download(url, filePath);
@@ -406,14 +407,17 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   Map<ChatMessage, String> messageIdMap = {};
+
   void _showDeleteDialog(BuildContext context, ChatMessage message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
-          title: Text('Delete Message',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+          title: Text(
+            'Delete Message',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           content: Text(
             'Are you sure you want to delete this message?',
             style: TextStyle(fontSize: 15),
@@ -489,11 +493,13 @@ class _GroupPageState extends State<GroupPage> {
   Future<void> uploadAudioToFirebase(File file) async {
     try {
       FirebaseStorage storage = FirebaseStorage.instance;
-      String fileName = 'audioGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}.aac';
+      String fileName =
+          'audioGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}.aac';
       Reference ref = storage.ref().child(fileName);
       UploadTask uploadTask = ref.putFile(file);
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        print('Upload progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
+        print(
+            'Upload progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
       });
 
       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
@@ -547,9 +553,10 @@ class _GroupPageState extends State<GroupPage> {
 
   Future<void> initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings = InitializationSettings(
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -724,7 +731,7 @@ class _GroupPageState extends State<GroupPage> {
                 ChatMessage? previousMessage, ChatMessage? nextMessage) {
               bool isUser = message.user.id == currentUser!.id;
               return BoxDecoration(
-                color: isUser ? Colors.deepPurple.shade200 : Colors.grey[300],
+                color: isUser ? Theme.of(context).colorScheme.primary.withOpacity(0.3) : Colors.grey[300],
                 borderRadius: BorderRadius.circular(12),
               );
             },
@@ -735,9 +742,8 @@ class _GroupPageState extends State<GroupPage> {
               String? audioUrl = message.customProperties?['audioUrl'];
               print('------- VOICE NOTE ------- $audioUrl');
               return Column(
-                crossAxisAlignment: isUser
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   if (!isUser)
                     Container(
@@ -1119,7 +1125,8 @@ class _GroupPageState extends State<GroupPage> {
           XFile? file = await _mediaService.pickVideoFromLibrary();
           if (file != null) {
             List<String> uids = widget.group.members;
-            await uploadToFirebase(File(file.path), MessageTypeGroup.Video, uids);
+            await uploadToFirebase(
+                File(file.path), MessageTypeGroup.Video, uids);
           }
         } catch (e) {
           print('Error selecting or uploading video: $e');
@@ -1140,7 +1147,8 @@ class _GroupPageState extends State<GroupPage> {
           XFile? file = await _mediaService.pickVideoFromCamera();
           if (file != null) {
             List<String> uids = widget.group.members;
-            await uploadToFirebase(File(file.path), MessageTypeGroup.Video, uids);
+            await uploadToFirebase(
+                File(file.path), MessageTypeGroup.Video, uids);
           }
         } catch (e) {
           print('Error capturing or uploading video: $e');
@@ -1289,7 +1297,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     final position = _videoValue?.position ?? Duration.zero;
     final isPlaying = _videoValue?.isPlaying ?? false;
     DateTime date =
-    DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
+        DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
     String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1335,34 +1343,34 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
               duration: Duration(milliseconds: 300),
               child: _isDownloading
                   ? Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 27,
-                    height: 27,
-                    child: CircularProgressIndicator(
-                      value: _progress / 100,
-                      valueColor:
-                      AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2.0,
-                      key: ValueKey<int>(1),
-                    ),
-                  ),
-                  Text(
-                    '${_progress.toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 7,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              )
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 27,
+                          height: 27,
+                          child: CircularProgressIndicator(
+                            value: _progress / 100,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                            strokeWidth: 2.0,
+                            key: ValueKey<int>(1),
+                          ),
+                        ),
+                        Text(
+                          '${_progress.toStringAsFixed(0)}%',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 7,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    )
                   : Icon(
-                Icons.file_download_outlined,
-                color: Colors.white,
-                key: ValueKey<int>(0),
-              ),
+                      Icons.file_download_outlined,
+                      color: Colors.white,
+                      key: ValueKey<int>(0),
+                    ),
             ),
           ),
         ],
@@ -1373,77 +1381,88 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
             child: Center(
               child: _controller.value.isInitialized
                   ? Stack(
-                children: [
-                  vp.VideoPlayer(_controller),
-
-                  if (_controller.value.isInitialized)
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isPlaying ? _controller.pause() : _controller.play();
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isPlaying ? Colors.white.withOpacity(0.3) : Colors.white,
-                          ),
-                          padding: const EdgeInsets.all(16.0),
-                          child: Icon(
-                            isPlaying ? Icons.pause : Icons.play_arrow,
-                            color: Colors.black,
-                            size: 40.0,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  if (_controller.value.isInitialized)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        vp.VideoPlayer(_controller),
+                        if (_controller.value.isInitialized)
+                          Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isPlaying
+                                      ? _controller.pause()
+                                      : _controller.play();
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isPlaying
+                                      ? Colors.white.withOpacity(0.3)
+                                      : Colors.white,
+                                ),
+                                padding: const EdgeInsets.all(16.0),
+                                child: Icon(
+                                  isPlaying ? Icons.pause : Icons.play_arrow,
+                                  color: Colors.black,
+                                  size: 40.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (_controller.value.isInitialized)
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text(
-                                _formatDuration(position),
-                                style: TextStyle(color: Colors.black),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _formatDuration(position),
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    Text(
+                                      _formatDuration(duration),
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Text(
-                                _formatDuration(duration),
-                                style: TextStyle(color: Colors.black),
+                              ValueListenableBuilder(
+                                valueListenable: _controller,
+                                builder:
+                                    (context, VideoPlayerValue value, child) {
+                                  return Slider(
+                                    value: value.position.inSeconds
+                                        .toDouble()
+                                        .clamp(
+                                            0.0,
+                                            value.duration.inSeconds
+                                                .toDouble()),
+                                    min: 0.0,
+                                    max: value.duration.inSeconds.toDouble(),
+                                    onChanged: (newValue) {
+                                      _controller.seekTo(
+                                          Duration(seconds: newValue.toInt()));
+                                    },
+                                  );
+                                },
                               ),
+                              // Slider(
+                              //   value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
+                              //   min: 0.0,
+                              //   max: duration.inSeconds.toDouble(),
+                              //   onChanged: (value) {
+                              //     _controller.seekTo(Duration(seconds: value.toInt()));
+                              //   },
+                              // ),
                             ],
                           ),
-                        ),
-                        ValueListenableBuilder(
-                          valueListenable: _controller,
-                          builder: (context, VideoPlayerValue value, child) {
-                            return Slider(
-                              value: value.position.inSeconds.toDouble().clamp(0.0, value.duration.inSeconds.toDouble()),
-                              min: 0.0,
-                              max: value.duration.inSeconds.toDouble(),
-                              onChanged: (newValue) {
-                                _controller.seekTo(Duration(seconds: newValue.toInt()));
-                              },
-                            );
-                          },
-                        ),
-                        // Slider(
-                        //   value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
-                        //   min: 0.0,
-                        //   max: duration.inSeconds.toDouble(),
-                        //   onChanged: (value) {
-                        //     _controller.seekTo(Duration(seconds: value.toInt()));
-                        //   },
-                        // ),
                       ],
-                    ),
-                ],
-              )
+                    )
                   : CircularProgressIndicator(), // Show loading indicator
             ),
           ),
@@ -1544,9 +1563,11 @@ class _FullScreenImageState extends State<FullScreenImage> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    DateTime date = DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
+    DateTime date =
+        DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
     String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
     return Scaffold(
       appBar: AppBar(
@@ -1591,34 +1612,34 @@ class _FullScreenImageState extends State<FullScreenImage> {
               duration: Duration(milliseconds: 300),
               child: _isDownloading
                   ? Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 27,
-                    height: 27,
-                    child: CircularProgressIndicator(
-                      value: _progress / 100,
-                      valueColor:
-                      AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2.0,
-                      key: ValueKey<int>(1),
-                    ),
-                  ),
-                  Text(
-                    '${_progress.toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 7,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              )
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 27,
+                          height: 27,
+                          child: CircularProgressIndicator(
+                            value: _progress / 100,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                            strokeWidth: 2.0,
+                            key: ValueKey<int>(1),
+                          ),
+                        ),
+                        Text(
+                          '${_progress.toStringAsFixed(0)}%',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 7,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    )
                   : Icon(
-                Icons.file_download_outlined,
-                color: Colors.white,
-                key: ValueKey<int>(0),
-              ),
+                      Icons.file_download_outlined,
+                      color: Colors.white,
+                      key: ValueKey<int>(0),
+                    ),
             ),
           ),
         ],
@@ -1719,7 +1740,7 @@ class _PDFViewPageState extends State<PDFViewPage> {
   @override
   Widget build(BuildContext context) {
     DateTime date =
-    DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
+        DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
     String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
     return Scaffold(
       appBar: AppBar(
@@ -1770,30 +1791,30 @@ class _PDFViewPageState extends State<PDFViewPage> {
               duration: Duration(milliseconds: 300),
               child: _isDownloading
                   ? Stack(
-                alignment: Alignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    value: _progress / 100,
-                    valueColor:
-                    AlwaysStoppedAnimation<Color>(Colors.white),
-                    strokeWidth: 2.0,
-                    key: ValueKey<int>(1),
-                  ),
-                  Text(
-                    '${_progress.toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              )
+                      alignment: Alignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          value: _progress / 100,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                          strokeWidth: 2.0,
+                          key: ValueKey<int>(1),
+                        ),
+                        Text(
+                          '${_progress.toStringAsFixed(0)}%',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    )
                   : Icon(
-                Icons.file_download_outlined,
-                color: Colors.white,
-                key: ValueKey<int>(0),
-              ),
+                      Icons.file_download_outlined,
+                      color: Colors.white,
+                      key: ValueKey<int>(0),
+                    ),
             ),
           ),
         ],

@@ -12,7 +12,7 @@ import '../service/navigation_service.dart';
 import '../widgets/textfield.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.blueGrey.shade900, Colors.blueGrey.shade700],
@@ -74,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _logo(),
-                SizedBox(height: 20),
                 if (cardEmail == true) _loginCard(),
                 SizedBox(height: 15),
                 (cardEmail == true)
@@ -124,88 +123,120 @@ class _LoginPageState extends State<LoginPage> {
             fontSize: 16,
           ),
         ),
-        (cardEmail == false) ? SizedBox(height: 20) : SizedBox(height: 0),
+        SizedBox(height: (cardEmail == false) ? 20 : 0),
         if (cardEmail == false)
-          Column(
-            children: [
-              IntlPhoneField(
-                invalidNumberMessage: '',
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
+          Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  offset: Offset(0, 5),
                 ),
-                initialCountryCode: 'ID',
-                onChanged: (phone) {
-                  setState(() {
-                    phoneNumber = phone.completeNumber;
-                    _checkFields();
-                  });
-                },
-              ),
-              TextFieldCustom(
-                controller: nameController,
-                onSaved: (value) {
-                  nameController.text = value!;
-                },
-                onChanged: (value) {
-                  _checkFields();
-                },
-                validationRegEx: NAME_VALIDATION_REGEX,
-                height: MediaQuery.of(context).size.height * 0.1,
-                hintText: 'Name',
-                obscureText: false,
-                borderRadius: 10,
-                fillColor: Colors.grey[200]!,
-                borderSide: BorderSide(color: Colors.blue, width: 2.0),
-                // Border yang terlihat dengan warna biru
-                filled: true,
-              ),
-              SizedBox(height: 20),
-              isLoad
-                  ? CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    )
-                  : SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isButtonEnabled
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text(
-                          'Next',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: isButtonEnabled && !isLoad
-                            ? () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Verifikasi(
-                                      phoneNumber: phoneNumber,
-                                      nama: nameController.text,
-                                    ),
-                                  ),
-                                );
-                              }
-                            : null,
-                      ),
+              ],
+            ),
+            child: Column(
+              children: [
+                IntlPhoneField(
+                  keyboardType: TextInputType.phone,
+                  invalidNumberMessage: '',
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 1),
                     ),
-            ],
+                    counterText: '',
+                  ),
+                  initialCountryCode: 'ID',
+                  onChanged: (phone) {
+                    setState(() {
+                      phoneNumber = phone.completeNumber;
+                    });
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFieldCustom(
+                  controller: nameController,
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  hintText: 'Name',
+                  obscureText: false,
+                  borderRadius: 10,
+                  fillColor: Colors.white,
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                  filled: true,
+                  validationRegEx: NAME_VALIDATION_REGEX,
+                  onSaved: (value) {
+                    nameController.text = value!;
+                  },
+                ),
+                SizedBox(height: 10),
+                isLoad
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                      )
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'Next',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () {
+                            if (phoneNumber.isEmpty ||
+                                nameController.text.isEmpty) {
+                              setState(() {
+                                isLoad = true;
+                              });
+
+                              Future.delayed(Duration(milliseconds: 500), () {
+                                setState(() {
+                                  isLoad = false;
+                                });
+                                _alertService.showToast(
+                                  text: 'Please fill in both fields.',
+                                  icon: Icons.error,
+                                  color: Colors.redAccent,
+                                );
+                              });
+                            } else {
+                              setState(() {
+                                isLoad = true;
+                              });
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Verifikasi(
+                                    phoneNumber: phoneNumber,
+                                    nama: nameController.text,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+              ],
+            ),
           ),
-        SizedBox(height: 15),
+        SizedBox(height: 20),
         (cardEmail == false)
             ? GestureDetector(
                 onTap: () {
@@ -229,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.95),
         borderRadius: BorderRadius.circular(15),
@@ -237,14 +268,14 @@ class _LoginPageState extends State<LoginPage> {
           BoxShadow(
             color: Colors.black26,
             blurRadius: 10,
-            offset: const Offset(0, 5),
+            offset: Offset(0, 5),
           ),
         ],
       ),
       child: Column(
         children: [
           _loginForm(),
-          const SizedBox(height: 20),
+          SizedBox(height: 10),
           _loginButton(),
         ],
       ),
@@ -263,8 +294,9 @@ class _LoginPageState extends State<LoginPage> {
           hintText: 'Email',
           obscureText: false,
           height: MediaQuery.of(context).size.height * 0.1,
+          borderSide: BorderSide(color: Colors.purple, width: 2.0),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         TextFieldCustom(
           controller: passwordController,
           onSaved: (value) {
@@ -274,6 +306,7 @@ class _LoginPageState extends State<LoginPage> {
           hintText: 'Password',
           obscureText: true,
           height: MediaQuery.of(context).size.height * 0.1,
+          borderSide: BorderSide(color: Colors.purple, width: 2.0),
         ),
       ],
     );
@@ -281,20 +314,20 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginButton() {
     return isLoading
-        ? const CircularProgressIndicator(
-            color: Colors.blueGrey,
+        ? CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
           )
         : SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                padding: const EdgeInsets.symmetric(vertical: 15),
+                backgroundColor: Colors.blueGrey,
+                padding: EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Login',
                 style: TextStyle(
                   fontSize: 16,
@@ -362,9 +395,9 @@ class _LoginPageState extends State<LoginPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Not a member?', style: TextStyle(color: Colors.white70)),
-          const SizedBox(width: 5),
-          const Text(
+          Text('Not a member?', style: TextStyle(color: Colors.white70)),
+          SizedBox(width: 5),
+          Text(
             'Register now',
             style: TextStyle(
               color: Colors.white,

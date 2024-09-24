@@ -117,7 +117,7 @@ class _VerifikasiState extends State<Verifikasi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('OTP Verification')),
+      appBar: AppBar(),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(

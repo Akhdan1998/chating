@@ -616,7 +616,7 @@ class _ChatPageState extends State<ChatPage> {
                 ChatMessage? previousMessage, ChatMessage? nextMessage) {
               bool isUser = message.user.id == currentUser!.id;
               return BoxDecoration(
-                color: isUser ? Colors.deepPurple.shade200 : Colors.grey[300],
+                color: isUser ? Theme.of(context).colorScheme.primary.withOpacity(0.3) : Colors.grey[300],
                 borderRadius: BorderRadius.circular(12),
               );
             },
@@ -1951,7 +1951,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     final position = _videoValue?.position ?? Duration.zero;
     final isPlaying = _videoValue?.isPlaying ?? false;
     DateTime date =
-    DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
+        DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
     String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
     return Scaffold(
       backgroundColor: Colors.white,
@@ -2035,77 +2035,88 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
             child: Center(
               child: _controller.value.isInitialized
                   ? Stack(
-                    children: [
-                      vp.VideoPlayer(_controller),
-
-                      if (_controller.value.isInitialized)
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isPlaying ? _controller.pause() : _controller.play();
-                              });
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: isPlaying ? Colors.white.withOpacity(0.3) : Colors.white,
-                              ),
-                              padding: const EdgeInsets.all(16.0),
-                              child: Icon(
-                                isPlaying ? Icons.pause : Icons.play_arrow,
-                                color: Colors.black,
-                                size: 40.0,
+                      children: [
+                        vp.VideoPlayer(_controller),
+                        if (_controller.value.isInitialized)
+                          Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isPlaying
+                                      ? _controller.pause()
+                                      : _controller.play();
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isPlaying
+                                      ? Colors.white.withOpacity(0.3)
+                                      : Colors.white,
+                                ),
+                                padding: const EdgeInsets.all(16.0),
+                                child: Icon(
+                                  isPlaying ? Icons.pause : Icons.play_arrow,
+                                  color: Colors.black,
+                                  size: 40.0,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-
-                      if (_controller.value.isInitialized)
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    _formatDuration(position),
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                  Text(
-                                    _formatDuration(duration),
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                ],
+                        if (_controller.value.isInitialized)
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _formatDuration(position),
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    Text(
+                                      _formatDuration(duration),
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            ValueListenableBuilder(
-                              valueListenable: _controller,
-                              builder: (context, VideoPlayerValue value, child) {
-                                return Slider(
-                                  value: value.position.inSeconds.toDouble().clamp(0.0, value.duration.inSeconds.toDouble()),
-                                  min: 0.0,
-                                  max: value.duration.inSeconds.toDouble(),
-                                  onChanged: (newValue) {
-                                    _controller.seekTo(Duration(seconds: newValue.toInt()));
-                                  },
-                                );
-                              },
-                            ),
-                            // Slider(
-                            //   value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
-                            //   min: 0.0,
-                            //   max: duration.inSeconds.toDouble(),
-                            //   onChanged: (value) {
-                            //     _controller.seekTo(Duration(seconds: value.toInt()));
-                            //   },
-                            // ),
-                          ],
-                        ),
-                    ],
-                  )
+                              ValueListenableBuilder(
+                                valueListenable: _controller,
+                                builder:
+                                    (context, VideoPlayerValue value, child) {
+                                  return Slider(
+                                    value: value.position.inSeconds
+                                        .toDouble()
+                                        .clamp(
+                                            0.0,
+                                            value.duration.inSeconds
+                                                .toDouble()),
+                                    min: 0.0,
+                                    max: value.duration.inSeconds.toDouble(),
+                                    onChanged: (newValue) {
+                                      _controller.seekTo(
+                                          Duration(seconds: newValue.toInt()));
+                                    },
+                                  );
+                                },
+                              ),
+                              // Slider(
+                              //   value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
+                              //   min: 0.0,
+                              //   max: duration.inSeconds.toDouble(),
+                              //   onChanged: (value) {
+                              //     _controller.seekTo(Duration(seconds: value.toInt()));
+                              //   },
+                              // ),
+                            ],
+                          ),
+                      ],
+                    )
                   : CircularProgressIndicator(), // Show loading indicator
             ),
           ),

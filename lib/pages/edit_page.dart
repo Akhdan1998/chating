@@ -91,6 +91,11 @@ class _EditPageState extends State<EditPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ButtonStyle style = ElevatedButton.styleFrom(
+      textStyle:
+          GoogleFonts.poppins().copyWith(fontSize: 14, color: Colors.white),
+      backgroundColor: Theme.of(context).colorScheme.primary,
+    );
     double bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Scaffold(
       appBar: AppBar(
@@ -175,8 +180,12 @@ class _EditPageState extends State<EditPage> {
                   ),
                   Container(
                     padding: EdgeInsets.only(top: 90, left: 80),
-                    child: Icon(Icons.add_circle,
-                        color: Theme.of(context).colorScheme.primary, size: 30),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          shape: BoxShape.circle),
+                      child: Icon(Icons.add, color: Colors.white, size: 25),
+                    ),
                   ),
                 ],
               ),
@@ -233,12 +242,14 @@ class _EditPageState extends State<EditPage> {
             child: ElevatedButton(
               style: style,
               onPressed: () {
-                saveUserProfile().whenComplete(() {      Navigator.pop(context);
+                saveUserProfile().whenComplete(() {
+                  Navigator.pop(context);
                 });
               },
               child: Text(
                 'Save',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
           ),
@@ -247,9 +258,9 @@ class _EditPageState extends State<EditPage> {
     );
   }
 
-  final ButtonStyle style = ElevatedButton.styleFrom(
-    textStyle:
-        GoogleFonts.poppins().copyWith(fontSize: 14, color: Colors.white),
-    backgroundColor: Colors.deepPurple,
-  );
+// final ButtonStyle style = ElevatedButton.styleFrom(
+//     textStyle:
+//         GoogleFonts.poppins().copyWith(fontSize: 14, color: Colors.white),
+//     backgroundColor: Theme.of(context).colorScheme.primary,
+// );
 }

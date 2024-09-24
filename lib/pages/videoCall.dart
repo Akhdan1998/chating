@@ -462,7 +462,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                     Text(
                       _remoteUid != null
                           ? _formatDuration(_secondsElapsed)
-                          : 'Berdering...',
+                          : 'Ringing...',
                       style: TextStyle(
                         color: Colors.white,
                       ),

@@ -158,13 +158,15 @@ class _MediaPageState extends State<MediaPage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(7),
                             color: _selectedIndex == 0
-                                ? Colors.purple.shade200
+                                ? Theme.of(context).colorScheme.primary
                                 : Colors.grey.shade200,
                           ),
                           child: Text(
                             'Media',
                             style: TextStyle(
                               fontSize: 16,
+                              color: _selectedIndex == 0
+                                  ? Colors.white : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -184,13 +186,15 @@ class _MediaPageState extends State<MediaPage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(7),
                             color: _selectedIndex == 1
-                                ? Colors.purple.shade200
+                                ? Theme.of(context).colorScheme.primary
                                 : Colors.grey.shade200,
                           ),
                           child: Text(
                             'Document',
                             style: TextStyle(
                               fontSize: 16,
+                              color: _selectedIndex == 1
+                                  ? Colors.white : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
