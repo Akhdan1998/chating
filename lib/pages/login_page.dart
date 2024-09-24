@@ -27,13 +27,11 @@ class _LoginPageState extends State<LoginPage> {
   late NavigationService _navigationService;
   late AlertService _alertService;
   bool isLoading = false;
+  bool isLoad = false;
   bool cardEmail = false;
   String phoneNumber = '';
   bool isButtonEnabled = false;
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  String? verificationId;
 
-  // Fungsi untuk memeriksa apakah kedua field terisi
   void _checkFields() {
     setState(() {
       isButtonEnabled =
@@ -41,74 +39,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // Future<void> _verifyPhoneNumber() async {
-  //   try {
-  //     await _auth.verifyPhoneNumber(
-  //       phoneNumber: phoneNumber,
-  //       verificationCompleted: (PhoneAuthCredential credential) async {
-  //
-  //         UserCredential userCredential = await _auth.signInWithCredential(credential);
-  //
-  //         if (userCredential.user != null) {
-  //           await FirebaseFirestore.instance.collection('users').add({
-  //             'name': nameController.text,
-  //             'phone': phoneNumber,
-  //             'uid': userCredential.user!.uid,
-  //           });
-  //         }
-  //       },
-  //       verificationFailed: (FirebaseAuthException e) {
-  //         print('Verifikasi gagal: ${e.message}');
-  //       },
-  //       codeSent: (String verificationId, int? resendToken) {
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //             builder: (context) => Verifikasi(
-  //               verificationId: verificationId,
-  //               phoneNumber: phoneNumber,
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //       codeAutoRetrievalTimeout: (String verificationId) {
-  //         print('Timeout');
-  //       },
-  //     );
-  //   } catch (e) {
-  //     print('Gagal menyimpan data atau mengirim OTP: $e');
-  //   }
-  // }
-
-  Future<void> sendOtp() async {
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber, // Gunakan variabel phoneNumber langsung
-        timeout: Duration(seconds: 60),
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // Jika verifikasi otomatis berhasil
-          await _auth.signInWithCredential(credential);
-          print('Verifikasi berhasil, login otomatis');
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          print('Verifikasi gagal: ${e.message}');
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          print('Kode OTP dikirim ke $phoneNumber');
-          setState(() {
-            this.verificationId = verificationId; // Simpan verificationId
-          });
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          print('Waktu habis untuk auto-retrieve OTP');
-        },
-      );
-    } catch (e) {
-      print('Gagal mengirim OTP: $e');
-    }
-  }
-
-  @override
   void initState() {
     super.initState();
     _authService = _getIt.get<AuthService>();
@@ -235,32 +165,44 @@ class _LoginPageState extends State<LoginPage> {
                 filled: true,
               ),
               SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isButtonEnabled
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+              isLoad
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isButtonEnabled
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'Next',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: isButtonEnabled && !isLoad
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Verifikasi(
+                                      phoneNumber: phoneNumber,
+                                      nama: nameController.text,
+                                    ),
+                                  ),
+                                );
+                              }
+                            : null,
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Next',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  onPressed: isButtonEnabled
-                      ? () {
-                          sendOtp();
-                        }
-                      : null,
-                ),
-              ),
             ],
           ),
         SizedBox(height: 15),
