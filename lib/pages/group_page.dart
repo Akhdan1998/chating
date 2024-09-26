@@ -31,6 +31,7 @@ import '../service/database_service.dart';
 import '../service/media_service.dart';
 import '../service/storage_service.dart';
 import 'detailGroup_page.dart';
+import 'groupVideoCall_page.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -650,7 +651,14 @@ class _GroupPageState extends State<GroupPage> {
               Icons.videocam,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupVideoCallScreen(grup: widget.group),
+                ),
+              );
+            },
           ),
           IconButton(
             icon: Icon(
@@ -875,202 +883,6 @@ class _GroupPageState extends State<GroupPage> {
         );
       },
     );
-
-    // return StreamBuilder(
-    //   stream: _firestore
-    //       .collection('messagesGroup')
-    //       .where('groupId', isEqualTo: widget.group.id)
-    //       .snapshots(),
-    //   builder: (context, snapshot) {
-    //     if (!snapshot.hasData ||
-    //         snapshot.data == null ||
-    //         widget.group.members.isEmpty) {
-    //       return Container();
-    //     }
-    //
-    //     return DashChat(
-    //       quickReplyOptions: QuickReplyOptions(),
-    //       messageListOptions: MessageListOptions(
-    //         separatorFrequency: SeparatorFrequency.days,
-    //         showFooterBeforeQuickReplies: true,
-    //         showDateSeparator: true,
-    //         scrollController: _scrollController,
-    //         scrollPhysics: AlwaysScrollableScrollPhysics(),
-    //       ),
-    //       messageOptions: MessageOptions(
-    //         maxWidth: 250,
-    //         textBeforeMedia: false,
-    //         showOtherUsersName: false,
-    //         showCurrentUserAvatar: false,
-    //         showOtherUsersAvatar: false,
-    //         messageDecorationBuilder: (ChatMessage message,
-    //             ChatMessage? previousMessage, ChatMessage? nextMessage) {
-    //           bool isUser = message.user.id == currentUser!.id;
-    //           return BoxDecoration(
-    //             color: isUser ? Colors.deepPurple.shade200 : Colors.grey[300],
-    //             borderRadius: BorderRadius.circular(12),
-    //           );
-    //         },
-    //         messageTextBuilder: (ChatMessage message,
-    //             ChatMessage? previousMessage, ChatMessage? nextMessage) {
-    //           bool isUser = message.user.id == currentUser!.id;
-    //           String? userName = getUserNameById(message.user.id);
-    //           String? audioUrl = message.customProperties?['audioUrl'];
-    //           print('------- VOICE NOTE ------- $audioUrl');
-    //           return Column(
-    //             crossAxisAlignment: isUser
-    //                 ? CrossAxisAlignment.end
-    //                 : CrossAxisAlignment.start,
-    //             children: [
-    //               if (!isUser)
-    //                 Container(
-    //                   width: MediaQuery.sizeOf(context).width,
-    //                   child: Text(
-    //                     userName ?? '-',
-    //                     overflow: TextOverflow.ellipsis,
-    //                     style: TextStyle(
-    //                       color: Colors.deepPurple.shade200,
-    //                       fontSize: 15,
-    //                       fontWeight: FontWeight.bold,
-    //                     ),
-    //                   ),
-    //                 ),
-    //               // if (audioUrl != null && audioUrl.isNotEmpty)
-    //               //   GestureDetector(
-    //               //     onTap: () async {
-    //               //       if (currentAudioUrl == audioUrl && audioPlayer.state == PlayerState.playing) {
-    //               //         await audioPlayer.pause();
-    //               //         setState(() {
-    //               //           currentAudioUrl = null;
-    //               //         });
-    //               //       } else {
-    //               //         if (currentAudioUrl != null) {
-    //               //           await audioPlayer.stop();
-    //               //         }
-    //               //         await audioPlayer.play(UrlSource(audioUrl));
-    //               //         setState(() {
-    //               //           currentAudioUrl = audioUrl;
-    //               //         });
-    //               //       }
-    //               //     },
-    //               //     child: Container(
-    //               //       color: Colors.red,
-    //               //       child: Icon(
-    //               //         currentAudioUrl == audioUrl && audioPlayer.state == PlayerState.playing ? Icons.pause : Icons.play_arrow,
-    //               //         color: Colors.deepPurple.shade200,
-    //               //       ),
-    //               //     ),
-    //               //   ),
-    //               Container(
-    //                 alignment: Alignment.centerLeft,
-    //                 child: Text(
-    //                   message.text,
-    //                   style: TextStyle(
-    //                     fontSize: 14,
-    //                     color: Colors.black87,
-    //                   ),
-    //                 ),
-    //               ),
-    //               // if (audioUrl != null && audioUrl.isNotEmpty) ...[
-    //               //   SizedBox(height: 5),
-    //               //   IconButton(onPressed: () {}, icon: Icon(Icons.play_arrow)),
-    //               // ],
-    //               Container(
-    //                 alignment: Alignment.centerRight,
-    //                 child: Text(
-    //                   DateFormat('HH:mm').format(message.createdAt),
-    //                   style: TextStyle(
-    //                     color: Colors.black87,
-    //                     fontSize: 11,
-    //                   ),
-    //                 ),
-    //               ),
-    //             ],
-    //           );
-    //         },
-    //         showTime: true,
-    //         onLongPressMessage: (ChatMessage message) {
-    //           _showDeleteDialog(context, message);
-    //         },
-    //         onTapMedia: (media) async {
-    //           if (media.type == MediaType.image) {
-    //             Navigator.push(
-    //               context,
-    //               MaterialPageRoute(
-    //                 builder: (context) => FullScreenImage(
-    //                   imageUrl: media.url,
-    //                   chatUser: otherUser!,
-    //                   dateTime: media.uploadedDate ?? DateTime.now(),
-    //                 ),
-    //               ),
-    //             );
-    //           } else if (media.type == MediaType.file) {
-    //             final Uri url = Uri.parse(media.url);
-    //             String fileName = media.fileName ?? 'File';
-    //             DateTime dateTime = media.uploadedDate ?? DateTime.now();
-    //             await _downloadAndOpenPDF(url.toString(), fileName, dateTime);
-    //           }
-    //         },
-    //       ),
-    //       inputOptions: InputOptions(
-    //         alwaysShowSend: true,
-    //         leading: [
-    //           PopupMenuButton(
-    //             icon: Icon(
-    //               Icons.add,
-    //               color: Theme.of(context).colorScheme.primary,
-    //             ),
-    //             itemBuilder: (context) => [
-    //               PopupMenuItem(
-    //                 child: _mediaMessageGallery(context),
-    //               ),
-    //               PopupMenuItem(
-    //                 child: _mediaMessageCamera(context),
-    //               ),
-    //               PopupMenuItem(
-    //                 child: _documentMessage(context),
-    //               ),
-    //               PopupMenuItem(
-    //                 child: _mediaMessageVideoGallery(context),
-    //               ),
-    //               PopupMenuItem(
-    //                 child: _mediaMessageVideoCamera(context),
-    //               ),
-    //             ],
-    //           ),
-    //           GestureDetector(
-    //             onTap: () async {
-    //               setState(() {
-    //                 play = !play;
-    //               });
-    //               if (recorder.isRecording) {
-    //                 await soundStop();
-    //                 setState(() {});
-    //               } else {
-    //                 await soundRecord();
-    //                 setState(() {});
-    //               }
-    //             },
-    //             child: Container(
-    //               color: Colors.transparent,
-    //               padding: EdgeInsets.only(right: 10),
-    //               child: Icon(
-    //                 (play == false)
-    //                     ? Icons.keyboard_voice_rounded
-    //                     : Icons.pause,
-    //                 color: Theme.of(context).colorScheme.primary,
-    //                 size: 21,
-    //               ),
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //       currentUser: _chatUser,
-    //       onSend: _sendMessage,
-    //       messages: _messages,
-    //     );
-    //   },
-    // );
   }
 
   Widget _mediaMessageGallery(BuildContext context) {

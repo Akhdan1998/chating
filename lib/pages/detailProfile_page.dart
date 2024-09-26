@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/fitur.dart';
 import '../models/user_profile.dart';
+import 'audioCall.dart';
 
 class DetailprofilePage extends StatefulWidget {
   final UserProfile chatUser;
@@ -92,14 +93,6 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                     );
                   },
                 );
-                // showDialog(
-                //     context: context,
-                //     builder: (BuildContext context) {
-                //       return AlertDialog(
-                //         contentPadding: EdgeInsets.zero,
-                //         content: Image.network(widget.chatUser.pfpURL!),
-                //       );
-                //     });
               },
               child: Container(
                 width: 150,
@@ -266,29 +259,53 @@ class ButtonFitur extends StatefulWidget {
 }
 
 class _ButtonFiturState extends State<ButtonFitur> {
+  void _handleCall(String callType) async {
+    String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+
+    if (callType == 'audio') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AudioCallScreen(userProfile: widget.chatUser),
+        ),
+      );
+    } else if (callType == 'video') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoCallScreen(userProfile: widget.chatUser),
+        ),
+      );
+    }
+  }
+
   Future<String> _getPhoneNumber(String userId) async {
     var firestore = FirebaseFirestore.instance;
     var userDoc = await firestore.collection('users').doc(userId).get();
     return userDoc.data()?['phoneNumber'] ?? '';
   }
 
-  // void _startVideoCall() async {
-  //   String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
-  //
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => VideoCallScreen(phoneNumber: phoneNumber),
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double buttonSize = screenWidth * 0.27;
+
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        switch (widget.fitur!.id) {
+          case '1': // Audio call
+            _handleCall('audio');
+            break;
+          case '2': // Video call
+            _handleCall('video');
+            break;
+          case '3': // Search functionality
+            print('SEARCH ACTION');
+            break;
+          default:
+            break;
+        }
+      },
       child: Container(
         width: buttonSize,
         height: buttonSize,

@@ -33,9 +33,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
   Set<String> clickedUIDs = {};
   bool _isRequestingPermission = false;
 
-  // File? _originalFile;
-  // File? _compressedFile;
-
   @override
   void initState() {
     super.initState();
@@ -50,21 +47,11 @@ class _UpdatesPageState extends State<UpdatesPage> {
     super.dispose();
   }
 
-  // Future<void> _requestPermission() async {
-  //   if (await Permission.camera.request().isGranted &&
-  //       await Permission.storage.request().isGranted) {
-  //     // Permission granted, do nothing
-  //   } else {
-  //     // Handle permission denied
-  //   }
-  // }
-
   Future<void> _requestPermission() async {
     if (_isRequestingPermission) return;
     _isRequestingPermission = true;
 
     try {
-      // Ganti dengan kode permintaan izin yang sebenarnya
       await Permission.camera.request();
     } finally {
       _isRequestingPermission = false;
@@ -315,21 +302,17 @@ class _UpdatesPageState extends State<UpdatesPage> {
                           snapshot.data!.docs[0].data()
                               as Map<String, dynamic>);
                       bool hasUploadedStory = userProfile.hasUploadedStory;
-
-                      // Using MediaQuery to scale the UI based on screen size
                       double screenWidth = MediaQuery.of(context).size.width;
                       double screenHeight = MediaQuery.of(context).size.height;
                       double avatarSize =
                           screenWidth * 0.15; // Scale avatar size
-                      double iconSize = screenWidth * 0.05; // Scale icon size
+                      double iconSize = screenWidth * 0.04; // Scale icon size
                       double margin = screenWidth * 0.05; // Scale margin
 
                       return Container(
                         margin: EdgeInsets.only(left: margin),
                         padding: EdgeInsets.all(screenWidth * 0.01),
-                        // Scaled padding
                         width: screenWidth * 0.2,
-                        // Scaled container width
                         child: Column(
                           children: [
                             Stack(
@@ -354,22 +337,27 @@ class _UpdatesPageState extends State<UpdatesPage> {
                                 Positioned(
                                   top: avatarSize * 0.68,
                                   right: 0,
-                                  child: Icon(
-                                    Icons.add_circle,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: iconSize,
+                                  child: Container(
+                                    padding: EdgeInsets.all(1),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                    child: Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: iconSize,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                             SizedBox(height: screenHeight * 0.01),
-                            // Scaled space
                             Text(
                               'My Story',
                               style: TextStyle(
                                   fontSize:
-                                      screenWidth * 0.03), // Scaled font size
+                                      screenWidth * 0.03),
                             ),
                           ],
                         ),
@@ -526,7 +514,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
                                 ),
                               ),
                               SizedBox(height: screenWidth * 0.01),
-                              // Responsive spacing
                               Text(
                                 user.name ?? '-',
                                 style: TextStyle(

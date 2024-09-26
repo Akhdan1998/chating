@@ -1,14 +1,10 @@
 import 'dart:async';
-
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:chating/models/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-// import 'package:camera/camera.dart';
-import 'package:http/http.dart' as http;
 import '../service/alert_service.dart';
 import 'audioCall.dart';
 
@@ -25,11 +21,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   int? _remoteUid;
   late RtcEngine _engine;
   bool _localUserJoined = false;
-
-  // late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-
-  // List<CameraDescription> _cameras = [];
   int _currentCameraIndex = 0;
   bool _isMuted = false;
   bool _isVideoEnabled = true;

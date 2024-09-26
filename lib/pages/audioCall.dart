@@ -10,7 +10,7 @@ import '../service/alert_service.dart';
 
 String appId = 'be76645285084ce7a1d7d4cd2bd94dd0';
 String token =
-    '007eJxTYJAof6V9jUvHeId12pbZ6XY/pproHWgKnnA70WVlxuPjp5YqMKSkmhummJlYphmnGpmYWFgmmSSZmSUmpxiYW1oYJ1qa8Z55ndYQyMgQwbqAhZEBAkF8NobS4tQizxQGBgCG1iAc';
+    '007eJxTYOgJurirqLnIf0WTpdu6k6IpqzRPfVgRWN/yJ1q8ae6trkYFhpRUc8MUMxPLNONUIxMTC8skkyQzs8TkFANzSwvjREuzooNf0hoCGRmKTlsyMEIhiM/GUFqcWuSZwsAAAPXlIbk=';
 String channel = "userId";
 
 class AudioCallScreen extends StatefulWidget {

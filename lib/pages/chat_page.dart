@@ -343,50 +343,63 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _showPopup(BuildContext context, ChatMessage message) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
-            titlePadding: EdgeInsets.zero,
-            title: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: Text('Copy'),
-                  trailing: Icon(
-                    Icons.copy,
-                    size: 19,
-                  ),
-                  onTap: () {
-                    Clipboard.setData(ClipboardData(text: message.text))
-                        .whenComplete(() {
-                      _alertService.showToast(
-                        text: 'Copy',
-                        icon: Icons.copy,
-                        color: Colors.green,
-                      );
-                    });
-                    Navigator.pop(context);
-                  },
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: '',
+      barrierColor: Colors.black54,
+      transitionDuration:
+      Duration(milliseconds: 300),
+      pageBuilder: (context, anim1, anim2) {
+        return AlertDialog(
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+          titlePadding: EdgeInsets.zero,
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text('Copy'),
+                trailing: Icon(
+                  Icons.copy,
+                  size: 19,
                 ),
-                Divider(height: 0),
-                ListTile(
-                  title: Text('Delete'),
-                  trailing: Icon(
-                    Icons.delete,
-                    size: 20,
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showDeleteMessageDialog(context, message);
-                  },
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: message.text))
+                      .whenComplete(() {
+                    _alertService.showToast(
+                      text: 'Copy',
+                      icon: Icons.copy,
+                      color: Colors.green,
+                    );
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              Divider(height: 0),
+              ListTile(
+                title: Text('Delete'),
+                trailing: Icon(
+                  Icons.delete,
+                  size: 20,
                 ),
-              ],
-            ),
-          );
-        });
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteMessageDialog(context, message);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+      transitionBuilder:
+          (context, anim1, anim2, child) {
+        return Transform.scale(
+          scale: anim1.value,
+          child: child,
+        );
+      },
+    );
   }
 
   void deleteAllMessages() {
@@ -478,7 +491,6 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       audioPlayer.play(AssetSource('ting.mp3'));
     });
-    // Memainkan suara dari assets
   }
 
   @override
