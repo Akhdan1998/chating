@@ -9,9 +9,9 @@ import 'audioCall.dart';
 
 class GroupVideoCallScreen extends StatefulWidget {
   late final Group grup;
-  GroupVideoCallScreen({
-    required this.grup,
-  });
+
+  GroupVideoCallScreen({required this.grup});
+
   @override
   _GroupVideoCallScreenState createState() => _GroupVideoCallScreenState();
 }
@@ -34,7 +34,7 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
   }
 
   void _startTimer() {
-    if (_secondUserJoined) return; // Jangan mulai timer jika pengguna kedua belum bergabung
+    if (_secondUserJoined) return;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _duration++;
@@ -271,8 +271,7 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
                     color: Colors.grey.shade800,
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.close_fullscreen,
-                        color: Colors.white),
+                    icon: Icon(Icons.close_fullscreen, color: Colors.white),
                     onPressed: () {},
                   ),
                 ),
@@ -304,8 +303,8 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
                         color: Colors.grey.shade800,
                       ),
                       child: IconButton(
-                        icon:
-                        Icon(Icons.person_add_alt_1_sharp, color: Colors.white),
+                        icon: Icon(Icons.person_add_alt_1_sharp,
+                            color: Colors.white),
                         onPressed: () {},
                       ),
                     ),
@@ -332,7 +331,6 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
       ),
     );
   }
-
   int _getCrossAxisCount(int numberOfParticipants) {
     if (numberOfParticipants == 1) {
       return 1; // 1 peserta

@@ -817,7 +817,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       MaterialPageRoute(builder: (context) {
                         return GroupPage(
                           group: group,
-                          users: users,
+                          userProfiles: users,
                         );
                       }),
                     );

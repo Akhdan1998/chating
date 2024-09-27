@@ -31,13 +31,14 @@ import '../service/database_service.dart';
 import '../service/media_service.dart';
 import '../service/storage_service.dart';
 import 'detailGroup_page.dart';
+import 'groupAudioCall_page.dart';
 import 'groupVideoCall_page.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
-  final List<UserProfile> users;
+  final List<UserProfile> userProfiles;
 
-  GroupPage({required this.group, required this.users});
+  GroupPage({required this.group, required this.userProfiles,});
 
   @override
   State<GroupPage> createState() => _GroupPageState();
@@ -567,7 +568,7 @@ class _GroupPageState extends State<GroupPage> {
   @override
   Widget build(BuildContext context) {
     List<String> memberNames = widget.group.members.map((memberId) {
-      final user = widget.users.firstWhere(
+      final user = widget.userProfiles.firstWhere(
         (user) => user.uid == memberId,
         orElse: () => UserProfile(
           uid: memberId,
@@ -596,7 +597,7 @@ class _GroupPageState extends State<GroupPage> {
               context,
               MaterialPageRoute(
                 builder: (context) => DetailGroupPage(
-                  users: widget.users,
+                  users: widget.userProfiles,
                   grup: widget.group,
                   onDeleteAllMessages: _deleteAllMessages,
                   onLeaveGroup: _leaveGroup,
@@ -634,11 +635,6 @@ class _GroupPageState extends State<GroupPage> {
                         fontSize: 11,
                       ),
                     ),
-                    // SizedBox(height: 4),
-                    // Text(
-                    //   _isInGroup ? 'Online' : 'Offline',
-                    //   style: TextStyle(fontSize: 14, color: Colors.green),
-                    // ),
                   ],
                 ),
               ),
@@ -666,9 +662,12 @@ class _GroupPageState extends State<GroupPage> {
               color: Colors.white,
             ),
             onPressed: () async {
-              String phoneNumber = await _databaseService
-                  .getPhoneNumberFromFirestore(otherUser!.id);
-              await launchPhoneCall(phoneNumber);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupAudioCallScreen(grup: widget.group, users: widget.userProfiles,),
+                ),
+              );
             },
           ),
         ],
@@ -986,7 +985,7 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   String? getUserNameById(String userId) {
-    final user = widget.users.firstWhere(
+    final user = widget.userProfiles.firstWhere(
       (user) => user.uid == userId,
       orElse: () => UserProfile(uid: userId, name: ''),
     );
