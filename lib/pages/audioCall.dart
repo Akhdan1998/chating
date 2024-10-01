@@ -7,11 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../models/user_profile.dart';
 import '../service/alert_service.dart';
-
-String appId = 'be76645285084ce7a1d7d4cd2bd94dd0';
-String token =
-    '007eJxTYJhvKtIf9PPs769XXr29lBq36Oel1mtbaownNWs+DdPMlFuqwJCSam6YYmZimWacamRiYmGZZJJkZpaYnGJgbmlhnGhpdl71W1pDICODX+V9VkYGCATx2RhKi1OLPFMYGAC3vyO2';
-String channel = "userId";
+import '../utils.dart';
 
 class AudioCallScreen extends StatefulWidget {
   final UserProfile userProfile;
@@ -72,7 +68,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       await _engine.enableAudio();
 
       await _engine.initialize(RtcEngineContext(
-          appId: appId,
+          appId: appIdAudio,
           channelProfile: ChannelProfileType.channelProfileCommunication));
 
       _engine.registerEventHandler(RtcEngineEventHandler(
@@ -100,7 +96,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       ));
 
       await _engine.joinChannel(
-        token: token,
+        token: tokenAudio,
         channelId: channel,
         options: ChannelMediaOptions(
           autoSubscribeAudio: true,

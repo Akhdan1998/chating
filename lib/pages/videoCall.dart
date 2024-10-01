@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../service/alert_service.dart';
+import '../utils.dart';
 import 'audioCall.dart';
 
 class VideoCallScreen extends StatefulWidget {
@@ -61,62 +62,62 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
-  Future<void> joinChannel() async {
-    await _engine.joinChannel(
-      token: token,
-      channelId: channelName,
-      options: const ChannelMediaOptions(
-        autoSubscribeVideo: true,
-        autoSubscribeAudio: true,
-        publishCameraTrack: true,
-        publishMicrophoneTrack: true,
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      ),
-      uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
-    );
-
-    print('TOKEN VIDEO CALLLLLLL ${token}');
-    print('NUMBER ${widget.userProfile.phoneNumber!.substring(1)}');
-
-    await _engine.enableVideo();
-
-    await _engine.startPreview();
-
-    _engine.registerEventHandler(
-      RtcEngineEventHandler(
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          debugPrint("local user ${connection.localUid} joined");
-          setState(() {
-            _localUserJoined = true;
-          });
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          setState(() {
-            _remoteUid = remoteUid;
-            _startCallTimer();
-          });
-        },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          setState(() {
-            _remoteUid = null;
-            _stopCallTimer();
-          });
-          Navigator.pop(context);
-        },
-        onError: (ErrorCodeType err, String msg) {
-          print('[onError] err: $err, msg: $msg');
-        },
-      ),
-    );
-  }
+  // Future<void> joinChannel() async {
+  //   await _engine.joinChannel(
+  //     token: tokenVideo,
+  //     channelId: channelVideo,
+  //     options: const ChannelMediaOptions(
+  //       autoSubscribeVideo: true,
+  //       autoSubscribeAudio: true,
+  //       publishCameraTrack: true,
+  //       publishMicrophoneTrack: true,
+  //       clientRoleType: ClientRoleType.clientRoleBroadcaster,
+  //     ),
+  //     uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
+  //   );
+  //
+  //   print('TOKEN VIDEO CALLLLLLL ${tokenVideo}');
+  //   print('NUMBER ${widget.userProfile.phoneNumber!.substring(1)}');
+  //
+  //   await _engine.enableVideo();
+  //
+  //   await _engine.startPreview();
+  //
+  //   _engine.registerEventHandler(
+  //     RtcEngineEventHandler(
+  //       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+  //         debugPrint("local user ${connection.localUid} joined");
+  //         setState(() {
+  //           _localUserJoined = true;
+  //         });
+  //       },
+  //       onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+  //         setState(() {
+  //           _remoteUid = remoteUid;
+  //           _startCallTimer();
+  //         });
+  //       },
+  //       onUserOffline: (RtcConnection connection, int remoteUid,
+  //           UserOfflineReasonType reason) {
+  //         setState(() {
+  //           _remoteUid = null;
+  //           _stopCallTimer();
+  //         });
+  //         Navigator.pop(context);
+  //       },
+  //       onError: (ErrorCodeType err, String msg) {
+  //         print('[onError] err: $err, msg: $msg');
+  //       },
+  //     ),
+  //   );
+  // }
 
   Future<void> _initAgora() async {
     try {
       await _requestPermissions();
 
       _engine = await createAgoraRtcEngine();
-      await _engine.initialize(RtcEngineContext(appId: appId));
+      await _engine.initialize(RtcEngineContext(appId: appIdVideo));
       await _engine.enableVideo();
       await _engine.startPreview();
 
@@ -145,11 +146,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         },
       ));
 
-      // String token = await fetchToken('+6281290763984');
-      print('TOKEN VIDEO CALL ${token}');
+      print('TOKEN VIDEO CALL ${tokenVideo}');
 
       await _engine.joinChannel(
-        token: token,
+        token: tokenVideo,
         channelId: channel,
         options: ChannelMediaOptions(
           autoSubscribeVideo: true,

@@ -69,6 +69,7 @@ class _GroupPageState extends State<GroupPage> {
   Duration position = Duration.zero;
   String? currentAudioUrl;
   PlayerState audioPlayerState = PlayerState.stopped;
+  Map<ChatMessage, String> messageIdMap = {};
 
   @override
   void initState() {
@@ -189,7 +190,7 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   void _scrollToBottom() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.minScrollExtent,
@@ -407,8 +408,6 @@ class _GroupPageState extends State<GroupPage> {
       print('Error saat mengunduh atau membuka file PDF: $e');
     }
   }
-
-  Map<ChatMessage, String> messageIdMap = {};
 
   void _showDeleteDialog(BuildContext context, ChatMessage message) {
     showDialog(
@@ -651,7 +650,7 @@ class _GroupPageState extends State<GroupPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => GroupVideoCallScreen(grup: widget.group),
+                  builder: (context) => GroupVideoCallScreen(grup: widget.group, users: widget.userProfiles,),
                 ),
               );
             },

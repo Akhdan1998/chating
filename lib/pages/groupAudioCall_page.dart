@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../models/group.dart';
 import '../models/user_profile.dart';
 import '../service/alert_service.dart';
+import '../utils.dart';
 import 'audioCall.dart';
 
 class GroupAudioCallScreen extends StatefulWidget {
@@ -81,7 +82,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
       await _engine.enableAudio();
 
       await _engine.initialize(RtcEngineContext(
-        appId: appId,
+        appId: appIdGroupAudio,
         channelProfile: ChannelProfileType.channelProfileCommunication,
       ));
 
@@ -100,7 +101,10 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
             UserOfflineReasonType reason) {
           setState(() {
             _remoteUids.remove(remoteUid);
-            if (_remoteUids.isEmpty) _stopCallTimer();
+            if (_remoteUids.isEmpty) {
+              _stopCallTimer();
+              _leaveChannel();
+            }
           });
         },
         onError: (ErrorCodeType err, String msg) {
@@ -110,7 +114,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
       ));
 
       await _engine.joinChannel(
-        token: token,
+        token: tokenGroupAudio,
         channelId: channel,
         options: ChannelMediaOptions(
           autoSubscribeAudio: true,
@@ -155,55 +159,54 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
 
   Widget _renderLocalPreview() {
     if (_localUserJoined) {
-      return Container(
-        margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.white.withOpacity(0.2),
-        ),
-        child: Stack(
-          children: [
-            AgoraVideoView(
-              controller: VideoViewController(
-                rtcEngine: _engine,
-                canvas: VideoCanvas(uid: 0),
-              ),
+      return Stack(
+        children: [
+          AgoraVideoView(
+            controller: VideoViewController(
+              rtcEngine: _engine,
+              canvas: VideoCanvas(uid: 0),
             ),
-            Container(
-              alignment: Alignment.center,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'You',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(widget.users.first.pfpURL!),
-                    radius: 35,
-                  ),
-                  // SizedBox(height: 20),
-                  AudioWaveforms(
-                    enableGesture: true,
-                    size: Size(200, 50),
-                    recorderController: _recorderController,
-                    waveStyle: WaveStyle(
-                      waveColor: Colors.black,
-                      extendWaveform: true,
-                      showMiddleLine: false,
-                    ),
-                  ),
-                ],
-              ),
+          ),
+          Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white.withOpacity(0.2),
             ),
-          ],
-        ),
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'You',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 10),
+                CircleAvatar(
+                  backgroundImage: NetworkImage(widget.users.first.pfpURL!),
+                  radius: 35,
+                ),
+                // SizedBox(height: 20),
+                AudioWaveforms(
+                  enableGesture: true,
+                  size: Size(200, 50),
+                  recorderController: _recorderController,
+                  waveStyle: WaveStyle(
+                    waveColor: Colors.black,
+                    extendWaveform: true,
+                    showMiddleLine: false,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       );
     } else {
       return Container();
@@ -211,59 +214,55 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
   }
 
   Widget _renderVideo(int uid) {
-    return Container(
-      margin: EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 150),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: Colors.white.withOpacity(0.2),
-      ),
-      child: Stack(
-        children: [
-          AgoraVideoView(
-            controller: VideoViewController.remote(
-              rtcEngine: _engine,
-              canvas: VideoCanvas(uid: uid),
-              connection: RtcConnection(channelId: channel),
-            ),
+    return Stack(
+      children: [
+        AgoraVideoView(
+          controller: VideoViewController.remote(
+            rtcEngine: _engine,
+            canvas: VideoCanvas(uid: uid),
+            connection: RtcConnection(channelId: channel),
           ),
-          Positioned(
-            child: Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.users.first.name!,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(widget.users.first.pfpURL!),
-                    radius: 35,
-                  ),
-                  SizedBox(height: 20),
-                  AudioWaveforms(
-                    enableGesture: true,
-                    size: Size(200, 50),
-                    recorderController: _recorderController,
-                    waveStyle: WaveStyle(
-                      waveColor: Colors.blueAccent,
-                      extendWaveform: true,
-                      showMiddleLine: false,
-                    ),
-                  ),
-                ],
+        ),
+        Container(
+          margin: EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Colors.white.withOpacity(0.2),
+          ),
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                widget.users.first.name!,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
+              SizedBox(height: 20),
+              CircleAvatar(
+                backgroundImage: NetworkImage(widget.users.first.pfpURL!),
+                radius: 35,
+              ),
+              SizedBox(height: 20),
+              AudioWaveforms(
+                enableGesture: true,
+                size: Size(200, 50),
+                recorderController: _recorderController,
+                waveStyle: WaveStyle(
+                  waveColor: Colors.blueAccent,
+                  extendWaveform: true,
+                  showMiddleLine: false,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -329,21 +328,49 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
           ],
         ),
       ),
-      body: GridView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: _getCrossAxisCount(_remoteUids.length),
-        ),
-        itemCount: _remoteUids.length + 1,
-        itemBuilder: (context, index) {if (index == 0) {
-            return AspectRatio(
-              aspectRatio: 9 / 16,
-              child: _renderLocalPreview(),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          int totalUsers = _remoteUids.length + 1;
+
+          if (totalUsers == 2) {
+            return Column(
+              children: [
+                Expanded(
+                  child: _renderLocalPreview(),
+                ),
+                Expanded(
+                  child: _renderVideo(_remoteUids[0]),
+                ),
+              ],
             );
           } else {
-            return AspectRatio(
-              aspectRatio: 16 / 9,
-              child: _renderVideo(_remoteUids[index - 1]),
+            int crossAxisCount;
+
+            if (totalUsers <= 4) {
+              crossAxisCount = 2;
+            } else {
+              crossAxisCount = 3;
+            }
+
+            double aspectRatio = (constraints.maxWidth / crossAxisCount) /
+                (constraints.maxHeight / (totalUsers / crossAxisCount));
+
+            return GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                childAspectRatio: aspectRatio,
+              ),
+              itemCount: totalUsers,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return _renderLocalPreview();
+                } else {
+                  return _renderVideo(_remoteUids[index - 1]);
+                }
+              },
             );
           }
         },
@@ -411,17 +438,5 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
         ),
       ),
     );
-  }
-
-  int _getCrossAxisCount(int numberOfParticipants) {
-    if (numberOfParticipants == 1) {
-      return 1; // 1 peserta
-    } else if (numberOfParticipants == 2) {
-      return 1; // 2 peserta, tampilkan 1 di atas 1
-    } else if (numberOfParticipants == 3) {
-      return 2; // 3 peserta, 2 di atas, 1 di bawah
-    } else {
-      return 2; // Lebih dari 3 peserta, 2 per baris
-    }
   }
 }

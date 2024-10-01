@@ -62,7 +62,8 @@ import 'firebase_options.dart';
 
 Future<void> setupFirebase() async {
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
   } catch (e) {
     print(e);
     // Handle initialization error here
@@ -85,3 +86,21 @@ String genereteChatID({required String uid1, required String uid2}) {
   String chatID = uids.join();
   return chatID;
 }
+
+String appIdGroupVideo = 'de71d649f3e24489b4b66acd07983a96';
+String tokenGroupVideo =
+    '007eJxTYNDb/GiZO1v7qn+7OucVtHjNvXH3dc4Wmc95unsfaS1uY3FUYEhJNTdMMTOxTDNONTIxsbBMMkkyM0tMTjEwt7QwTrQ0+7/kd1pDICODquB6VkYGCATx2RhKi1OLPFMYGAA2jCIz';
+
+String appIdGroupAudio = '3cdecaec34ea49c38355b28f5d803ac0';
+String tokenGroupAudio =
+    '007eJxTYLjKNElMRf+jEN/F1BNS38+6mm6bUrA2+VrelvzGN5qiS2UVGIyTU1KTE1OTjU1SE00sk40tjE1Nk4ws0kxTLAyME5MNJJf9TmsIZGSYJVTCyMgAgSA+G0NpcWqRZwoDAwBj6x+9';
+
+String appIdAudio = 'fecb15824e0c4e888662459c3b74c273';
+String tokenAudio =
+    '007eJxTYHh98K+V/wfNN7sn1b44tOrh7uCLTuLhTCkKe5d3KGXuXf9OgSEtNTnJ0NTCyCTVINkk1cLCwszMyMTUMtk4ydwk2cjcWGHJ77SGQEaGlzY1TIwMEAjiszGUFqcWeaYwMAAAdWcirg==';
+
+String appIdVideo = 'be76645285084ce7a1d7d4cd2bd94dd0';
+String tokenVideo =
+    '007eJxTYLj2rfV94ryD5ge2VousfRYfcnDhmxZzrrX8FzXKb2aVG/QpMCSlmpuZmZgaWZgaWJgkp5onGqaYp5gkpxglpViapKQYVC/+ndYQyMjgcF+GmZEBAkF8NobS4tQizxQGBgBAIiJG';
+
+String channel = "userId";

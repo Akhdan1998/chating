@@ -1,16 +1,24 @@
 import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../models/group.dart';
+import '../models/user_profile.dart';
+import '../utils.dart';
 import 'audioCall.dart';
 
 class GroupVideoCallScreen extends StatefulWidget {
   late final Group grup;
+  final List<UserProfile> users;
 
-  GroupVideoCallScreen({required this.grup});
+  GroupVideoCallScreen({
+    required this.grup,
+    required this.users,
+  });
 
   @override
   _GroupVideoCallScreenState createState() => _GroupVideoCallScreenState();
@@ -25,6 +33,7 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
   Timer? _timer;
   int _duration = 0;
   bool _secondUserJoined = false;
+  RecorderController _recorderController = RecorderController();
 
   @override
   void initState() {
@@ -34,7 +43,7 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
   }
 
   void _startTimer() {
-    if (_secondUserJoined) return;
+    if (_secondUserJoined || _timer != null) return;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _duration++;
@@ -46,7 +55,7 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
     await _requestPermissions();
 
     _engine = await createAgoraRtcEngine();
-    await _engine.initialize(RtcEngineContext(appId: appId));
+    await _engine.initialize(RtcEngineContext(appId: appIdGroupVideo));
 
     _engine.registerEventHandler(
       RtcEngineEventHandler(
@@ -58,9 +67,10 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           setState(() {
             _remoteUids.add(remoteUid);
-            if (_remoteUids.length == 1) {
+            if (_remoteUids.length == 1 && !_secondUserJoined) {
               _secondUserJoined = true;
-              _startTimer();
+              _duration = 0; // Reset duration to 0
+              _startTimer(); // Start the timer
             }
           });
         },
@@ -68,6 +78,11 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
             UserOfflineReasonType reason) {
           setState(() {
             _remoteUids.remove(remoteUid);
+            if (_remoteUids.isEmpty) {
+              _endCall();
+            } else if (_remoteUids.length == 1) {
+              _timer?.cancel();
+            }
           });
         },
       ),
@@ -77,7 +92,7 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
     await _engine.startPreview();
 
     await _engine.joinChannel(
-      token: token,
+      token: tokenGroupVideo,
       channelId: channel,
       uid: 0,
       options: ChannelMediaOptions(
@@ -109,12 +124,61 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
     Navigator.pop(context);
   }
 
+  Widget _buildVideoGrid(double maxWidth, double maxHeight) {
+    int totalUsers = _remoteUids.length + 1;
+
+    if (totalUsers == 2) {
+      return Column(
+        children: [
+          Expanded(
+            child: _renderLocalPreview(),
+          ),
+          Expanded(
+            child: _renderVideo(_remoteUids[0]),
+          ),
+        ],
+      );
+    } else {
+      int crossAxisCount = 1;
+      if (totalUsers > 2 && totalUsers <= 4) {
+        crossAxisCount = 2;
+      } else if (totalUsers > 4) {
+        crossAxisCount = 3;
+      }
+
+      double aspectRatio = maxWidth / maxHeight;
+
+      return GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          childAspectRatio: aspectRatio * (crossAxisCount / totalUsers),
+        ),
+        itemCount: totalUsers,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return _renderLocalPreview();
+          } else {
+            return _renderVideo(_remoteUids[index - 1]);
+          }
+        },
+      );
+    }
+  }
+
   Widget _renderVideo(int uid) {
-    return AgoraVideoView(
-      controller: VideoViewController.remote(
-        rtcEngine: _engine,
-        canvas: VideoCanvas(uid: uid),
-        connection: RtcConnection(channelId: channel),
+    return Container(
+      color: Colors.transparent,
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: AgoraVideoView(
+          controller: VideoViewController.remote(
+            rtcEngine: _engine,
+            canvas: VideoCanvas(uid: uid),
+            connection: RtcConnection(channelId: channel),
+          ),
+        ),
       ),
     );
   }
@@ -122,23 +186,19 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
   Widget _renderLocalPreview() {
     if (_localUserJoined) {
       return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: AgoraVideoView(
-          controller: VideoViewController(
-            rtcEngine: _engine,
-            canvas: VideoCanvas(uid: 0),
+        color: Colors.transparent,
+        child: AspectRatio(
+          aspectRatio: 1.0,
+          child: AgoraVideoView(
+            controller: VideoViewController(
+              rtcEngine: _engine,
+              canvas: VideoCanvas(uid: 0),
+            ),
           ),
         ),
       );
     } else {
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Center(
-          child: Icon(Icons.videocam_off),
-        ),
-      );
+      return SizedBox.shrink();
     }
   }
 
@@ -161,25 +221,13 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blueGrey,
       body: Stack(
         children: [
-          GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: _getCrossAxisCount(_remoteUids.length),
-            ),
-            itemCount: _remoteUids.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: _renderLocalPreview(),
-                );
-              } else {
-                return AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: _renderVideo(_remoteUids[index - 1]),
-                );
-              }
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return _buildVideoGrid(
+                  constraints.maxWidth, constraints.maxHeight);
             },
           ),
           Positioned(
@@ -286,7 +334,9 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
                       ),
                     ),
                     Text(
-                      _formatDuration(_duration),
+                      _secondUserJoined
+                          ? _formatDuration(_duration)
+                          : 'Ringing...',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
@@ -330,16 +380,5 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
         ],
       ),
     );
-  }
-  int _getCrossAxisCount(int numberOfParticipants) {
-    if (numberOfParticipants == 1) {
-      return 1; // 1 peserta
-    } else if (numberOfParticipants == 2) {
-      return 1; // 2 peserta, tampilkan 1 di atas 1
-    } else if (numberOfParticipants == 3) {
-      return 2; // 3 peserta, 2 di atas, 1 di bawah
-    } else {
-      return 2; // Lebih dari 3 peserta, 2 per baris
-    }
   }
 }
