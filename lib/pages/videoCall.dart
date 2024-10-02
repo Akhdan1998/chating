@@ -313,7 +313,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.blueGrey,
       body: Stack(
         children: [
           Center(child: _remoteVideo()),
@@ -440,14 +440,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      widget.userProfile.phoneNumber!,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

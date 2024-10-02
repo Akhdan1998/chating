@@ -89,18 +89,18 @@ String genereteChatID({required String uid1, required String uid2}) {
 
 String appIdGroupVideo = 'de71d649f3e24489b4b66acd07983a96';
 String tokenGroupVideo =
-    '007eJxTYNDb/GiZO1v7qn+7OucVtHjNvXH3dc4Wmc95unsfaS1uY3FUYEhJNTdMMTOxTDNONTIxsbBMMkkyM0tMTjEwt7QwTrQ0+7/kd1pDICODquB6VkYGCATx2RhKi1OLPFMYGAA2jCIz';
+    '007eJxTYHhUoa9gFnn+jHWt3/SpkeVZTXfMp/y/nvF9/7P1lpbngu8oMKSkmhummJlYphmnGpmYWFgmmSSZmSUmpxiYW1oYJ1qa6f/6k9YQyMjgN1OHhZEBAkF8NobS4tQizxQGBgAU2yIF';
 
 String appIdGroupAudio = '3cdecaec34ea49c38355b28f5d803ac0';
 String tokenGroupAudio =
-    '007eJxTYLjKNElMRf+jEN/F1BNS38+6mm6bUrA2+VrelvzGN5qiS2UVGIyTU1KTE1OTjU1SE00sk40tjE1Nk4ws0kxTLAyME5MNJJf9TmsIZGSYJVTCyMgAgSA+G0NpcWqRZwoDAwBj6x+9';
+    '007eJxTYJh0dvKsExoNEqd3sHpbnH73sSea823rtac/3gf966m5UtOjwGCcnJKanJiabGySmmhimWxsYWxqmmRkkWaaYmFgnJhsMO/nn7SGQEaGgJeZDIxQCOKzMZQWpxZ5pjAwAADkdyVB';
 
 String appIdAudio = 'fecb15824e0c4e888662459c3b74c273';
 String tokenAudio =
-    '007eJxTYHh98K+V/wfNN7sn1b44tOrh7uCLTuLhTCkKe5d3KGXuXf9OgSEtNTnJ0NTCyCTVINkk1cLCwszMyMTUMtk4ydwk2cjcWGHJ77SGQEaGlzY1TIwMEAjiszGUFqcWeaYwMAAAdWcirg==';
+    '007eJxTYKhMvbhNu3rRbOsk4ZPNlTum7G5QSg9X8v6vr+Ttcv36r0IFhrTU5CRDUwsjk1SDZJNUCwsLMzMjE1PLZOMkc5NkI3Pjaz//pDUEMjJwqi5hYWSAQBCfjaG0OLXIM4WBAQCTrSBa';
 
 String appIdVideo = 'be76645285084ce7a1d7d4cd2bd94dd0';
 String tokenVideo =
-    '007eJxTYLj2rfV94ryD5ge2VousfRYfcnDhmxZzrrX8FzXKb2aVG/QpMCSlmpuZmZgaWZgaWJgkp5onGqaYp5gkpxglpViapKQYVC/+ndYQyMjgcF+GmZEBAkF8NobS4tQizxQGBgBAIiJG';
+    '007eJxTYJi722fKo5Tbp/pao4LmeRcIe0/NrFRL/hnB13VKUtZ2A6cCQ1KquZmZiamRhamBhUlyqnmiYYp5iklyilFSiqVJSooB/68/aQ2BjAyeexewMDJAIIjPxlBanFrkmcLAAABhdB/e';
 
 String channel = "userId";

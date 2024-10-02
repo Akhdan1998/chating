@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
@@ -24,7 +25,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   bool _localUserJoined = false;
   bool _isMuted = false;
   bool _isSpeakerOn = false;
-
+  late RecorderController recorderController;
   int? _remoteUid;
   Timer? _callTimer;
   int _secondsElapsed = 0;
@@ -33,6 +34,11 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   void initState() {
     super.initState();
     _initAgora();
+    recorderController = RecorderController()
+      ..androidEncoder = AndroidEncoder.aac
+      ..androidOutputFormat = AndroidOutputFormat.mpeg4
+      ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
+      ..sampleRate = 16000;
   }
 
   Future<void> _toggleSpeaker() async {
@@ -79,6 +85,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
           setState(() {
             _remoteUid = remoteUid;
             _startCallTimer();
+            recorderController.record();
           });
         },
         onUserOffline: (RtcConnection connection, int remoteUid,
@@ -88,6 +95,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             _stopCallTimer();
           });
           _leaveChannel();
+          recorderController.stop();
         },
         onError: (ErrorCodeType err, String msg) {
           _alertService.showToast(
@@ -143,7 +151,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Colors.blueGrey,
       body: Container(
         padding: EdgeInsets.all(20.0),
         child: Column(
@@ -153,6 +161,18 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             CircleAvatar(
               backgroundImage: NetworkImage(widget.userProfile.pfpURL!),
               radius: 100,
+            ),
+            AudioWaveforms(
+              padding: EdgeInsets.only(left: 100, right: 100),
+              recorderController: recorderController,
+              enableGesture: false,
+              size: Size(double.infinity, 60),
+              waveStyle: WaveStyle(
+                waveCap: StrokeCap.square,
+                waveColor: Colors.blueGrey,
+                showMiddleLine: false,
+                extendWaveform: true,
+              ),
             ),
             _buildControlPanel(),
           ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -33,16 +34,15 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
   bool _isSpeakerOn = false;
   bool _isJoined = false;
   List<int> _remoteUids = [];
-  RecorderController _recorderController = RecorderController();
-  int? _remoteUid;
   Timer? _callTimer;
   int _secondsElapsed = 0;
+  late RecorderController recorderController;
 
   @override
   void initState() {
     super.initState();
     _initAgora();
-    _recorderController = RecorderController()
+    recorderController = RecorderController()
       ..androidEncoder = AndroidEncoder.aac
       ..androidOutputFormat = AndroidOutputFormat.mpeg4
       ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
@@ -81,37 +81,46 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
       _engine = await createAgoraRtcEngine();
       await _engine.enableAudio();
 
+      await _engine.enableAudioVolumeIndication(
+          interval: 200, smooth: 3, reportVad: true);
+
       await _engine.initialize(RtcEngineContext(
         appId: appIdGroupAudio,
         channelProfile: ChannelProfileType.channelProfileCommunication,
       ));
 
-      _engine.registerEventHandler(RtcEngineEventHandler(
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          setState(() => _localUserJoined = true);
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          setState(() {
-            _remoteUids.add(remoteUid);
-            _startCallTimer();
-            onUserJoined();
-          });
-        },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          setState(() {
-            _remoteUids.remove(remoteUid);
-            if (_remoteUids.isEmpty) {
-              _stopCallTimer();
-              _leaveChannel();
-            }
-          });
-        },
-        onError: (ErrorCodeType err, String msg) {
-          _alertService.showToast(
-              text: 'Error: $err - $msg', icon: Icons.error, color: Colors.red);
-        },
-      ));
+      _engine.registerEventHandler(
+        RtcEngineEventHandler(
+          onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+            setState(() => _localUserJoined = true);
+          },
+          onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+            setState(() {
+              _remoteUids.add(remoteUid);
+              _startCallTimer();
+              onUserJoined();
+              recorderController.record();
+            });
+          },
+          onUserOffline: (RtcConnection connection, int remoteUid,
+              UserOfflineReasonType reason) {
+            setState(() {
+              _remoteUids.remove(remoteUid);
+              if (_remoteUids.isEmpty) {
+                _stopCallTimer();
+                _leaveChannel();
+                recorderController.stop();
+              }
+            });
+          },
+          onError: (ErrorCodeType err, String msg) {
+            _alertService.showToast(
+                text: 'Error: $err - $msg',
+                icon: Icons.error,
+                color: Colors.red);
+          },
+        ),
+      );
 
       await _engine.joinChannel(
         token: tokenGroupAudio,
@@ -174,10 +183,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
               borderRadius: BorderRadius.circular(15),
               color: Colors.white.withOpacity(0.2),
             ),
-            alignment: Alignment.center,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   'You',
@@ -192,15 +198,17 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
                   backgroundImage: NetworkImage(widget.users.first.pfpURL!),
                   radius: 35,
                 ),
-                // SizedBox(height: 20),
+                SizedBox(height: 10),
                 AudioWaveforms(
-                  enableGesture: true,
-                  size: Size(200, 50),
-                  recorderController: _recorderController,
+                  padding: EdgeInsets.only(left: 100, right: 100),
+                  recorderController: recorderController,
+                  enableGesture: false,
+                  size: Size(double.infinity, 60),
                   waveStyle: WaveStyle(
-                    waveColor: Colors.black,
-                    extendWaveform: true,
+                    waveCap: StrokeCap.square,
+                    waveColor: Colors.blueGrey,
                     showMiddleLine: false,
+                    extendWaveform: true,
                   ),
                 ),
               ],
@@ -248,15 +256,17 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
                 backgroundImage: NetworkImage(widget.users.first.pfpURL!),
                 radius: 35,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               AudioWaveforms(
-                enableGesture: true,
-                size: Size(200, 50),
-                recorderController: _recorderController,
+                padding: EdgeInsets.only(left: 100, right: 100),
+                recorderController: recorderController,
+                enableGesture: false,
+                size: Size(double.infinity, 60),
                 waveStyle: WaveStyle(
-                  waveColor: Colors.blueAccent,
-                  extendWaveform: true,
+                  waveCap: StrokeCap.square,
+                  waveColor: Colors.blueGrey,
                   showMiddleLine: false,
+                  extendWaveform: true,
                 ),
               ),
             ],
@@ -270,6 +280,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
   void dispose() {
     _stopCallTimer();
     _engine.release();
+    recorderController.dispose();
     super.dispose();
   }
 
@@ -306,11 +317,12 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
                   ),
                 ),
                 Text(
-                  _isJoined ? _formatDuration(_secondsElapsed) : 'Ringing...',
+                  _isJoined
+                      ? _formatDuration(_secondsElapsed)
+                      : 'Waiting for other participants...',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
                 ),
               ],

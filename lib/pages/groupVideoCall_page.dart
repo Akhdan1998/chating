@@ -336,11 +336,10 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
                     Text(
                       _secondUserJoined
                           ? _formatDuration(_duration)
-                          : 'Ringing...',
+                          : 'Waiting for other participants...',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
                     ),
                   ],
