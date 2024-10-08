@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -143,10 +144,23 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
     }
   }
 
+  Future<void> _saveCallHistory() async {
+    final callData = {
+      'callerName': widget.grup.name,
+      'callerImage': widget.grup.imageUrl,
+      'callDate': Timestamp.now(),
+      'callDuration': _formatDuration(_secondsElapsed),
+      'type': 'voice',
+    };
+
+    await FirebaseFirestore.instance.collection('call_history').add(callData);
+  }
+
   Future<void> _leaveChannel() async {
     await _engine.leaveChannel();
     _stopCallTimer();
     Navigator.of(context).pop();
+    await _saveCallHistory();
     setState(() => _localUserJoined = false);
   }
 

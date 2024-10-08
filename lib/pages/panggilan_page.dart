@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 import '../consts.dart';
 
 class PanggilanPage extends StatefulWidget {
-  const PanggilanPage({super.key});
 
   @override
   State<PanggilanPage> createState() => _PanggilanPageState();
@@ -169,21 +168,48 @@ class AllCallsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(15),
+      padding: EdgeInsets.all(15),
       child: Column(
         children: [
-          CallItem(
-            name: 'Sadelih',
-            date: 'Friday',
-            callType: 'Outgoing',
-            avatarUrl: 'PLACEHOLDER_PFP',
-          ),
-          SizedBox(height: 10),
-          CallItem(
-            name: 'Dadan',
-            date: 'Wednesday',
-            callType: 'Outgoing',
-            avatarUrl: 'PLACEHOLDER_PFP',
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('call_history')
+                  .orderBy('callDate', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('No call history found.'));
+                }
+
+                final callHistory = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: callHistory.length,
+                  itemBuilder: (context, index) {
+                    final call = callHistory[index].data() as Map<String, dynamic>;
+                    final DateTime callDate = (call['callDate'] as Timestamp?)?.toDate() ?? DateTime.now();
+                    final String dayOfWeek = DateFormat.EEEE().format(callDate);
+
+                    return Column(
+                      children: [
+                        CallItem(
+                          name: call['callerName'] ?? '',
+                          date: dayOfWeek,
+                          callType: call['type'] ?? '',
+                          avatarUrl: call['callerImage'] ?? '',
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    );
+                  },
+                );
+
+              },
+            ),
           ),
         ],
       ),
@@ -216,7 +242,8 @@ class CallItem extends StatelessWidget {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundImage: NetworkImage(avatarUrl),
+      child: avatarUrl.isEmpty ? Icon(Icons.person, color: Colors.white,) : null,
+            backgroundImage: NetworkImage(avatarUrl.isNotEmpty ? avatarUrl : 'PLACEHOLDER_PFP'),
           ),
           SizedBox(width: 10),
           Expanded(
@@ -226,13 +253,13 @@ class CallItem extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(name),
+                    Text(name.isNotEmpty ? name : '', style: TextStyle(fontSize: 16)),
                     SizedBox(height: 5),
                     Row(
                       children: [
-                        Icon(Icons.missed_video_call_outlined, size: 20),
+                        Icon(callType == 'voice' ? Icons.call : Icons.videocam, size: 15),
                         SizedBox(width: 5),
-                        Text(callType, style: TextStyle(fontSize: 11)),
+                        Text(callType.isNotEmpty ? callType : '', style: TextStyle(fontSize: 13)),
                       ],
                     ),
                   ],
@@ -240,7 +267,7 @@ class CallItem extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      date,
+                      date.isNotEmpty ? date : '',
                       style: TextStyle(fontSize: 10),
                     ),
                     IconButton(

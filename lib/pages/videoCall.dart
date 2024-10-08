@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:chating/models/user_profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -34,6 +35,18 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   Offset _localVideoPosition = Offset(20, 150);
   final double videoWidth = 130;
   final double videoHeight = 180;
+
+  Future<void> _saveCallHistory() async {
+    final callData = {
+      'callerName': widget.userProfile.name,
+      'callerImage': widget.userProfile.pfpURL,
+      'callDate': Timestamp.now(),
+      'callDuration': _formatDuration(_secondsElapsed),
+      'type': 'video',
+    };
+
+    await FirebaseFirestore.instance.collection('call_history').add(callData);
+  }
 
   @override
   void initState() {
@@ -205,7 +218,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   Future<void> _endCall() async {
     await _engine.leaveChannel();
     await _engine.release();
-    // await _controller.dispose();
+    await _saveCallHistory();
     Navigator.pop(context);
   }
 

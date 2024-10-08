@@ -32,12 +32,12 @@ class _LoginPageState extends State<LoginPage> {
   String phoneNumber = '';
   bool isButtonEnabled = false;
 
-  void _checkFields() {
-    setState(() {
-      isButtonEnabled =
-          phoneNumber.isNotEmpty && nameController.text.isNotEmpty;
-    });
-  }
+  // void _checkFields() {
+  //   setState(() {
+  //     isButtonEnabled =
+  //         phoneNumber.isNotEmpty && nameController.text.isNotEmpty;
+  //   });
+  // }
 
   void initState() {
     super.initState();
@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Sign in with phone number',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white, fontSize: 12),
                           ),
                         ),
                       )
@@ -249,7 +249,7 @@ class _LoginPageState extends State<LoginPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Sign in with email',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
               )
@@ -388,24 +388,26 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _createAnAccountLink() {
-    return GestureDetector(
-      onTap: () {
-        _navigationService.pushNamed("/register");
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('Not a member?', style: TextStyle(color: Colors.white70)),
-          SizedBox(width: 5),
-          Text(
-            'Register now',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+    return (cardEmail == false)
+        ? Container()
+        : GestureDetector(
+            onTap: () {
+              _navigationService.pushNamed("/register");
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Not a member?', style: TextStyle(color: Colors.white70)),
+                SizedBox(width: 5),
+                Text(
+                  'Register now',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
 }

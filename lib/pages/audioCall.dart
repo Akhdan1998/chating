@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
@@ -39,6 +40,18 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       ..androidOutputFormat = AndroidOutputFormat.mpeg4
       ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
       ..sampleRate = 16000;
+  }
+
+  Future<void> _saveCallHistory() async {
+    final callData = {
+      'callerName': widget.userProfile.name,
+      'callerImage': widget.userProfile.pfpURL,
+      'callDate': Timestamp.now(),
+      'callDuration': _formatDuration(_secondsElapsed),
+      'type': 'voice',
+    };
+
+    await FirebaseFirestore.instance.collection('call_history').add(callData);
   }
 
   Future<void> _toggleSpeaker() async {
@@ -131,6 +144,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   Future<void> _leaveChannel() async {
     await _engine.leaveChannel();
     _stopCallTimer();
+    await _saveCallHistory();
     Navigator.of(context).pop();
     setState(() => _localUserJoined = false);
   }

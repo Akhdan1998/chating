@@ -1,38 +1,3 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-//
-// enum MessageType { Text, Image }
-//
-// class Message {
-//   String? senderID;
-//   String? content;
-//   MessageType? messageType;
-//   Timestamp? sentAt;
-//
-//   Message({
-//     required this.senderID,
-//     required this.content,
-//     required this.messageType,
-//     required this.sentAt,
-//   });
-//
-//   Message.fromJson(Map<String, dynamic> json) {
-//     senderID = json['senderID'];
-//     content = json['content'];
-//     messageType = MessageType.values.byName(json['message']);
-//     sentAt = json['sentAt'];
-//   }
-//
-//   Map<String, dynamic> toJson() {
-//     final Map<String, dynamic> data = <String, dynamic>{};
-//     data['senderID'] = senderID;
-//     data['content'] = content;
-//     data['messageType'] = messageType!.name;
-//     data['sentAt'] = sentAt;
-//     return data;
-//   }
-// }
-
-// import 'package:chating/models/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum MessageType { Text, Image, Document, Audio, Video }
@@ -51,18 +16,6 @@ class Message {
     required this.sentAt,
     required this.isRead,
   });
-
-  // factory Message.fromFirestore(DocumentSnapshot doc) {
-  //   Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-  //   return Message(
-  //     senderID: data['senderID'] as String?,
-  //     content: data['content'] as String?,
-  //     messageType: data['messageType'] != null
-  //         ? MessageType.values.byName(data['messageType'])
-  //         : null,
-  //     sentAt: data['sentAt'] as Timestamp?,
-  //   );
-  // }
 
   factory Message.fromMap(Map<String, dynamic> map) {
     return Message(

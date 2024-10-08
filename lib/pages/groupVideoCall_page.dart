@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -40,6 +41,18 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
     super.initState();
     _initAgora();
     _startTimer();
+  }
+
+  Future<void> _saveCallHistory() async {
+    final callData = {
+      'callerName': widget.grup.name,
+      'callerImage': widget.grup.imageUrl,
+      'callDate': Timestamp.now(),
+      'callDuration': _formatDuration(_duration),
+      'type': 'video',
+    };
+
+    await FirebaseFirestore.instance.collection('call_history').add(callData);
   }
 
   void _startTimer() {
@@ -119,8 +132,9 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
     _engine.muteLocalVideoStream(!_isVideoEnabled);
   }
 
-  void _endCall() {
+  void _endCall() async {
     _engine.leaveChannel();
+    await _saveCallHistory();
     Navigator.pop(context);
   }
 
@@ -203,7 +217,6 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
   }
 
   String _formatDuration(int seconds) {
-    final int hours = seconds ~/ 3600;
     final int minutes = (seconds % 3600) ~/ 60;
     final int secs = seconds % 60;
 
