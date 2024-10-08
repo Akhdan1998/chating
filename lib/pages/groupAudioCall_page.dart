@@ -1,17 +1,13 @@
 import 'dart:async';
-
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../models/group.dart';
 import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 import '../utils.dart';
-import 'audioCall.dart';
 
 class GroupAudioCallScreen extends StatefulWidget {
   late final Group grup;
@@ -177,13 +173,17 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(10),
+            height: _isJoined
+                ? MediaQuery.of(context).size.height : 209,
             margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: Colors.white.withOpacity(0.2),
             ),
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(10),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'You',
@@ -193,12 +193,10 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 10),
                 CircleAvatar(
                   backgroundImage: NetworkImage(widget.users.first.pfpURL!),
                   radius: 35,
                 ),
-                SizedBox(height: 10),
                 AudioWaveforms(
                   padding: EdgeInsets.only(left: 100, right: 100),
                   recorderController: recorderController,
@@ -232,7 +230,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
           ),
         ),
         Container(
-          margin: EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
+          margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             color: Colors.white.withOpacity(0.2),
@@ -241,7 +239,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
           padding: EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 widget.users.first.name!,
@@ -251,12 +249,10 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 20),
               CircleAvatar(
                 backgroundImage: NetworkImage(widget.users.first.pfpURL!),
                 radius: 35,
               ),
-              SizedBox(height: 10),
               AudioWaveforms(
                 padding: EdgeInsets.only(left: 100, right: 100),
                 recorderController: recorderController,
