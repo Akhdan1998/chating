@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
 
     <application
-        android:label="chating"
+        android:label="Appskabs"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         tools:replace="android:icon, android:label">
