@@ -23,48 +23,6 @@ class DatabaseService {
     _setupCollectionReferences();
   }
 
-  Future<void> deleteUserMessages(String userUid) async {
-    try {
-      QuerySnapshot chatSnapshots = await _firebaseFirestore
-          .collection('chats')
-          .where('participants', arrayContains: userUid)
-          .get();
-
-      for (QueryDocumentSnapshot chatDoc in chatSnapshots.docs) {
-        QuerySnapshot messageSnapshots = await chatDoc.reference.collection('messages').get();
-        for (QueryDocumentSnapshot messageDoc in messageSnapshots.docs) {
-          await messageDoc.reference.delete();
-        }
-
-        await chatDoc.reference.delete();
-      }
-
-      print("Semua pesan pengguna dengan UID $userUid telah dihapus.");
-    } catch (e) {
-      print("Terjadi kesalahan saat menghapus pesan: $e");
-    }
-  }
-
-  Future<void> deleteAllMessages(String chatId) async {
-    try {
-      WriteBatch batch = _firebaseFirestore.batch();
-
-      QuerySnapshot messagesSnapshot = await _firebaseFirestore
-          .collection('chats')
-          .doc(chatId)
-          .collection('messages')
-          .get();
-
-      for (DocumentSnapshot doc in messagesSnapshot.docs) {
-        batch.delete(doc.reference);
-      }
-
-      await batch.commit();
-    } catch (e) {
-      print("Error deleting all messages: $e");
-    }
-  }
-
   User? getCurrentUser() {
     return _authService.getCurrentUser();
   }

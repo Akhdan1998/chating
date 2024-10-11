@@ -482,7 +482,6 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   Future<void> soundStop() async {
-    print('STOP RECORDDDDDDDDDD');
     final isPath = await recorder.stopRecorder();
     audioFile = File(isPath!);
     print('Recorded audio Flutter Sound: $isPath');
@@ -491,32 +490,76 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+  // Future<void> uploadAudioToFirebase(File file) async {
+  //   try {
+  //     FirebaseStorage storage = FirebaseStorage.instance;
+  //     String fileName =
+  //         'audioGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}.aac';
+  //     Reference ref = storage.ref().child(fileName);
+  //     UploadTask uploadTask = ref.putFile(file);
+  //     uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+  //       print(
+  //           'Upload progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
+  //     });
+  //
+  //     TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+  //     String downloadURL = await taskSnapshot.ref.getDownloadURL();
+  //     print('Audio file uploaded successfully. Download URL: $downloadURL');
+  //
+  //     ChatMessage message = ChatMessage(
+  //       user: _chatUser,
+  //       createdAt: DateTime.now(),
+  //       text: '',
+  //       customProperties: {'audioUrl': downloadURL}, // Set audioUrl di sini
+  //     );
+  //     _sendMessage(message);
+  //   } catch (e) {
+  //     print('Error uploading audio file: $e');
+  //   }
+  // }
+  //
+  // void playAudio(String url) {
+  //   final player = AudioPlayer();
+  //   player.play(UrlSource(url));
+  // }
+
+  // Future<void> startRecording() async {
+  //   print('START RECORDING');
+  //   await recorder.startRecorder(toFile: 'audio.aac'); // Specify file extension
+  // }
+  //
+  // Future<void> stopRecording() async {
+  //   final recordedFilePath = await recorder.stopRecorder();
+  //   audioFile = File(recordedFilePath!);
+  //   print('Recorded audio: $recordedFilePath');
+  //
+  //   if (audioFile != null) {
+  //     await uploadAudioToFirebase(audioFile!);
+  //   }
+  // }
+
   Future<void> uploadAudioToFirebase(File file) async {
     try {
-      FirebaseStorage storage = FirebaseStorage.instance;
-      String fileName =
-          'audioGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}.aac';
-      Reference ref = storage.ref().child(fileName);
-      UploadTask uploadTask = ref.putFile(file);
+      final storage = FirebaseStorage.instance;
+      final fileName = 'audioGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}';
+      final ref = storage.ref().child(fileName);
+      final uploadTask = ref.putFile(file);
+
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        print(
-            'Upload progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
+        final progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        print('Upload progress: $progress%');
       });
 
-      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-      String downloadURL = await taskSnapshot.ref.getDownloadURL();
+      final taskSnapshot = await uploadTask;
+      final downloadURL = await taskSnapshot.ref.getDownloadURL();
       print('Audio file uploaded successfully. Download URL: $downloadURL');
 
-      ChatMessage message = ChatMessage(
+      // Create and send the message with the audio URL
+      final message = ChatMessage(
         user: _chatUser,
         createdAt: DateTime.now(),
-        medias: [
-          ChatMedia(
-            url: downloadURL,
-            fileName: 'Audio',
-            type: MediaType.video,
-          ),
-        ],
+        text: '',
+        customProperties: {'audioUrl': downloadURL},
       );
       _sendMessage(message);
     } catch (e) {
@@ -524,15 +567,10 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
-  // void _sendMessageWithAudio(String audioUrl) {
-  //   ChatMessage message = ChatMessage(
-  //     text: 'Voice message',
-  //     user: _chatUser,
-  //     customProperties: {'audioUrl': audioUrl},
-  //     createdAt: DateTime.now(),
-  //   );
-  //   _firestore.collection('messagesGroup').add(message.toJson());
-  // }
+  void playAudio(String url) {
+    final player = AudioPlayer();
+    player.play(UrlSource(url));
+  }
 
   Future initRecorder() async {
     final status = await Permission.microphone.request();
@@ -542,15 +580,6 @@ class _GroupPageState extends State<GroupPage> {
     await recorder.openRecorder();
     recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
   }
-
-  // void _playAudio(String url) async {
-  //   final AudioPlayer audioPlayer = AudioPlayer();
-  //   await audioPlayer.play(UrlSource(url)).then((_) {
-  //     print('Audio started playing');
-  //   }).catchError((error) {
-  //     print('Error playing audio: $error');
-  //   });
-  // }
 
   Future<void> initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -697,27 +726,6 @@ class _GroupPageState extends State<GroupPage> {
           return Container();
         }
 
-        // final newMessages = snapshot.data!.docs;
-        // if (newMessages.isNotEmpty) {
-        //   // Display notification
-        //   flutterLocalNotificationsPlugin.show(
-        //     0,
-        //     widget.group.name,
-        //     'Anda memiliki pesan baru di grup',
-        //     const NotificationDetails(
-        //       android: AndroidNotificationDetails(
-        //         'Awokawok',
-        //         'AwokAwokAwok',
-        //         importance: Importance.high,
-        //         priority: Priority.high,
-        //       ),
-        //     ),
-        //   );
-        //
-        //   // Play sound
-        //   audioPlayer.play(AssetSource('ting.mp3'));
-        // }
-
         return DashChat(
           quickReplyOptions: QuickReplyOptions(),
           messageListOptions: MessageListOptions(
@@ -743,50 +751,68 @@ class _GroupPageState extends State<GroupPage> {
             },
             messageTextBuilder: (ChatMessage message,
                 ChatMessage? previousMessage, ChatMessage? nextMessage) {
-              bool isUser = message.user.id == currentUser!.id;
-              String? userName = getUserNameById(message.user.id);
-              String? audioUrl = message.customProperties?['audioUrl'];
-              print('------- VOICE NOTE ------- $audioUrl');
+              final isUser = message.user.id == currentUser!.id;
+              final userName = getUserNameById(message.user.id);
+              final audioUrl = message.customProperties?['audioUrl'];
+
               return Column(
-                crossAxisAlignment:
-                    isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   if (!isUser)
-                    Container(
-                      width: MediaQuery.sizeOf(context).width,
-                      child: Text(
-                        userName ?? '-',
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.deepPurple.shade200,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      message.text,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      DateFormat('HH:mm').format(message.createdAt),
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ),
+                    _buildUserName(userName),
+                  if (message.text.isNotEmpty)
+                    _buildMessageText(message.text),
+                  if (audioUrl != null)
+                    _buildAudioPlayer(audioUrl),
+                  _buildMessageTime(message.createdAt),
                 ],
               );
             },
+            // messageTextBuilder: (ChatMessage message,
+            //     ChatMessage? previousMessage, ChatMessage? nextMessage) {
+            //   bool isUser = message.user.id == currentUser!.id;
+            //   String? userName = getUserNameById(message.user.id);
+            //   String? audioUrl = message.customProperties?['audioUrl'];
+            //   return Column(
+            //     crossAxisAlignment:
+            //         isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            //     children: [
+            //       if (!isUser)
+            //         Container(
+            //           width: MediaQuery.sizeOf(context).width,
+            //           child: Text(
+            //             userName ?? '-',
+            //             overflow: TextOverflow.ellipsis,
+            //             style: TextStyle(
+            //               color: Colors.deepPurple.shade200,
+            //               fontSize: 15,
+            //               fontWeight: FontWeight.bold,
+            //             ),
+            //           ),
+            //         ),
+            //       Container(
+            //         alignment: Alignment.centerLeft,
+            //         child: Text(
+            //           message.text,
+            //           style: TextStyle(
+            //             fontSize: 14,
+            //             color: Colors.black87,
+            //           ),
+            //         ),
+            //       ),
+            //       Container(
+            //         alignment: Alignment.centerRight,
+            //         child: Text(
+            //           DateFormat('HH:mm').format(message.createdAt),
+            //           style: TextStyle(
+            //             color: Colors.black87,
+            //             fontSize: 11,
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   );
+            // },
             showTime: true,
             onLongPressMessage: (ChatMessage message) {
               _showDeleteDialog(context, message);
@@ -880,6 +906,64 @@ class _GroupPageState extends State<GroupPage> {
           messages: _messages,
         );
       },
+    );
+  }
+
+  Widget _buildUserName(String? userName) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Text(
+        userName ?? '-',
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: Colors.deepPurple.shade200,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageText(String text) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAudioPlayer(String audioUrl) {
+    return Container(
+      color: Colors.red,
+      height: 20,
+      width: double.infinity,
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.play_arrow),
+            onPressed: () => playAudio(audioUrl),
+          ),
+          Text('Audio message'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageTime(DateTime createdAt) {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Text(
+        DateFormat('HH:mm').format(createdAt),
+        style: TextStyle(
+          color: Colors.black87,
+          fontSize: 11,
+        ),
+      ),
     );
   }
 
