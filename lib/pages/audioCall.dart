@@ -3,7 +3,6 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -30,6 +29,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   int? _remoteUid;
   Timer? _callTimer;
   int _secondsElapsed = 0;
+  DateTime? _callStartTime;
 
   @override
   void initState() {
@@ -52,6 +52,33 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
     };
 
     await FirebaseFirestore.instance.collection('call_history').add(callData);
+  }
+
+  Future<void> _saveCallToFirestore(String callType, String callerId, String receiverId, String channelId, int callDuration) async {
+    try {
+      await FirebaseFirestore.instance.collection('call_history').add({
+        'callType': callType,
+        'callerId': callerId,
+        'receiverId': receiverId,
+        'channelId': channelId,
+        'callStartTime': FieldValue.serverTimestamp(),
+        'callDuration': callDuration,
+      });
+    } catch (e) {
+      debugPrint('Error saving call to Firestore: $e');
+    }
+  }
+
+  int _calculateCallDuration() {
+    if (_callStartTime == null) {
+      return 0;
+    }
+
+    DateTime callEndTime = DateTime.now();
+
+    Duration duration = callEndTime.difference(_callStartTime!);
+
+    return duration.inSeconds;
   }
 
   Future<void> _toggleSpeaker() async {
@@ -100,6 +127,14 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             _startCallTimer();
             recorderController.record();
           });
+
+          _saveCallToFirestore(
+              'audio',
+              widget.userProfile.phoneNumber!,
+              remoteUid.toString(),
+              channel,
+              0,
+          );
         },
         onUserOffline: (RtcConnection connection, int remoteUid,
             UserOfflineReasonType reason) {
@@ -109,6 +144,15 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
           });
           _leaveChannel();
           recorderController.stop();
+
+          int callDuration = _calculateCallDuration();
+          _saveCallToFirestore(
+              'audio',
+              widget.userProfile.phoneNumber!,
+              remoteUid.toString(),
+              channel,
+              callDuration
+          );
         },
         onError: (ErrorCodeType err, String msg) {
           _alertService.showToast(

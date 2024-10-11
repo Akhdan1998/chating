@@ -1,5 +1,4 @@
 import 'package:chating/pages/verifikasi_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -31,13 +30,6 @@ class _LoginPageState extends State<LoginPage> {
   bool cardEmail = false;
   String phoneNumber = '';
   bool isButtonEnabled = false;
-
-  // void _checkFields() {
-  //   setState(() {
-  //     isButtonEnabled =
-  //         phoneNumber.isNotEmpty && nameController.text.isNotEmpty;
-  //   });
-  // }
 
   void initState() {
     super.initState();
