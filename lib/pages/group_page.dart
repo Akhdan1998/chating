@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,6 +25,8 @@ import 'package:video_player/video_player.dart' as vp;
 import 'package:video_player/video_player.dart';
 import '../main.dart';
 import '../models/group.dart';
+import '../models/message.dart' as chat;
+import '../models/message.dart';
 import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 import '../service/auth_service.dart';
@@ -409,7 +412,7 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
-  void _showDeleteDialog(BuildContext context, ChatMessage message) {
+  void _showDeleteDialog(BuildContext context, ChatMessage message)   {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -446,10 +449,15 @@ class _GroupPageState extends State<GroupPage> {
 
                   setState(() {
                     _messages.remove(message);
-                    messageIdMap.remove(message);
+                    // messageIdMap.remove(message);
                   });
 
-                  Navigator.pop(context);
+                  _alertService.showToast(
+                    text: 'Message deleted',
+                    icon: Icons.check,
+                    color: Colors.green,
+                  );
+
                 } catch (e) {
                   print('Error deleting message: $e');
                   _alertService.showToast(
@@ -458,6 +466,8 @@ class _GroupPageState extends State<GroupPage> {
                     color: Colors.red,
                   );
                 }
+
+                Navigator.pop(context);
               },
               child: Text(
                 'Yes',
@@ -490,44 +500,56 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
-  // Future<void> uploadAudioToFirebase(File file) async {
-  //   try {
-  //     FirebaseStorage storage = FirebaseStorage.instance;
-  //     String fileName =
-  //         'audioGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}.aac';
-  //     Reference ref = storage.ref().child(fileName);
-  //     UploadTask uploadTask = ref.putFile(file);
-  //     uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-  //       print(
-  //           'Upload progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
-  //     });
-  //
-  //     TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-  //     String downloadURL = await taskSnapshot.ref.getDownloadURL();
-  //     print('Audio file uploaded successfully. Download URL: $downloadURL');
-  //
-  //     ChatMessage message = ChatMessage(
-  //       user: _chatUser,
-  //       createdAt: DateTime.now(),
-  //       text: '',
-  //       customProperties: {'audioUrl': downloadURL}, // Set audioUrl di sini
-  //     );
-  //     _sendMessage(message);
-  //   } catch (e) {
-  //     print('Error uploading audio file: $e');
-  //   }
-  // }
-  //
-  // void playAudio(String url) {
-  //   final player = AudioPlayer();
-  //   player.play(UrlSource(url));
-  // }
+  Future<void> uploadAudioToFirebase(File file) async {
+    try {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      final fileName = 'audioGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}';
+      Reference ref = storage.ref().child(fileName);
+      UploadTask uploadTask = ref.putFile(file);
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        print(
+            'Upload progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
+      });
+
+      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+      String downloadURL = await taskSnapshot.ref.getDownloadURL();
+      print('Audio file uploaded successfully. Download URL: $downloadURL');
+
+      ChatMessage message = ChatMessage(
+        user: _chatUser,
+        createdAt: DateTime.now(),
+        medias: [
+          ChatMedia(
+            url: downloadURL,
+            fileName: 'Audio',
+            type: MediaType.video,
+          ),
+        ],
+      );
+      _sendMessage(message);
+
+      // chat.Message message = chat.Message(
+      //   senderID: currentUser!.id,
+      //   content: downloadURL,
+      //   messageType: MessageType.Audio,
+      //   sentAt: Timestamp.now(),
+      //   isRead: false,
+      // );
+      // await _databaseService.sendChatMessage(
+      //   currentUser!.id,
+      //   otherUser!.id,
+      //   message,
+      // );
+    } catch (e) {
+      print('Error uploading audio file: $e');
+    }
+  }
 
   // Future<void> startRecording() async {
   //   print('START RECORDING');
   //   await recorder.startRecorder(toFile: 'audio.aac'); // Specify file extension
   // }
-  //
+
   // Future<void> stopRecording() async {
   //   final recordedFilePath = await recorder.stopRecorder();
   //   audioFile = File(recordedFilePath!);
@@ -538,39 +560,10 @@ class _GroupPageState extends State<GroupPage> {
   //   }
   // }
 
-  Future<void> uploadAudioToFirebase(File file) async {
-    try {
-      final storage = FirebaseStorage.instance;
-      final fileName = 'audioGroup/${DateTime.now().toIso8601String()}${p.extension(file.path)}';
-      final ref = storage.ref().child(fileName);
-      final uploadTask = ref.putFile(file);
-
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        final progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        print('Upload progress: $progress%');
-      });
-
-      final taskSnapshot = await uploadTask;
-      final downloadURL = await taskSnapshot.ref.getDownloadURL();
-      print('Audio file uploaded successfully. Download URL: $downloadURL');
-
-      // Create and send the message with the audio URL
-      final message = ChatMessage(
-        user: _chatUser,
-        createdAt: DateTime.now(),
-        text: '',
-        customProperties: {'audioUrl': downloadURL},
-      );
-      _sendMessage(message);
-    } catch (e) {
-      print('Error uploading audio file: $e');
-    }
-  }
-
-  void playAudio(String url) {
-    final player = AudioPlayer();
-    player.play(UrlSource(url));
-  }
+  // void playAudio(String url) {
+  //   final player = AudioPlayer();
+  //   player.play(UrlSource(url));
+  // }
 
   Future initRecorder() async {
     final status = await Permission.microphone.request();
@@ -737,7 +730,7 @@ class _GroupPageState extends State<GroupPage> {
           ),
           messageOptions: MessageOptions(
             maxWidth: 250,
-            textBeforeMedia: false,
+            textBeforeMedia: true,
             showOtherUsersName: false,
             showCurrentUserAvatar: false,
             showOtherUsersAvatar: false,
@@ -751,23 +744,317 @@ class _GroupPageState extends State<GroupPage> {
             },
             messageTextBuilder: (ChatMessage message,
                 ChatMessage? previousMessage, ChatMessage? nextMessage) {
-              final isUser = message.user.id == currentUser!.id;
-              final userName = getUserNameById(message.user.id);
-              final audioUrl = message.customProperties?['audioUrl'];
 
-              return Column(
-                crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: [
-                  if (!isUser)
-                    _buildUserName(userName),
-                  if (message.text.isNotEmpty)
-                    _buildMessageText(message.text),
-                  if (audioUrl != null)
-                    _buildAudioPlayer(audioUrl),
-                  _buildMessageTime(message.createdAt),
-                ],
-              );
+              bool isURL(String text) {
+                final Uri? uri = Uri.tryParse(text);
+                return uri != null &&
+                    (uri.isScheme('http') || uri.isScheme('https'));
+              }
+
+              void _launchURL(String url) async {
+                final Uri uri = Uri.parse(url);
+                if (!await launchUrl(uri)) {
+                  throw Exception('Could not launch $uri');
+                }
+              }
+
+              if (message.customProperties?['audioUrl'] != null) {
+                String audioUrl = message.customProperties!['audioUrl'];
+                bool isCurrentlyPlaying = (isPlaying && currentAudioUrl == audioUrl);
+
+                return Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            setState(() {
+                              if (!isCurrentlyPlaying) {
+                                isPlaying = true;
+                                currentAudioUrl = audioUrl;
+                              } else {
+                                isPlaying = false;
+                              }
+                            });
+
+                            if (isPlaying) {
+                              await audioPlayer.play(UrlSource(audioUrl));
+                            } else {
+                              await audioPlayer.pause();
+                            }
+                          },
+                          child: Container(
+                            color: Colors.transparent,
+                            child: Icon(
+                              isCurrentlyPlaying
+                                  ? Icons.pause
+                                  : Icons.play_arrow,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 10,
+                                width: MediaQuery.of(context).size.width - 233,
+                                child: Slider(
+                                  min: 0,
+                                  max: duration.inSeconds.toDouble(),
+                                  value: isCurrentlyPlaying
+                                      ? position.inSeconds.toDouble()
+                                      : 0,
+                                  inactiveColor: Colors.grey,
+                                  onChanged: (value) async {
+                                    setState(() {
+                                      position =
+                                          Duration(seconds: value.toInt());
+                                    });
+                                    await audioPlayer.seek(position);
+                                    await audioPlayer.resume();
+                                  },
+                                ),
+                              ),
+                              Text(
+                                isCurrentlyPlaying
+                                    ? "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}"
+                                    : "0:00",
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        DateFormat('HH:mm').format(message.createdAt),
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                List<TextSpan> textSpans = [];
+                final RegExp urlPattern = RegExp(r'http[s]?://[^\s]+');
+                final matches = urlPattern.allMatches(message.text);
+
+                int lastMatchEnd = 0;
+                for (final match in matches) {
+                  if (match.start > lastMatchEnd) {
+                    textSpans.add(TextSpan(
+                      text: message.text.substring(lastMatchEnd, match.start),
+                      style: TextStyle(color: Colors.black87, fontSize: 15,),
+                    ));
+                  }
+
+                  textSpans.add(TextSpan(
+                    text: match.group(0),
+                    style: TextStyle(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => _launchURL(match.group(0)!),
+                  ),);
+
+                  lastMatchEnd = match.end;
+                }
+
+                if (lastMatchEnd < message.text.length) {
+                  textSpans.add(TextSpan(
+                    text: message.text.substring(lastMatchEnd),
+                    style: TextStyle(color: Colors.black87, fontSize: 15),
+                  ));
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(children: textSpans),
+                    ),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        DateFormat('HH:mm').format(message.createdAt),
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
             },
+
+            // messageTextBuilder: (ChatMessage message,
+            //     ChatMessage? previousMessage, ChatMessage? nextMessage) {
+            //   // final isUser = message.user.id == currentUser!.id;
+            //   // final userName = getUserNameById(message.user.id);
+            //   // final audioUrl = message.customProperties?['audioUrl'];
+            //
+            //   bool isURL(String text) {
+            //     final Uri? uri = Uri.tryParse(text);
+            //     return uri != null &&
+            //         (uri.isScheme('http') || uri.isScheme('https'));
+            //   }
+            //
+            //   void _launchURL(String url) async {
+            //     final Uri uri = Uri.parse(url);
+            //     if (!await launchUrl(uri)) {
+            //       throw Exception('Could not launch $uri');
+            //     }
+            //   }
+            //
+            //   if (message.customProperties?['audioUrl'] != null) {
+            //     String audioUrl = message.customProperties!['audioUrl'];
+            //     bool isCurrentlyPlaying = (isPlaying && currentAudioUrl == audioUrl);
+            //
+            //     return Column(
+            //       children: [
+            //         Row(
+            //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //           crossAxisAlignment: CrossAxisAlignment.center,
+            //           children: [
+            //             GestureDetector(
+            //               onTap: () async {
+            //                 setState(() {
+            //                   if (!isCurrentlyPlaying) {
+            //                     isPlaying = true;
+            //                     currentAudioUrl = audioUrl;
+            //                   } else {
+            //                     isPlaying = false;
+            //                   }
+            //                 });
+            //
+            //                 if (isPlaying) {
+            //                   await audioPlayer.play(UrlSource(audioUrl));
+            //                 } else {
+            //                   await audioPlayer.pause();
+            //                 }
+            //               },
+            //               child: Container(
+            //                 color: Colors.transparent,
+            //                 child: Icon(
+            //                   isCurrentlyPlaying
+            //                       ? Icons.pause
+            //                       : Icons.play_arrow,
+            //                 ),
+            //               ),
+            //             ),
+            //             Expanded(
+            //               child: Row(
+            //                 children: [
+            //                   Container(
+            //                     height: 10,
+            //                     width: MediaQuery.of(context).size.width - 233,
+            //                     child: Slider(
+            //                       min: 0,
+            //                       max: duration.inSeconds.toDouble(),
+            //                       value: isCurrentlyPlaying
+            //                           ? position.inSeconds.toDouble()
+            //                           : 0,
+            //                       inactiveColor: Colors.grey,
+            //                       onChanged: (value) async {
+            //                         setState(() {
+            //                           position =
+            //                               Duration(seconds: value.toInt());
+            //                         });
+            //                         await audioPlayer.seek(position);
+            //                         await audioPlayer.resume();
+            //                       },
+            //                     ),
+            //                   ),
+            //                   Text(
+            //                     isCurrentlyPlaying
+            //                         ? "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}"
+            //                         : "0:00",
+            //                     style: TextStyle(fontSize: 10),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //         Container(
+            //           alignment: Alignment.centerRight,
+            //           child: Text(
+            //             DateFormat('HH:mm').format(message.createdAt),
+            //             style: TextStyle(
+            //               color: Colors.black87,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     );
+            //   } else if (isURL(message.text)) {
+            //     return Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         GestureDetector(
+            //           onTap: () => _launchURL(message.text),
+            //           child: Text(
+            //             message.text,
+            //             style: TextStyle(
+            //               color: Colors.blue,
+            //             ),
+            //           ),
+            //         ),
+            //         Container(
+            //           alignment: Alignment.centerRight,
+            //           child: Text(
+            //             DateFormat('HH:mm').format(message.createdAt),
+            //             style: TextStyle(
+            //               color: Colors.black87,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     );
+            //   } else {
+            //     return Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         Text(
+            //           message.text,
+            //           style: TextStyle(
+            //             color: Colors.black87,
+            //           ),
+            //         ),
+            //         Container(
+            //           alignment: Alignment.centerRight,
+            //           child: Text(
+            //             DateFormat('HH:mm').format(message.createdAt),
+            //             style: TextStyle(
+            //               color: Colors.black87,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     );
+            //   }
+            //
+            //   // return Column(
+            //   //   crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            //   //   children: [
+            //   //     if (!isUser)
+            //   //       _buildUserName(userName),
+            //   //     if (message.text.isNotEmpty)
+            //   //       _buildMessageText(message.text),
+            //   //     if (audioUrl != null)
+            //   //       _buildAudioPlayer(audioUrl),
+            //   //     _buildMessageTime(message.createdAt),
+            //   //   ],
+            //   // );
+            // },
             // messageTextBuilder: (ChatMessage message,
             //     ChatMessage? previousMessage, ChatMessage? nextMessage) {
             //   bool isUser = message.user.id == currentUser!.id;
@@ -909,63 +1196,132 @@ class _GroupPageState extends State<GroupPage> {
     );
   }
 
-  Widget _buildUserName(String? userName) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: Text(
-        userName ?? '-',
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: Colors.deepPurple.shade200,
-          fontSize: 15,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
+  // Widget _buildUserName(String? userName) {
+  //   return Container(
+  //     width: MediaQuery.of(context).size.width,
+  //     child: Text(
+  //       userName ?? '-',
+  //       overflow: TextOverflow.ellipsis,
+  //       style: TextStyle(
+  //         color: Colors.deepPurple.shade200,
+  //         fontSize: 15,
+  //         fontWeight: FontWeight.bold,
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildMessageText(String text) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.black87,
-        ),
-      ),
-    );
-  }
+  // Widget _buildMessageText(String text) {
+  //   return Container(
+  //     alignment: Alignment.centerLeft,
+  //     child: Text(
+  //       text,
+  //       style: TextStyle(
+  //         fontSize: 14,
+  //         color: Colors.black87,
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildAudioPlayer(String audioUrl) {
-    return Container(
-      color: Colors.red,
-      height: 20,
-      width: double.infinity,
-      child: Row(
-        children: [
-          IconButton(
-            icon: Icon(Icons.play_arrow),
-            onPressed: () => playAudio(audioUrl),
-          ),
-          Text('Audio message'),
-        ],
-      ),
-    );
-  }
+  // Widget _buildAudioPlayer(String audioUrl) {
+  //   return Container(
+  //     color: Colors.red,
+  //     height: 20,
+  //     width: double.infinity,
+  //     child: Column(
+  //       children: [
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           crossAxisAlignment: CrossAxisAlignment.center,
+  //           children: [
+  //             GestureDetector(
+  //               onTap: () async {
+  //                 setState(() {
+  //                   if (!isCurrentlyPlaying) {
+  //                     isPlaying = true;
+  //                     currentAudioUrl = audioUrl;
+  //                   } else {
+  //                     isPlaying = false;
+  //                   }
+  //                 });
+  //
+  //                 if (isPlaying) {
+  //                   await audioPlayer.play(UrlSource(audioUrl));
+  //                 } else {
+  //                   await audioPlayer.pause();
+  //                 }
+  //               },
+  //               child: Container(
+  //                 color: Colors.transparent,
+  //                 child: Icon(
+  //                   isCurrentlyPlaying
+  //                       ? Icons.pause
+  //                       : Icons.play_arrow,
+  //                 ),
+  //               ),
+  //             ),
+  //             Expanded(
+  //               child: Row(
+  //                 children: [
+  //                   Container(
+  //                     height: 10,
+  //                     width: MediaQuery.of(context).size.width - 233,
+  //                     child: Slider(
+  //                       min: 0,
+  //                       max: duration.inSeconds.toDouble(),
+  //                       value: isCurrentlyPlaying
+  //                           ? position.inSeconds.toDouble()
+  //                           : 0,
+  //                       inactiveColor: Colors.grey,
+  //                       onChanged: (value) async {
+  //                         setState(() {
+  //                           position =
+  //                               Duration(seconds: value.toInt());
+  //                         });
+  //                         await audioPlayer.seek(position);
+  //                         await audioPlayer.resume();
+  //                       },
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     isCurrentlyPlaying
+  //                         ? "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}"
+  //                         : "0:00",
+  //                     style: TextStyle(fontSize: 10),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         Container(
+  //           alignment: Alignment.centerRight,
+  //           child: Text(
+  //             DateFormat('HH:mm').format(message.createdAt),
+  //             style: TextStyle(
+  //               color: Colors.black87,
+  //               fontSize: 12,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildMessageTime(DateTime createdAt) {
-    return Container(
-      alignment: Alignment.centerRight,
-      child: Text(
-        DateFormat('HH:mm').format(createdAt),
-        style: TextStyle(
-          color: Colors.black87,
-          fontSize: 11,
-        ),
-      ),
-    );
-  }
+  // Widget _buildMessageTime(DateTime createdAt) {
+  //   return Container(
+  //     alignment: Alignment.centerRight,
+  //     child: Text(
+  //       DateFormat('HH:mm').format(createdAt),
+  //       style: TextStyle(
+  //         color: Colors.black87,
+  //         fontSize: 11,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _mediaMessageGallery(BuildContext context) {
     return ListTile(

@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -72,7 +73,6 @@ class _ChatPageState extends State<ChatPage> {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   Future<String> _getPhoneNumber(String userId) async {
-    // Replace this with your Firestore service instance
     var firestore = FirebaseFirestore.instance;
     var userDoc = await firestore.collection('users').doc(userId).get();
     return userDoc.data()?['phoneNumber'] ?? '';
@@ -440,12 +440,10 @@ class _ChatPageState extends State<ChatPage> {
       String downloadURL = await taskSnapshot.ref.getDownloadURL();
       print('Audio file uploaded successfully. Download URL: $downloadURL');
 
-      // Send the download URL as a message
       chat.Message message = chat.Message(
         senderID: currentUser!.id,
         content: downloadURL,
         messageType: MessageType.Audio,
-        // Assuming you have an Audio type
         sentAt: Timestamp.now(),
         isRead: false,
       );
@@ -642,17 +640,49 @@ class _ChatPageState extends State<ChatPage> {
 
               void _launchURL(String url) async {
                 final Uri uri = Uri.parse(url);
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                } else {
-                  throw 'Could not launch $url';
+                if (!await launchUrl(uri)) {
+                  throw Exception('Could not launch $uri');
                 }
+              }
+
+              // Assuming message.text may contain plain text and links
+              List<TextSpan> _buildTextSpans(String text) {
+                final List<TextSpan> spans = [];
+                final RegExp urlPattern = RegExp(r'(https?://[^\s]+)');
+                final Iterable<Match> matches = urlPattern.allMatches(text);
+                int lastMatchEnd = 0;
+
+                for (final Match match in matches) {
+                  if (match.start > lastMatchEnd) {
+                    spans.add(TextSpan(
+                      text: text.substring(lastMatchEnd, match.start),
+                      style: TextStyle(color: Colors.black87, fontSize: 15),
+                    ),);
+                  }
+
+                  spans.add(TextSpan(
+                    text: match.group(0),
+                    style: TextStyle(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => _launchURL(match.group(0)!),
+                  ),);
+                  lastMatchEnd = match.end;
+                }
+
+                if (lastMatchEnd < text.length) {
+                  spans.add(TextSpan(
+                    text: text.substring(lastMatchEnd),
+                    style: TextStyle(color: Colors.black87, fontSize: 15),
+                  ));
+                }
+
+                return spans;
               }
 
               if (message.customProperties?['audioUrl'] != null) {
                 String audioUrl = message.customProperties!['audioUrl'];
                 bool isCurrentlyPlaying =
-                    (isPlaying && currentAudioUrl == audioUrl);
+                (isPlaying && currentAudioUrl == audioUrl);
 
                 return Column(
                   children: [
@@ -732,39 +762,13 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ],
                 );
-              } else if (isURL(message.text)) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () => _launchURL(message.text),
-                      child: Text(
-                        message.text,
-                        style: TextStyle(
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        DateFormat('HH:mm').format(message.createdAt),
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
               } else {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      message.text,
-                      style: TextStyle(
-                        color: Colors.black87,
+                    RichText(
+                      text: TextSpan(
+                        children: _buildTextSpans(message.text),
                       ),
                     ),
                     Container(
@@ -781,6 +785,153 @@ class _ChatPageState extends State<ChatPage> {
                 );
               }
             },
+            // messageTextBuilder: (ChatMessage message,
+            //     ChatMessage? previousMessage, ChatMessage? nextMessage) {
+            //   bool isURL(String text) {
+            //     final Uri? uri = Uri.tryParse(text);
+            //     return uri != null &&
+            //         (uri.isScheme('http') || uri.isScheme('https'));
+            //   }
+            //
+            //   void _launchURL(String url) async {
+            //     final Uri uri = Uri.parse(url);
+            //     if (!await launchUrl(uri)) {
+            //       throw Exception('Could not launch $uri');
+            //     }
+            //   }
+            //
+            //   if (message.customProperties?['audioUrl'] != null) {
+            //     String audioUrl = message.customProperties!['audioUrl'];
+            //     bool isCurrentlyPlaying =
+            //         (isPlaying && currentAudioUrl == audioUrl);
+            //
+            //     return Column(
+            //       children: [
+            //         Row(
+            //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //           crossAxisAlignment: CrossAxisAlignment.center,
+            //           children: [
+            //             GestureDetector(
+            //               onTap: () async {
+            //                 setState(() {
+            //                   if (!isCurrentlyPlaying) {
+            //                     isPlaying = true;
+            //                     currentAudioUrl = audioUrl;
+            //                   } else {
+            //                     isPlaying = false;
+            //                   }
+            //                 });
+            //
+            //                 if (isPlaying) {
+            //                   await audioPlayer.play(UrlSource(audioUrl));
+            //                 } else {
+            //                   await audioPlayer.pause();
+            //                 }
+            //               },
+            //               child: Container(
+            //                 color: Colors.transparent,
+            //                 child: Icon(
+            //                   isCurrentlyPlaying
+            //                       ? Icons.pause
+            //                       : Icons.play_arrow,
+            //                 ),
+            //               ),
+            //             ),
+            //             Expanded(
+            //               child: Row(
+            //                 children: [
+            //                   Container(
+            //                     height: 10,
+            //                     width: MediaQuery.of(context).size.width - 233,
+            //                     child: Slider(
+            //                       min: 0,
+            //                       max: duration.inSeconds.toDouble(),
+            //                       value: isCurrentlyPlaying
+            //                           ? position.inSeconds.toDouble()
+            //                           : 0,
+            //                       inactiveColor: Colors.grey,
+            //                       onChanged: (value) async {
+            //                         setState(() {
+            //                           position =
+            //                               Duration(seconds: value.toInt());
+            //                         });
+            //                         await audioPlayer.seek(position);
+            //                         await audioPlayer.resume();
+            //                       },
+            //                     ),
+            //                   ),
+            //                   Text(
+            //                     isCurrentlyPlaying
+            //                         ? "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}"
+            //                         : "0:00",
+            //                     style: TextStyle(fontSize: 10),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //         Container(
+            //           alignment: Alignment.centerRight,
+            //           child: Text(
+            //             DateFormat('HH:mm').format(message.createdAt),
+            //             style: TextStyle(
+            //               color: Colors.black87,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     );
+            //   } else if (isURL(message.text)) {
+            //     return Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         GestureDetector(
+            //           onTap: () => _launchURL(message.text),
+            //           child: Text(
+            //             message.text,
+            //             style: TextStyle(
+            //               color: Colors.blue,
+            //             ),
+            //           ),
+            //         ),
+            //         Container(
+            //           alignment: Alignment.centerRight,
+            //           child: Text(
+            //             DateFormat('HH:mm').format(message.createdAt),
+            //             style: TextStyle(
+            //               color: Colors.black87,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     );
+            //   } else {
+            //     return Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         Text(
+            //           message.text,
+            //           style: TextStyle(
+            //             color: Colors.black87,
+            //           ),
+            //         ),
+            //         Container(
+            //           alignment: Alignment.centerRight,
+            //           child: Text(
+            //             DateFormat('HH:mm').format(message.createdAt),
+            //             style: TextStyle(
+            //               color: Colors.black87,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     );
+            //   }
+            // },
             onTapMedia: (media) async {
               if (media.type == MediaType.image) {
                 Navigator.push(
@@ -1021,7 +1172,7 @@ class _ChatPageState extends State<ChatPage> {
           user: e.senderID == currentUser!.id ? currentUser! : otherUser!,
           text: "Audio message",
           createdAt: e.sentAt!.toDate(),
-          customProperties: {"audioUrl": e.content}, // Store the audio URL
+          customProperties: {"audioUrl": e.content},
         );
       } else if (e.messageType == MessageType.Video) {
         return ChatMessage(

@@ -69,7 +69,8 @@ class DatabaseService {
 
   Future<void> addMembersToGroup(String groupId, List<String> memberIds) async {
     // Reference to the group document
-    DocumentReference groupRef = _firebaseFirestore.collection('groups').doc(groupId);
+    DocumentReference groupRef =
+        _firebaseFirestore.collection('groups').doc(groupId);
 
     // Perform the update
     await _firebaseFirestore.runTransaction((transaction) async {
@@ -81,7 +82,8 @@ class DatabaseService {
         List<dynamic> currentMembers = groupSnapshot.get('members');
 
         // Add new members to the current members list
-        List<String> updatedMembers = List<String>.from(currentMembers)..addAll(memberIds);
+        List<String> updatedMembers = List<String>.from(currentMembers)
+          ..addAll(memberIds);
 
         // Remove duplicates by converting to a Set and back to a List
         updatedMembers = updatedMembers.toSet().toList();
@@ -91,12 +93,6 @@ class DatabaseService {
       }
     });
   }
-
-  // Stream<QuerySnapshot<UserProfile>> getUserProfiles() {
-  //   return _usersCollection!
-  //       .where("uid", isNotEqualTo: _authService.user!.uid)
-  //       .snapshots() as Stream<QuerySnapshot<UserProfile>>;
-  // }
 
   Future<bool> checkChatExist(String uid1, String uid2) async {
     String chatID = genereteChatID(uid1: uid1, uid2: uid2);
@@ -171,71 +167,24 @@ class DatabaseService {
     }
   }
 
-  Future<void> deleteMessage(String currentUserId, String otherUserId, String messageId) async {
+  Future<void> deleteMessage(
+      String currentUserId, String otherUserId, String messageId) async {
     try {
-      // Mengakses koleksi chat berdasarkan ID pengguna
-      await _firebaseFirestore.collection('chats')
+      await _firebaseFirestore
+          .collection('chats')
           .doc(currentUserId)
           .collection(otherUserId)
           .doc(messageId)
           .delete();
-
-      // Jika chat disimpan di koleksi lain, Anda mungkin perlu menambahkan penghapusan di koleksi lain juga
     } catch (e) {
       print('Error deleting message: $e');
       throw Exception('Failed to delete message');
     }
   }
 
-  // Future<void> deleteMessage(String currentUserId, String otherUserId, String messageId) async {
-  //   try {
-  //     DocumentReference chatDoc = _firebaseFirestore
-  //         .collection('chats')
-  //         .doc('$currentUserId$otherUserId');
-  //
-  //     DocumentSnapshot chatSnapshot = await chatDoc.get();
-  //
-  //     if (chatSnapshot.exists) {
-  //       await chatDoc.update({
-  //         'messages': FieldValue.arrayRemove([{
-  //           'id': messageId,
-  //         }])
-  //       });
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error deleting message: $e');
-  //   }
-  // }
-  // Future<void> deleteMessage(String currentUserId, String otherUserId, String messageId) async {
-  //   try {
-  //     String chatId = '$currentUserId$otherUserId';
-  //     DocumentReference chatDocRef = _firebaseFirestore.collection('chats').doc(chatId);
-  //
-  //     DocumentSnapshot chatSnapshot = await chatDocRef.get();
-  //
-  //     if (chatSnapshot.exists) {
-  //       List<dynamic> messages = List.from(chatSnapshot.get('messages'));
-  //
-  //       // Filter out the message with matching id
-  //       messages.removeWhere((message) => message['id'] == messageId);
-  //
-  //       // Update the chat document with the modified messages array
-  //       await chatDocRef.update({
-  //         'messages': messages,
-  //       });
-  //
-  //       print('Message deleted successfully.');
-  //     } else {
-  //       print('Chat document does not exist.');
-  //     }
-  //   } catch (e) {
-  //     print('Error deleting message: $e');
-  //     throw Exception('Error deleting message: $e');
-  //   }
-  // }
-
   Future<Group> getGroupById(String groupId) async {
-    DocumentSnapshot groupSnapshot = await _firebaseFirestore.collection('groups').doc(groupId).get();
+    DocumentSnapshot groupSnapshot =
+        await _firebaseFirestore.collection('groups').doc(groupId).get();
 
     if (groupSnapshot.exists) {
       return Group.fromMap(groupSnapshot.data() as Map<String, dynamic>);
@@ -244,7 +193,7 @@ class DatabaseService {
     }
   }
 
-void online(String userId) {
+  void online(String userId) {
     _firebaseFirestore.collection('users').doc(userId).update({
       'isOnline': true,
       'lastSeen': FieldValue.serverTimestamp(),
@@ -257,19 +206,4 @@ void online(String userId) {
       'lastSeen': FieldValue.serverTimestamp(),
     });
   }
-
-  // Stream<Map<String, dynamic>> getNewMessagesStream() {
-  //   return FirebaseFirestore.instance
-  //       .collection('messages')
-  //       .snapshots()
-  //       .map((snapshot) {
-  //     // Logic to detect new messages
-  //     final newMessage = snapshot.docs.last.data();
-  //     return {
-  //       'senderName': newMessage['senderName'],
-  //       'content': newMessage['content'],
-  //     };
-  //   });
-  // }
-
 }
