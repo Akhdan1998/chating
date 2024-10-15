@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../consts.dart';
 
 class PanggilanPage extends StatefulWidget {
-
   @override
   State<PanggilanPage> createState() => _PanggilanPageState();
 }
@@ -91,7 +90,8 @@ class _PanggilanPageState extends State<PanggilanPage> {
                             style: TextStyle(
                               fontSize: 16,
                               color: _selectedIndex == 0
-                                  ? Colors.white : Theme.of(context).colorScheme.primary,
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -116,7 +116,8 @@ class _PanggilanPageState extends State<PanggilanPage> {
                             style: TextStyle(
                               fontSize: 16,
                               color: _selectedIndex == 1
-                                  ? Colors.white : Theme.of(context).colorScheme.primary,
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -190,15 +191,20 @@ class AllCallsPage extends StatelessWidget {
                 return ListView.builder(
                   itemCount: callHistory.length,
                   itemBuilder: (context, index) {
-                    final call = callHistory[index].data() as Map<String, dynamic>;
-                    final DateTime callDate = (call['callDate'] as Timestamp?)?.toDate() ?? DateTime.now();
-                    final String dayOfWeek = DateFormat.EEEE().format(callDate);
+                    final call =
+                        callHistory[index].data() as Map<String, dynamic>;
+                    final DateTime callDate =
+                        (call['callDate'] as Timestamp?)?.toDate() ??
+                            DateTime.now();
+                    final String dayDate = DateFormat('EEEE, d').format(callDate);
+                    final String dayTime = DateFormat.Hm().format(callDate);
 
                     return Column(
                       children: [
                         CallItem(
                           name: call['callerName'] ?? '',
-                          date: dayOfWeek,
+                          date: dayDate,
+                          time: dayTime,
                           callType: call['type'] ?? '',
                           avatarUrl: call['callerImage'] ?? '',
                         ),
@@ -207,7 +213,6 @@ class AllCallsPage extends StatelessWidget {
                     );
                   },
                 );
-
               },
             ),
           ),
@@ -220,12 +225,14 @@ class AllCallsPage extends StatelessWidget {
 class CallItem extends StatelessWidget {
   final String name;
   final String date;
+  final String time;
   final String callType;
   final String avatarUrl;
 
   const CallItem({
     required this.name,
     required this.date,
+    required this.time,
     required this.callType,
     required this.avatarUrl,
     super.key,
@@ -233,53 +240,75 @@ class CallItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.grey.shade200,
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-      child: avatarUrl.isEmpty ? Icon(Icons.person, color: Colors.white,) : null,
-            backgroundImage: NetworkImage(avatarUrl.isNotEmpty ? avatarUrl : 'PLACEHOLDER_PFP'),
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(name.isNotEmpty ? name : '', style: TextStyle(fontSize: 16)),
-                    SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Icon(callType == 'voice' ? Icons.call : Icons.videocam, size: 15),
-                        SizedBox(width: 5),
-                        Text(callType.isNotEmpty ? callType : '', style: TextStyle(fontSize: 13)),
-                      ],
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      date.isNotEmpty ? date : '',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.info_outline, size: 20),
-                    ),
-                  ],
-                ),
-              ],
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.grey.shade200,
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              child: avatarUrl.isEmpty
+                  ? Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    )
+                  : null,
+              backgroundImage: NetworkImage(
+                  avatarUrl.isNotEmpty ? avatarUrl : 'PLACEHOLDER_PFP'),
             ),
-          ),
-        ],
+            SizedBox(width: 10),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name.isNotEmpty ? name : '',
+                          style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Icon(callType == 'voice' ? Icons.call : Icons.videocam,
+                              size: 15),
+                          SizedBox(width: 5),
+                          Text(callType.isNotEmpty ? callType : '',
+                              style: TextStyle(fontSize: 13)),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            date.isNotEmpty ? date : '',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                          Text(
+                            date.isNotEmpty ? time : '',
+                            style: TextStyle(fontSize: 9),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.info_outline, size: 20),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
