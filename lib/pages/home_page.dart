@@ -841,7 +841,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 padding: EdgeInsets.all(5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: Colors.deepPurple.shade100,
+                                  color: Colors.blueGrey.shade100,
                                 ),
                                 child: Text(
                                   'Only group admins will be notified that you leave the group.',

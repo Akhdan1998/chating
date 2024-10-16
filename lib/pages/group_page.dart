@@ -72,7 +72,7 @@ class _GroupPageState extends State<GroupPage> {
   Duration position = Duration.zero;
   String? currentAudioUrl;
   PlayerState audioPlayerState = PlayerState.stopped;
-  Map<ChatMessage, String> messageIdMap = {};
+  // Map<ChatMessage, String> messageIdMap = {};
 
   @override
   void initState() {

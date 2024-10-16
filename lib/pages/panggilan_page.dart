@@ -207,6 +207,8 @@ class AllCallsPage extends StatelessWidget {
                           time: dayTime,
                           callType: call['type'] ?? '',
                           avatarUrl: call['callerImage'] ?? '',
+                          callerPhoneNumber: call['callerPhoneNumber'] ?? '',
+                          duration: call['duration'] ?? 0,
                         ),
                         SizedBox(height: 10),
                       ],
@@ -222,22 +224,31 @@ class AllCallsPage extends StatelessWidget {
   }
 }
 
-class CallItem extends StatelessWidget {
+class CallItem extends StatefulWidget {
   final String name;
   final String date;
   final String time;
   final String callType;
   final String avatarUrl;
+  final String callerPhoneNumber;
+  final int duration;
 
-  const CallItem({
+  CallItem({
     required this.name,
     required this.date,
     required this.time,
     required this.callType,
     required this.avatarUrl,
+    required this.callerPhoneNumber,
+    required this.duration,
     super.key,
   });
 
+  @override
+  State<CallItem> createState() => _CallItemState();
+}
+
+class _CallItemState extends State<CallItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -251,14 +262,12 @@ class CallItem extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              child: avatarUrl.isEmpty
-                  ? Icon(
-                      Icons.person,
-                      color: Colors.white,
-                    )
+              child: widget.avatarUrl.isEmpty
+                  ? Icon(Icons.person, color: Colors.white)
                   : null,
-              backgroundImage: NetworkImage(
-                  avatarUrl.isNotEmpty ? avatarUrl : 'PLACEHOLDER_PFP'),
+              backgroundImage: widget.avatarUrl.isNotEmpty
+                  ? NetworkImage(widget.avatarUrl)
+                  : null,
             ),
             SizedBox(width: 10),
             Expanded(
@@ -269,17 +278,22 @@ class CallItem extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name.isNotEmpty ? name : '',
-                          style: TextStyle(fontSize: 16),
+                      Text(
+                        widget.name.isNotEmpty ? widget.name : '',
+                        style: TextStyle(fontSize: 16),
                       ),
                       SizedBox(height: 5),
                       Row(
                         children: [
-                          Icon(callType == 'voice' ? Icons.call : Icons.videocam,
-                              size: 15),
+                          Icon(
+                            widget.callType == 'voice' ? Icons.call : Icons.videocam,
+                            size: 15,
+                          ),
                           SizedBox(width: 5),
-                          Text(callType.isNotEmpty ? callType : '',
-                              style: TextStyle(fontSize: 13)),
+                          Text(
+                            widget.callType,
+                            style: TextStyle(fontSize: 13),
+                          ),
                         ],
                       ),
                     ],
@@ -289,17 +303,44 @@ class CallItem extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            date.isNotEmpty ? date : '',
+                            widget.date.isNotEmpty ? widget.date : '',
                             style: TextStyle(fontSize: 10),
                           ),
                           Text(
-                            date.isNotEmpty ? time : '',
+                            widget.time.isNotEmpty ? widget.time : '',
                             style: TextStyle(fontSize: 9),
                           ),
                         ],
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showGeneralDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            barrierLabel: '',
+                            barrierColor: Colors.black54,
+                            transitionDuration: Duration(milliseconds: 300),
+                            pageBuilder: (context, anim1, anim2) {
+                              return AlertDialog(
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      widget.duration.toString(),
+                                      style: TextStyle(fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            transitionBuilder: (context, anim1, anim2, child) {
+                              return Transform.scale(
+                                scale: anim1.value,
+                                child: child,
+                              );
+                            },
+                          );
+                        },
                         icon: Icon(Icons.info_outline, size: 20),
                       ),
                     ],

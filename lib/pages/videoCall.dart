@@ -40,6 +40,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     final callData = {
       'callerName': widget.userProfile.name,
       'callerImage': widget.userProfile.pfpURL,
+      'callerPhoneNumber': widget.userProfile.phoneNumber,
       'callDate': Timestamp.now(),
       'callDuration': _formatDuration(_secondsElapsed),
       'type': 'video',
@@ -134,30 +135,32 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       await _engine.enableVideo();
       await _engine.startPreview();
 
-      _engine.registerEventHandler(RtcEngineEventHandler(
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          setState(() {
-            _localUserJoined = true;
-          });
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          setState(() {
-            _remoteUid = remoteUid;
-            _startCallTimer();
-          });
-        },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          setState(() {
-            _remoteUid = null;
-            _stopCallTimer();
-          });
-          _endCall();
-        },
-        onError: (ErrorCodeType err, String msg) {
-          debugPrint('[onError] err: $err, msg: $msg');
-        },
-      ));
+      _engine.registerEventHandler(
+        RtcEngineEventHandler(
+          onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+            setState(() {
+              _localUserJoined = true;
+            });
+          },
+          onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+            setState(() {
+              _remoteUid = remoteUid;
+              _startCallTimer();
+            });
+          },
+          onUserOffline: (RtcConnection connection, int remoteUid,
+              UserOfflineReasonType reason) {
+            setState(() {
+              _remoteUid = null;
+              _stopCallTimer();
+            });
+            _endCall();
+          },
+          onError: (ErrorCodeType err, String msg) {
+            debugPrint('[onError] err: $err, msg: $msg');
+          },
+        ),
+      );
 
       print('TOKEN VIDEO CALL ${tokenVideo}');
 
