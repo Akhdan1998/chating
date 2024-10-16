@@ -168,8 +168,8 @@ class AllCallsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(15),
+    return Container(
+      padding: EdgeInsets.only(left: 15, right: 15),
       child: Column(
         children: [
           Expanded(
@@ -201,6 +201,7 @@ class AllCallsPage extends StatelessWidget {
 
                     return Column(
                       children: [
+                        SizedBox(height: 15),
                         CallItem(
                           name: call['callerName'] ?? '',
                           date: dayDate,
@@ -210,7 +211,7 @@ class AllCallsPage extends StatelessWidget {
                           callerPhoneNumber: call['callerPhoneNumber'] ?? '',
                           duration: call['duration'] ?? 0,
                         ),
-                        SizedBox(height: 10),
+                        // SizedBox(height: 5),
                       ],
                     );
                   },
