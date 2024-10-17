@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -32,8 +33,10 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
   bool _isJoined = false;
   List<int> _remoteUids = [];
   Timer? _callTimer;
+  Timer? _joinTimeoutTimer;
   int _secondsElapsed = 0;
   late RecorderController recorderController;
+  AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -49,7 +52,20 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
   Future<void> _toggleSpeaker() async {
     _isSpeakerOn = !_isSpeakerOn;
     await _engine.setEnableSpeakerphone(_isSpeakerOn);
+
+    double volume = _isSpeakerOn ? 2.0 : 1.0;
+    await _audioPlayer.setVolume(volume);
+
     setState(() {});
+  }
+
+  Future<void> _playWaitingAudio() async {
+    await _audioPlayer.play(AssetSource('tut.mp3'),
+        volume: _isSpeakerOn ? 2.0 : 1.0);
+  }
+
+  Future<void> _stopWaitingAudio() async {
+    await _audioPlayer.stop();
   }
 
   void _startCallTimer() {
@@ -62,13 +78,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
 
   void _stopCallTimer() {
     _callTimer?.cancel();
-    _secondsElapsed = 0;
-  }
-
-  String _formatDuration(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+    // _secondsElapsed = 0;
   }
 
   Future<void> _initAgora() async {
@@ -90,6 +100,8 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
         RtcEngineEventHandler(
           onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
             setState(() => _localUserJoined = true);
+            _startJoinTimeoutTimer();
+            _playWaitingAudio();
           },
           onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
             setState(() {
@@ -98,6 +110,8 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
               onUserJoined();
               recorderController.record();
             });
+            _cancelJoinTimeoutTimer();
+            _stopWaitingAudio();
           },
           onUserOffline: (RtcConnection connection, int remoteUid,
               UserOfflineReasonType reason) {
@@ -134,6 +148,27 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
     }
   }
 
+  void _startJoinTimeoutTimer() {
+    _joinTimeoutTimer = Timer(Duration(seconds: 30), () {
+      if (_remoteUids.isEmpty) {
+        _leaveChannel();
+        _stopWaitingAudio();
+      }
+    });
+  }
+
+  void _cancelJoinTimeoutTimer() {
+    _joinTimeoutTimer?.cancel();
+  }
+
+  Future<void> _leaveChannel() async {
+    await _engine.leaveChannel();
+    _stopCallTimer();
+    Navigator.of(context).pop();
+    await _saveCallHistory();
+    setState(() => _localUserJoined = false);
+  }
+
   Future<void> _requestPermissions() async {
     final status = await [Permission.microphone].request();
     if (status[Permission.microphone] != PermissionStatus.granted) {
@@ -156,12 +191,10 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
     await FirebaseFirestore.instance.collection('call_history').add(callData);
   }
 
-  Future<void> _leaveChannel() async {
-    await _engine.leaveChannel();
-    _stopCallTimer();
-    Navigator.of(context).pop();
-    await _saveCallHistory();
-    setState(() => _localUserJoined = false);
+  String _formatDuration(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   Future<void> _toggleMute() async {
@@ -187,8 +220,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
             ),
           ),
           Container(
-            height: _isJoined
-                ? MediaQuery.of(context).size.height : 209,
+            height: _isJoined ? MediaQuery.of(context).size.height : 209,
             margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
@@ -429,7 +461,10 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
                     borderRadius: BorderRadius.circular(15),
                     color: Colors.black.withOpacity(0.2),
                   ),
-                  child: Icon(Icons.volume_up, color: Colors.white),
+                  child: Icon(
+                    Icons.volume_up,
+                    color: _isSpeakerOn ? Colors.red : Colors.white,
+                  ),
                 ),
               ),
               GestureDetector(

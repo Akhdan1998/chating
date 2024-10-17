@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:chating/models/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,6 @@ import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../service/alert_service.dart';
 import '../utils.dart';
-import 'audioCall.dart';
 
 class VideoCallScreen extends StatefulWidget {
   final UserProfile userProfile;
@@ -23,8 +23,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   int? _remoteUid;
   late RtcEngine _engine;
   bool _localUserJoined = false;
-  late Future<void> _initializeControllerFuture;
-  int _currentCameraIndex = 0;
   bool _isMuted = false;
   bool _isVideoEnabled = true;
   final GetIt _getIt = GetIt.instance;
@@ -35,6 +33,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   Offset _localVideoPosition = Offset(20, 150);
   final double videoWidth = 130;
   final double videoHeight = 180;
+  Timer? _joinTimeoutTimer;
+  AudioPlayer _audioPlayer = AudioPlayer();
 
   Future<void> _saveCallHistory() async {
     final callData = {
@@ -57,6 +57,20 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     _initAgora();
   }
 
+  String _formatDuration(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _playWaitingAudio() async {
+    await _audioPlayer.play(AssetSource('tut.mp3'), volume: 4);
+  }
+
+  Future<void> _stopWaitingAudio() async {
+    await _audioPlayer.stop();
+  }
+
   void _startCallTimer() {
     _callTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
@@ -67,64 +81,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
   void _stopCallTimer() {
     _callTimer?.cancel();
-    _secondsElapsed = 0;
+    // _secondsElapsed = 0;
   }
-
-  String _formatDuration(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
-  }
-
-  // Future<void> joinChannel() async {
-  //   await _engine.joinChannel(
-  //     token: tokenVideo,
-  //     channelId: channelVideo,
-  //     options: const ChannelMediaOptions(
-  //       autoSubscribeVideo: true,
-  //       autoSubscribeAudio: true,
-  //       publishCameraTrack: true,
-  //       publishMicrophoneTrack: true,
-  //       clientRoleType: ClientRoleType.clientRoleBroadcaster,
-  //     ),
-  //     uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
-  //   );
-  //
-  //   print('TOKEN VIDEO CALLLLLLL ${tokenVideo}');
-  //   print('NUMBER ${widget.userProfile.phoneNumber!.substring(1)}');
-  //
-  //   await _engine.enableVideo();
-  //
-  //   await _engine.startPreview();
-  //
-  //   _engine.registerEventHandler(
-  //     RtcEngineEventHandler(
-  //       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-  //         debugPrint("local user ${connection.localUid} joined");
-  //         setState(() {
-  //           _localUserJoined = true;
-  //         });
-  //       },
-  //       onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-  //         setState(() {
-  //           _remoteUid = remoteUid;
-  //           _startCallTimer();
-  //         });
-  //       },
-  //       onUserOffline: (RtcConnection connection, int remoteUid,
-  //           UserOfflineReasonType reason) {
-  //         setState(() {
-  //           _remoteUid = null;
-  //           _stopCallTimer();
-  //         });
-  //         Navigator.pop(context);
-  //       },
-  //       onError: (ErrorCodeType err, String msg) {
-  //         print('[onError] err: $err, msg: $msg');
-  //       },
-  //     ),
-  //   );
-  // }
 
   Future<void> _initAgora() async {
     try {
@@ -141,12 +99,16 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             setState(() {
               _localUserJoined = true;
             });
+            _startJoinTimeoutTimer();
+            _playWaitingAudio();
           },
           onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
             setState(() {
               _remoteUid = remoteUid;
               _startCallTimer();
             });
+            _cancelJoinTimeoutTimer();
+            _stopWaitingAudio();
           },
           onUserOffline: (RtcConnection connection, int remoteUid,
               UserOfflineReasonType reason) {
@@ -179,6 +141,26 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     } catch (e) {
       debugPrint("Error initializing Agora: $e");
     }
+  }
+
+  void _startJoinTimeoutTimer() {
+    _joinTimeoutTimer = Timer(Duration(seconds: 30), () {
+      if (_remoteUid == null) {
+        _endCall();
+        _stopWaitingAudio();
+      }
+    });
+  }
+
+  void _cancelJoinTimeoutTimer() {
+    _joinTimeoutTimer?.cancel();
+  }
+
+  Future<void> _endCall() async {
+    await _engine.leaveChannel();
+    await _engine.release();
+    await _saveCallHistory();
+    Navigator.pop(context);
   }
 
   Future<void> _requestPermissions() async {
@@ -218,18 +200,12 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     await _engine.muteLocalVideoStream(!_isVideoEnabled);
   }
 
-  Future<void> _endCall() async {
-    await _engine.leaveChannel();
-    await _engine.release();
-    await _saveCallHistory();
-    Navigator.pop(context);
-  }
-
   @override
   void dispose() {
     _engine.leaveChannel();
     _engine.release();
     _stopCallTimer();
+    _audioPlayer.dispose();
     super.dispose();
   }
 

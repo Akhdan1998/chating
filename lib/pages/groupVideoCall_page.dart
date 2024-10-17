@@ -1,16 +1,13 @@
 import 'dart:async';
-
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../models/group.dart';
 import '../models/user_profile.dart';
 import '../utils.dart';
-import 'audioCall.dart';
 
 class GroupVideoCallScreen extends StatefulWidget {
   late final Group grup;
@@ -32,15 +29,24 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
   bool _isMuted = false;
   bool _isVideoEnabled = true;
   Timer? _timer;
+  Timer? _joinTimeoutTimer;
   int _duration = 0;
   bool _secondUserJoined = false;
-  RecorderController _recorderController = RecorderController();
+  AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
     _initAgora();
     _startTimer();
+  }
+
+  Future<void> _playWaitingAudio() async {
+    await _audioPlayer.play(AssetSource('tut.mp3'), volume: 4);
+  }
+
+  Future<void> _stopWaitingAudio() async {
+    await _audioPlayer.stop();
   }
 
   Future<void> _saveCallHistory() async {
@@ -64,6 +70,19 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
     });
   }
 
+  void _startJoinTimeoutTimer() {
+    _joinTimeoutTimer = Timer(Duration(seconds: 30), () {
+      if (_remoteUids.isEmpty) {
+        _endCall();
+        _stopWaitingAudio();
+      }
+    });
+  }
+
+  void _cancelJoinTimeoutTimer() {
+    _joinTimeoutTimer?.cancel();
+  }
+
   Future<void> _initAgora() async {
     await _requestPermissions();
 
@@ -76,14 +95,18 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
           setState(() {
             _localUserJoined = true;
           });
+          _startJoinTimeoutTimer();
+          _playWaitingAudio();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           setState(() {
             _remoteUids.add(remoteUid);
             if (_remoteUids.length == 1 && !_secondUserJoined) {
               _secondUserJoined = true;
-              _duration = 0; // Reset duration to 0
-              _startTimer(); // Start the timer
+              _duration = 0;
+              _startTimer();
+              _cancelJoinTimeoutTimer();
+              _stopWaitingAudio();
             }
           });
         },
@@ -114,6 +137,14 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
     );
   }
 
+  void _endCall() async {
+    _timer?.cancel();
+    _joinTimeoutTimer?.cancel();
+    _engine.leaveChannel();
+    await _saveCallHistory();
+    Navigator.pop(context);
+  }
+
   Future<void> _requestPermissions() async {
     await [Permission.camera, Permission.microphone].request();
   }
@@ -130,12 +161,6 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
       _isVideoEnabled = !_isVideoEnabled;
     });
     _engine.muteLocalVideoStream(!_isVideoEnabled);
-  }
-
-  void _endCall() async {
-    _engine.leaveChannel();
-    await _saveCallHistory();
-    Navigator.pop(context);
   }
 
   Widget _buildVideoGrid(double maxWidth, double maxHeight) {

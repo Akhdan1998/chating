@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-// import 'package:agora_rtm/agora_rtm.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 import '../utils.dart';
@@ -29,8 +28,18 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   late RecorderController recorderController;
   int? _remoteUid;
   Timer? _callTimer;
+  Timer? _callTimeoutTimer;
   int _secondsElapsed = 0;
-  // DateTime? _callStartTime;
+  AudioPlayer _audioPlayer = AudioPlayer();
+
+  @override
+  void dispose() {
+    _stopCallTimer();
+    _cancelCallTimeoutTimer();
+    _audioPlayer.dispose();
+    _engine.release();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -78,7 +87,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   //     debugPrint('Error saving call to Firestore: $e');
   //   }
   // }
-  //
+
   // int _calculateCallDuration() {
   //   if (_callStartTime == null) {
   //     return 0;
@@ -94,6 +103,10 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   Future<void> _toggleSpeaker() async {
     _isSpeakerOn = !_isSpeakerOn;
     await _engine.setEnableSpeakerphone(_isSpeakerOn);
+
+    double volume = _isSpeakerOn ? 2.0 : 1.0;
+    await _audioPlayer.setVolume(volume);
+
     setState(() {});
   }
 
@@ -107,12 +120,6 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
 
   void _stopCallTimer() {
     _callTimer?.cancel();
-  }
-
-  String _formatDuration(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   Future<void> _initAgora() async {
@@ -132,6 +139,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       _engine.registerEventHandler(RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
           setState(() => _localUserJoined = true);
+          _startCallTimeoutTimer();
+          _playWaitingAudio();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           setState(() {
@@ -139,8 +148,11 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             _startCallTimer();
             recorderController.record();
           });
+          _cancelCallTimeoutTimer();
+          _stopWaitingAudio();
         },
-        onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) async {
+        onUserOffline: (RtcConnection connection, int remoteUid,
+            UserOfflineReasonType reason) async {
           setState(() {
             _remoteUid = null;
           });
@@ -154,6 +166,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
           await _saveCallHistory();
 
           await _leaveChannel();
+
+          _playWaitingAudio();
         },
         onError: (ErrorCodeType err, String msg) {
           print('Errorrrrrrrrrrrrr: $err - $msg');
@@ -180,14 +194,17 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
     }
   }
 
-  Future<void> _requestPermissions() async {
-    final status = await [Permission.microphone].request();
-    if (status[Permission.microphone] != PermissionStatus.granted) {
-      _alertService.showToast(
-          text: 'Microphone permission is required.',
-          icon: Icons.warning,
-          color: Colors.yellowAccent);
-    }
+  void _startCallTimeoutTimer() {
+    _callTimeoutTimer = Timer(Duration(seconds: 30), () {
+      if (_remoteUid == null) {
+        _leaveChannel();
+        _stopWaitingAudio();
+      }
+    });
+  }
+
+  void _cancelCallTimeoutTimer() {
+    _callTimeoutTimer?.cancel();
   }
 
   Future<void> _leaveChannel() async {
@@ -199,17 +216,35 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
     setState(() => _localUserJoined = false);
   }
 
+  Future<void> _playWaitingAudio() async {
+    await _audioPlayer.play(AssetSource('tut.mp3'),
+        volume: _isSpeakerOn ? 2.0 : 1.0);
+  }
+
+  Future<void> _stopWaitingAudio() async {
+    await _audioPlayer.stop();
+  }
+
+  Future<void> _requestPermissions() async {
+    final status = await [Permission.microphone].request();
+    if (status[Permission.microphone] != PermissionStatus.granted) {
+      _alertService.showToast(
+          text: 'Microphone permission is required.',
+          icon: Icons.warning,
+          color: Colors.yellowAccent);
+    }
+  }
+
   Future<void> _toggleMute() async {
     _isMuted = !_isMuted;
     await _engine.muteLocalAudioStream(_isMuted);
     setState(() {});
   }
 
-  @override
-  void dispose() {
-    _stopCallTimer();
-    _engine.release();
-    super.dispose();
+  String _formatDuration(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -309,13 +344,19 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
           _buildControlButton(Icons.more_horiz, () {}),
           _buildControlButton(Icons.videocam, () {}),
           _buildControlButton(
-              color: _isSpeakerOn ? Colors.red : Colors.white,
-              Icons.volume_up,
-              _toggleSpeaker),
+            color: _isSpeakerOn ? Colors.red : Colors.white,
+            Icons.volume_up,
+            _toggleSpeaker,
+          ),
           _buildControlButton(
-              _isMuted ? Icons.mic_off : Icons.mic, _toggleMute),
-          _buildControlButton(Icons.call_end, _leaveChannel,
-              color: Colors.redAccent),
+            _isMuted ? Icons.mic_off : Icons.mic,
+            _toggleMute,
+          ),
+          _buildControlButton(
+            Icons.call_end,
+            _leaveChannel,
+            color: Colors.redAccent,
+          ),
         ],
       ),
     );
