@@ -37,6 +37,7 @@ import '../service/auth_service.dart';
 import '../service/database_service.dart';
 import 'audioCall.dart';
 import 'detailProfile_page.dart';
+import 'package:any_link_preview/any_link_preview.dart';
 
 class ChatPage extends StatefulWidget {
   final UserProfile chatUser;
@@ -645,7 +646,6 @@ class _ChatPageState extends State<ChatPage> {
                 }
               }
 
-              // Assuming message.text may contain plain text and links
               List<TextSpan> _buildTextSpans(String text) {
                 final List<TextSpan> spans = [];
                 final RegExp urlPattern = RegExp(r'(https?://[^\s]+)');
@@ -766,6 +766,12 @@ class _ChatPageState extends State<ChatPage> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    AnyLinkPreview(
+                      link: message.text,
+                      showMultimedia: true,
+                      onTap: () => _launchURL(message.text),
+                    ),
+                    SizedBox(height: 8),
                     RichText(
                       text: TextSpan(
                         children: _buildTextSpans(message.text),
