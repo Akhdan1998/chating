@@ -29,6 +29,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'package:video_player/video_player.dart';
+import '../consts.dart';
 import '../models/chat.dart';
 import '../models/message.dart' as chat;
 import '../models/message.dart';
@@ -349,12 +350,10 @@ class _ChatPageState extends State<ChatPage> {
       barrierDismissible: true,
       barrierLabel: '',
       barrierColor: Colors.black54,
-      transitionDuration:
-      Duration(milliseconds: 300),
+      transitionDuration: Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return AlertDialog(
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
           titlePadding: EdgeInsets.zero,
           title: Column(
             mainAxisSize: MainAxisSize.min,
@@ -393,8 +392,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
         );
       },
-      transitionBuilder:
-          (context, anim1, anim2, child) {
+      transitionBuilder: (context, anim1, anim2, child) {
         return Transform.scale(
           scale: anim1.value,
           child: child,
@@ -627,7 +625,9 @@ class _ChatPageState extends State<ChatPage> {
                 ChatMessage? previousMessage, ChatMessage? nextMessage) {
               bool isUser = message.user.id == currentUser!.id;
               return BoxDecoration(
-                color: isUser ? Theme.of(context).colorScheme.primary.withOpacity(0.3) : Colors.grey[300],
+                color: isUser
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                    : Colors.grey[300],
                 borderRadius: BorderRadius.circular(12),
               );
             },
@@ -654,18 +654,22 @@ class _ChatPageState extends State<ChatPage> {
 
                 for (final Match match in matches) {
                   if (match.start > lastMatchEnd) {
-                    spans.add(TextSpan(
-                      text: text.substring(lastMatchEnd, match.start),
-                      style: TextStyle(color: Colors.black87, fontSize: 15),
-                    ),);
+                    spans.add(
+                      TextSpan(
+                        text: text.substring(lastMatchEnd, match.start),
+                        style: TextStyle(color: Colors.black87, fontSize: 15),
+                      ),
+                    );
                   }
 
-                  spans.add(TextSpan(
-                    text: match.group(0),
-                    style: TextStyle(color: Colors.blue),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => _launchURL(match.group(0)!),
-                  ),);
+                  spans.add(
+                    TextSpan(
+                      text: match.group(0),
+                      style: TextStyle(color: Colors.blue),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => _launchURL(match.group(0)!),
+                    ),
+                  );
                   lastMatchEnd = match.end;
                 }
 
@@ -682,7 +686,7 @@ class _ChatPageState extends State<ChatPage> {
               if (message.customProperties?['audioUrl'] != null) {
                 String audioUrl = message.customProperties!['audioUrl'];
                 bool isCurrentlyPlaying =
-                (isPlaying && currentAudioUrl == audioUrl);
+                    (isPlaying && currentAudioUrl == audioUrl);
 
                 return Column(
                   children: [
@@ -762,7 +766,7 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ],
                 );
-              } else {
+              } else if (isURL(message.text)) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -770,6 +774,19 @@ class _ChatPageState extends State<ChatPage> {
                       link: message.text,
                       showMultimedia: true,
                       onTap: () => _launchURL(message.text),
+                      errorBody: 'Show my custom error body',
+                      errorTitle: 'Show my custom error title',
+                      bodyStyle: TextStyle(fontSize: 12),
+                      errorWidget: Container(
+                        height: 200,
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.grey[300],
+                        child: Icon(Icons.image_not_supported_sharp),
+                      ),
+                      errorImage: "https://google.com/",
+                      cache: Duration(seconds: 3),
+                      borderRadius: 12,
+                      removeElevation: false,
                     ),
                     SizedBox(height: 8),
                     RichText(
@@ -789,155 +806,29 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ],
                 );
+              } else {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        children: _buildTextSpans(message.text),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        DateFormat('HH:mm').format(message.createdAt),
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
               }
             },
-            // messageTextBuilder: (ChatMessage message,
-            //     ChatMessage? previousMessage, ChatMessage? nextMessage) {
-            //   bool isURL(String text) {
-            //     final Uri? uri = Uri.tryParse(text);
-            //     return uri != null &&
-            //         (uri.isScheme('http') || uri.isScheme('https'));
-            //   }
-            //
-            //   void _launchURL(String url) async {
-            //     final Uri uri = Uri.parse(url);
-            //     if (!await launchUrl(uri)) {
-            //       throw Exception('Could not launch $uri');
-            //     }
-            //   }
-            //
-            //   if (message.customProperties?['audioUrl'] != null) {
-            //     String audioUrl = message.customProperties!['audioUrl'];
-            //     bool isCurrentlyPlaying =
-            //         (isPlaying && currentAudioUrl == audioUrl);
-            //
-            //     return Column(
-            //       children: [
-            //         Row(
-            //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //           crossAxisAlignment: CrossAxisAlignment.center,
-            //           children: [
-            //             GestureDetector(
-            //               onTap: () async {
-            //                 setState(() {
-            //                   if (!isCurrentlyPlaying) {
-            //                     isPlaying = true;
-            //                     currentAudioUrl = audioUrl;
-            //                   } else {
-            //                     isPlaying = false;
-            //                   }
-            //                 });
-            //
-            //                 if (isPlaying) {
-            //                   await audioPlayer.play(UrlSource(audioUrl));
-            //                 } else {
-            //                   await audioPlayer.pause();
-            //                 }
-            //               },
-            //               child: Container(
-            //                 color: Colors.transparent,
-            //                 child: Icon(
-            //                   isCurrentlyPlaying
-            //                       ? Icons.pause
-            //                       : Icons.play_arrow,
-            //                 ),
-            //               ),
-            //             ),
-            //             Expanded(
-            //               child: Row(
-            //                 children: [
-            //                   Container(
-            //                     height: 10,
-            //                     width: MediaQuery.of(context).size.width - 233,
-            //                     child: Slider(
-            //                       min: 0,
-            //                       max: duration.inSeconds.toDouble(),
-            //                       value: isCurrentlyPlaying
-            //                           ? position.inSeconds.toDouble()
-            //                           : 0,
-            //                       inactiveColor: Colors.grey,
-            //                       onChanged: (value) async {
-            //                         setState(() {
-            //                           position =
-            //                               Duration(seconds: value.toInt());
-            //                         });
-            //                         await audioPlayer.seek(position);
-            //                         await audioPlayer.resume();
-            //                       },
-            //                     ),
-            //                   ),
-            //                   Text(
-            //                     isCurrentlyPlaying
-            //                         ? "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}"
-            //                         : "0:00",
-            //                     style: TextStyle(fontSize: 10),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //         Container(
-            //           alignment: Alignment.centerRight,
-            //           child: Text(
-            //             DateFormat('HH:mm').format(message.createdAt),
-            //             style: TextStyle(
-            //               color: Colors.black87,
-            //               fontSize: 12,
-            //             ),
-            //           ),
-            //         ),
-            //       ],
-            //     );
-            //   } else if (isURL(message.text)) {
-            //     return Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         GestureDetector(
-            //           onTap: () => _launchURL(message.text),
-            //           child: Text(
-            //             message.text,
-            //             style: TextStyle(
-            //               color: Colors.blue,
-            //             ),
-            //           ),
-            //         ),
-            //         Container(
-            //           alignment: Alignment.centerRight,
-            //           child: Text(
-            //             DateFormat('HH:mm').format(message.createdAt),
-            //             style: TextStyle(
-            //               color: Colors.black87,
-            //               fontSize: 12,
-            //             ),
-            //           ),
-            //         ),
-            //       ],
-            //     );
-            //   } else {
-            //     return Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         Text(
-            //           message.text,
-            //           style: TextStyle(
-            //             color: Colors.black87,
-            //           ),
-            //         ),
-            //         Container(
-            //           alignment: Alignment.centerRight,
-            //           child: Text(
-            //             DateFormat('HH:mm').format(message.createdAt),
-            //             style: TextStyle(
-            //               color: Colors.black87,
-            //               fontSize: 12,
-            //             ),
-            //           ),
-            //         ),
-            //       ],
-            //     );
-            //   }
-            // },
             onTapMedia: (media) async {
               if (media.type == MediaType.image) {
                 Navigator.push(
