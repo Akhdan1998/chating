@@ -5,11 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:story_view/controller/story_controller.dart';
 import '../models/user_profile.dart';
+import '../service/alert_service.dart';
 import '../service/auth_service.dart';
 import '../service/database_service.dart';
 import '../service/navigation_service.dart';
@@ -32,6 +35,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
   final currentUser = FirebaseAuth.instance;
   Set<String> clickedUIDs = {};
   bool _isRequestingPermission = false;
+  late AlertService _alertService;
 
   @override
   void initState() {
@@ -39,6 +43,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
     _navigationService = _getIt.get<NavigationService>();
     _databaseService = _getIt.get<DatabaseService>();
     _authService = _getIt.get<AuthService>();
+    _alertService = _getIt.get<AlertService>();
   }
 
   @override
@@ -59,100 +64,218 @@ class _UpdatesPageState extends State<UpdatesPage> {
   }
 
   // Future<void> _pickAndUploadMedia(ImageSource source) async {
+  //   final ImagePicker _picker = ImagePicker();
+  //   context.loaderOverlay.show();
+  //
   //   final XFile? pickedFile = await _picker.pickImage(source: source);
-  //   if (pickedFile != null) {
-  //     File file = File(pickedFile.path);
+  //
+  //   if (pickedFile == null) {
+  //     context.loaderOverlay.hide();
+  //     print('No image selected');
+  //     return;
+  //   }
+  //
+  //   File file = File(pickedFile.path);
+  //   print('Ukuran file sebelum dikompresi: ${file.lengthSync()} bytes');
+  //
+  //   final img.Image? image = img.decodeImage(file.readAsBytesSync());
+  //   if (image != null) {
+  //     final compressedImage = img.encodeJpg(image, quality: 50);
+  //     File compressedFile = File('${file.path}.jpg')
+  //       ..writeAsBytesSync(compressedImage);
+  //     print('Ukuran gambar setelah kompresi: ${compressedImage.length} bytes');
+  //
   //     try {
-  //       String fileName =
-  //           'stories/${DateTime.now().millisecondsSinceEpoch.toString()}_${pickedFile.name}';
-  //       UploadTask uploadTask =
-  //       FirebaseStorage.instance.ref().child(fileName).putFile(file);
+  //       String fileName = 'stories/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+  //       UploadTask uploadTask = FirebaseStorage.instance
+  //           .ref()
+  //           .child(fileName)
+  //           .putFile(compressedFile);
   //       TaskSnapshot taskSnapshot = await uploadTask;
   //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
   //
   //       DateTime localTimestamp = DateTime.now();
   //
-  //       // Save the story data with both the server-side and local timestamps
-  //       await FirebaseFirestore.instance.collection('stories').add({
-  //         'url': downloadUrl,
-  //         'serverTimestamp': FieldValue.serverTimestamp(),
-  //         'localTimestamp': localTimestamp,
-  //         'uid': currentUser.currentUser!.uid,
-  //         'timestamp': localTimestamp, // Tambahkan field ini
-  //       });
+  //       await FirebaseFirestore.instance.runTransaction((transaction) async {
+  //         transaction.set(
+  //           FirebaseFirestore.instance.collection('stories').doc(),
+  //           {
+  //             'url': downloadUrl,
+  //             'serverTimestamp': FieldValue.serverTimestamp(),
+  //             'localTimestamp': localTimestamp,
+  //             'uid': currentUser.currentUser!.uid,
+  //             'timestamp': localTimestamp,
+  //           },
+  //         );
   //
-  //       await FirebaseFirestore.instance
-  //           .collection('users')
-  //           .doc(currentUser.currentUser!.uid)
-  //           .update({
-  //         'hasUploadedStory': true,
-  //         'latestStoryUrl': downloadUrl,
+  //         transaction.update(
+  //           FirebaseFirestore.instance.collection('users').doc(currentUser.currentUser!.uid),
+  //           {
+  //             'hasUploadedStory': true,
+  //             'latestStoryUrl': downloadUrl,
+  //           },
+  //         );
   //       });
-  //
+  //       context.loaderOverlay.hide();
   //       print('Upload successful: $downloadUrl');
   //     } catch (e) {
   //       print('Failed to upload: $e');
+  //     } finally {
+  //       context.loaderOverlay.hide();
   //     }
+  //   } else {
+  //     context.loaderOverlay.hide();
+  //     print('Failed to decode image');
   //   }
   // }
 
   Future<void> _pickAndUploadMedia(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
+    context.loaderOverlay.show();
+
     final XFile? pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      File file = File(pickedFile.path);
-      print('Ukuran file sebelum dikompresi: ${file.lengthSync()} bytes');
-      final img.Image? image = img.decodeImage(file.readAsBytesSync());
-      if (image != null) {
-        final compressedImage = img.encodeJpg(image, quality: 50);
-        File compressedFile = File('${file.path}.jpg')
-          ..writeAsBytesSync(compressedImage);
-        print(
-            'Ukuran gambar setelah kompresi: ${compressedImage.length} bytes');
-        try {
-          String fileName =
-              'stories/${DateTime.now().millisecondsSinceEpoch.toString()}_${pickedFile.name}';
-          UploadTask uploadTask = FirebaseStorage.instance
-              .ref()
-              .child(fileName)
-              .putFile(compressedFile);
-          TaskSnapshot taskSnapshot = await uploadTask;
-          String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    if (pickedFile == null) {
+      context.loaderOverlay.hide();
+      print('No image selected');
+      return;
+    }
 
-          DateTime localTimestamp = DateTime.now();
+    File file = File(pickedFile.path);
+    print('File size before compression: ${file.lengthSync()} bytes');
 
-          await FirebaseFirestore.instance.collection('stories').add({
+    final img.Image? image = img.decodeImage(await file.readAsBytes());
+    if (image == null) {
+      context.loaderOverlay.hide();
+      print('Failed to decode image');
+      return;
+    }
+
+    final compressedImage = img.encodeJpg(image, quality: 50);
+    final String compressedFilePath = '${file.path}.jpg';
+    await File(compressedFilePath).writeAsBytes(compressedImage);
+    print('File size after compression: ${compressedImage.length} bytes');
+
+    String fileName =
+        'stories/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+    try {
+      UploadTask uploadTask = FirebaseStorage.instance
+          .ref()
+          .child(fileName)
+          .putFile(File(compressedFilePath));
+
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      DateTime localTimestamp = DateTime.now();
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        transaction.set(
+          FirebaseFirestore.instance.collection('stories').doc(),
+          {
             'url': downloadUrl,
             'serverTimestamp': FieldValue.serverTimestamp(),
             'localTimestamp': localTimestamp,
             'uid': currentUser.currentUser!.uid,
-            'timestamp': localTimestamp, // Tambahkan field ini
-          });
+            'timestamp': localTimestamp,
+          },
+        );
 
-          await FirebaseFirestore.instance
+        transaction.update(
+          FirebaseFirestore.instance
               .collection('users')
-              .doc(currentUser.currentUser!.uid)
-              .update({
+              .doc(currentUser.currentUser!.uid),
+          {
             'hasUploadedStory': true,
             'latestStoryUrl': downloadUrl,
-          });
-
-          print('Upload successful: $downloadUrl');
-        } catch (e) {
-          print('Failed to upload: $e');
-        }
-      } else {
-        print('Failed to decode image');
-      }
+          },
+        );
+      });
+      context.loaderOverlay.hide();
+      print('Upload successful: $downloadUrl');
+    } catch (e) {
+      context.loaderOverlay.hide();
+      _alertService.showToast(
+        text: e.toString(),
+        icon: Icons.error,
+        color: Colors.red,
+      );
+      print('Failed to upload: $e');
+    } finally {
+      context.loaderOverlay.hide();
     }
   }
+
+  // Future<void> _pickAndUploadMedia(ImageSource source) async {
+  //   final ImagePicker _picker = ImagePicker();
+  //   final XFile? pickedFile = await _picker.pickImage(source: source);
+  //
+  //   if (pickedFile == null) return;
+  //
+  //   try {
+  //     final File file = File(pickedFile.path);
+  //
+  //     final File? compressedFile = await _compressImage(file);
+  //
+  //     if (compressedFile == null) throw 'Gagal mengkompres gambar';
+  //
+  //     print('Mengunggah gambar...');
+  //
+  //     String fileName = 'stories/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+  //     final uploadTask = FirebaseStorage.instance.ref(fileName).putFile(compressedFile);
+  //
+  //     final snapshot = await uploadTask;
+  //     final downloadUrl = await snapshot.ref.getDownloadURL();
+  //
+  //     DateTime localTimestamp = DateTime.now();
+  //
+  //     await FirebaseFirestore.instance.runTransaction((transaction) async {
+  //       transaction.set(FirebaseFirestore.instance.collection('stories').doc(), {
+  //         'url': downloadUrl,
+  //         'serverTimestamp': FieldValue.serverTimestamp(),
+  //         'localTimestamp': localTimestamp,
+  //         'uid': currentUser.currentUser!.uid,
+  //         'timestamp': localTimestamp,
+  //       });
+  //
+  //       transaction.update(FirebaseFirestore.instance.collection('users').doc(currentUser.currentUser!.uid), {
+  //         'hasUploadedStory': true,
+  //         'latestStoryUrl': downloadUrl,
+  //       });
+  //     });
+  //     context.loaderOverlay.hide();
+  //     print('Upload sukses: $downloadUrl');
+  //   } catch (e) {
+  //     context.loaderOverlay.hide();
+  //     _alertService.showToast(
+  //       text: 'Select at least 2 users to create a group',
+  //       icon: Icons.error,
+  //       color: Colors.red,
+  //     );
+  //     print('Gagal mengunggah: $e');
+  //   } finally {
+  //     context.loaderOverlay.hide();
+  //   }
+  // }
+
+  // Future<File?> _compressImage(File file) async {
+  //   final compressedImage = await FlutterImageCompress.compressAndGetFile(
+  //     file.absolute.path,
+  //     '${file.path}_compressed.jpg',
+  //     quality: 50,
+  //   );
+  //
+  //   if (compressedImage != null) {
+  //     return File(compressedImage.path);
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   Future<List<Map<String, dynamic>>> getUserStory(String uid) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('stories')
           .where('uid', isEqualTo: uid)
-          .orderBy('timestamp', descending: true) // Gunakan field 'timestamp'
+          .orderBy('timestamp', descending: true)
           .get();
 
       List<Map<String, dynamic>> stories = querySnapshot.docs
@@ -208,47 +331,51 @@ class _UpdatesPageState extends State<UpdatesPage> {
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      body: Container(
-        padding:
-            EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.05,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text(
-                      'Status',
-                      style: TextStyle(
-                        fontSize: MediaQuery.of(context).size.width * 0.05,
-                        fontWeight: FontWeight.bold,
+      body: LoaderOverlay(
+        switchOutCurve: Curves.linear,
+        switchInCurve: Curves.easeIn,
+        useDefaultLoading: true,
+        child: Container(
+          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.05,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        'Status',
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.05,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      await _requestPermission().whenComplete(() async {
-                        await _pickAndUploadMedia(ImageSource.camera);
-                      });
-                    },
-                    icon: Icon(Icons.camera_alt),
-                    iconSize: MediaQuery.of(context).size.width * 0.06,
-                  ),
-                ],
+                    IconButton(
+                      onPressed: () async {
+                        await _requestPermission().whenComplete(() async {
+                          await _pickAndUploadMedia(ImageSource.camera);
+                        });
+                      },
+                      icon: Icon(Icons.camera_alt),
+                      iconSize: MediaQuery.of(context).size.width * 0.06,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(child: _storyList()),
-          ],
+              Expanded(child: _storyList()),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _storyList() {
+Widget _storyList() {
     return StreamBuilder(
       stream: _databaseService.getUserProfiles(),
       builder: (context, snapshot) {
@@ -305,9 +432,9 @@ class _UpdatesPageState extends State<UpdatesPage> {
                       double screenWidth = MediaQuery.of(context).size.width;
                       double screenHeight = MediaQuery.of(context).size.height;
                       double avatarSize =
-                          screenWidth * 0.15; // Scale avatar size
-                      double iconSize = screenWidth * 0.04; // Scale icon size
-                      double margin = screenWidth * 0.05; // Scale margin
+                          screenWidth * 0.15;
+                      double iconSize = screenWidth * 0.04;
+                      double margin = screenWidth * 0.05;
 
                       return Container(
                         margin: EdgeInsets.only(left: margin),
@@ -365,96 +492,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     },
                   ),
                 );
-                // return GestureDetector(
-                //   onTap: () async {
-                //     var userProfile =
-                //     await _getUserProfile(currentUser.currentUser!.uid);
-                //
-                //     if (userProfile.hasUploadedStory) {
-                //       Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //           builder: (context) => StoryViewerScreen(
-                //             userProfile: userProfile,
-                //             requestPermission: _requestPermission,
-                //             pickAndUploadMedia: _pickAndUploadMedia,
-                //           ),
-                //         ),
-                //       );
-                //     } else {
-                //       if (!_isRequestingPermission) {
-                //         await _requestPermission().then((_) async {
-                //           await _pickAndUploadMedia(ImageSource.camera);
-                //         });
-                //       }
-                //     }
-                //   },
-                //   child: StreamBuilder(
-                //     stream: FirebaseFirestore.instance
-                //         .collection('users')
-                //         .where('uid', isEqualTo: currentUser.currentUser!.uid)
-                //         .snapshots(),
-                //     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                //       if (!snapshot.hasData ||
-                //           snapshot.connectionState == ConnectionState.waiting) {
-                //         return Container();
-                //       }
-                //
-                //       var userProfile = UserProfile.fromMap(
-                //           snapshot.data!.docs[0].data()
-                //               as Map<String, dynamic>);
-                //       bool hasUploadedStory = userProfile.hasUploadedStory;
-                //
-                //       return Container(
-                //         margin: EdgeInsets.only(left: 20),
-                //         padding: EdgeInsets.all(3),
-                //         width: 80,
-                //         child: Column(
-                //           children: [
-                //             Stack(
-                //               children: [
-                //                 Container(
-                //                   width: 60,
-                //                   height: 60,
-                //                   decoration: BoxDecoration(
-                //                     border: Border.all(
-                //                       color: hasUploadedStory
-                //                           ? Colors.grey
-                //                           : Colors.white,
-                //                       width: 2,
-                //                     ),
-                //                     shape: BoxShape.circle,
-                //                     image: DecorationImage(
-                //                       image: NetworkImage(userProfile.pfpURL!),
-                //                       fit: BoxFit.cover,
-                //                     ),
-                //                   ),
-                //                 ),
-                //                 Positioned(
-                //                   top: 41,
-                //                   right: 0,
-                //                   bottom: 0,
-                //                   left: 40,
-                //                   child: Icon(
-                //                     Icons.add_circle,
-                //                     color:
-                //                         Theme.of(context).colorScheme.primary,
-                //                     size: 20,
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //             SizedBox(height: 5),
-                //             Text(
-                //               'My Story',
-                //               style: TextStyle(fontSize: 12),
-                //             ),
-                //           ],
-                //         ),
-                //       );
-                //     },
-                //   ),
-                // );
               } else {
                 UserProfile user = users[index - 1].data();
                 return GestureDetector(
@@ -530,80 +567,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     },
                   ),
                 );
-
-                // UserProfile user = users[index - 1].data();
-                // return GestureDetector(
-                //   onTap: () async {
-                //     final storyData = await getUserStory(user.uid!);
-                //     if (storyData.isNotEmpty) {
-                //       final List<String> storyUrls = storyData
-                //           .map((story) => story['url'] as String)
-                //           .toList();
-                //       Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //           builder: (context) => OtherUser(
-                //             userProfile: user,
-                //             storyData: storyUrls,
-                //           ),
-                //         ),
-                //       );
-                //     } else {
-                //       print('No story data available');
-                //     }
-                //     setState(() {
-                //       clickedUIDs.add(user.uid!);
-                //     });
-                //   },
-                //   child: FutureBuilder<List<dynamic>>(
-                //     future: getUserStory(user.uid!),
-                //     builder: (context, snapshot) {
-                //       if (snapshot.connectionState == ConnectionState.waiting) {
-                //         return Container();
-                //       } else if (snapshot.hasError) {
-                //         return Container();
-                //       } else if (snapshot.hasData &&
-                //           snapshot.data!.isNotEmpty) {
-                //         return Container(
-                //           padding: EdgeInsets.all(3),
-                //           width: 66,
-                //           child: Column(
-                //             children: [
-                //               Container(
-                //                 width: 60,
-                //                 height: 60,
-                //                 decoration: BoxDecoration(
-                //                   border: Border.all(
-                //                     color: clickedUIDs.contains(user.uid!)
-                //                         ? Colors.grey
-                //                         : Colors.blue,
-                //                     width: 2,
-                //                   ),
-                //                   shape: BoxShape.circle,
-                //                   image: DecorationImage(
-                //                     image: NetworkImage(user.pfpURL ?? ''),
-                //                     fit: BoxFit.cover,
-                //                   ),
-                //                 ),
-                //               ),
-                //               SizedBox(height: 5),
-                //               Text(
-                //                 user.name ?? '-',
-                //                 style: TextStyle(
-                //                   overflow: TextOverflow.ellipsis,
-                //                   fontSize: 12,
-                //                 ),
-                //               ),
-                //             ],
-                //           ),
-                //         );
-                //       } else {
-                //         // Jika user belum membuat story, tampilkan Container
-                //         return Container();
-                //       }
-                //     },
-                //   ),
-                // );
               }
             },
           );

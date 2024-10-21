@@ -16,6 +16,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,49 +56,76 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Future<void> _pickAndUploadMedia(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
+    context.loaderOverlay.show();
+
     final XFile? pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      File file = File(pickedFile.path);
-      print('Ukuran file sebelum dikompresi: ${file.lengthSync()} bytes');
-      final img.Image? image = img.decodeImage(file.readAsBytesSync());
-      if (image != null) {
-        final compressedImage = img.encodeJpg(image, quality: 50);
-        File compressedFile = File('${file.path}.jpg')
-          ..writeAsBytesSync(compressedImage);
-        print('Ukuran gambar setelah kompresi: ${compressedImage.length} bytes');
-        try {
-          String fileName =
-              'stories/${DateTime.now().millisecondsSinceEpoch.toString()}_${pickedFile.name}';
-          UploadTask uploadTask =
-          FirebaseStorage.instance.ref().child(fileName).putFile(compressedFile);
-          TaskSnapshot taskSnapshot = await uploadTask;
-          String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    if (pickedFile == null) {
+      context.loaderOverlay.hide();
+      print('No image selected');
+      return;
+    }
 
-          DateTime localTimestamp = DateTime.now();
+    File file = File(pickedFile.path);
+    print('File size before compression: ${file.lengthSync()} bytes');
 
-          await FirebaseFirestore.instance.collection('stories').add({
+    final img.Image? image = img.decodeImage(await file.readAsBytes());
+    if (image == null) {
+      context.loaderOverlay.hide();
+      print('Failed to decode image');
+      return;
+    }
+
+    final compressedImage = img.encodeJpg(image, quality: 50);
+    final String compressedFilePath = '${file.path}.jpg';
+    await File(compressedFilePath).writeAsBytes(compressedImage);
+    print('File size after compression: ${compressedImage.length} bytes');
+
+    String fileName =
+        'stories/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+    try {
+      UploadTask uploadTask = FirebaseStorage.instance
+          .ref()
+          .child(fileName)
+          .putFile(File(compressedFilePath));
+
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      DateTime localTimestamp = DateTime.now();
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        transaction.set(
+          FirebaseFirestore.instance.collection('stories').doc(),
+          {
             'url': downloadUrl,
             'serverTimestamp': FieldValue.serverTimestamp(),
             'localTimestamp': localTimestamp,
             'uid': currentUser.currentUser!.uid,
-            'timestamp': localTimestamp, // Tambahkan field ini
-          });
+            'timestamp': localTimestamp,
+          },
+        );
 
-          await FirebaseFirestore.instance
+        transaction.update(
+          FirebaseFirestore.instance
               .collection('users')
-              .doc(currentUser.currentUser!.uid)
-              .update({
+              .doc(currentUser.currentUser!.uid),
+          {
             'hasUploadedStory': true,
             'latestStoryUrl': downloadUrl,
-          });
-
-          print('Upload successful: $downloadUrl');
-        } catch (e) {
-          print('Failed to upload: $e');
-        }
-      } else {
-        print('Failed to decode image');
-      }
+          },
+        );
+      });
+      context.loaderOverlay.hide();
+      print('Upload successful: $downloadUrl');
+    } catch (e) {
+      context.loaderOverlay.hide();
+      _alertService.showToast(
+        text: e.toString(),
+        icon: Icons.error,
+        color: Colors.red,
+      );
+      print('Failed to upload: $e');
+    } finally {
+      context.loaderOverlay.hide();
     }
   }
 
@@ -489,6 +517,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     children: [
                       IconButton(
                         onPressed: () async {
+                          context.loaderOverlay.show();
                           await _requestPermission().whenComplete(() async {
                             await _pickAndUploadMedia(ImageSource.camera);
                           });
@@ -628,10 +657,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Widget _buildUI() {
     return SafeArea(
-      child: Container(
-        color: Colors.white,
-        padding: EdgeInsets.only(left: 10, right: 10),
-        child: _chatListAndGroups()
+      child: LoaderOverlay(
+        switchOutCurve: Curves.linear,
+        switchInCurve: Curves.easeIn,
+        useDefaultLoading: true,
+        child: Container(
+          color: Colors.white,
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: _chatListAndGroups()
+        ),
       ),
     );
   }

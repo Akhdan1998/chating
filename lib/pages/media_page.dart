@@ -11,8 +11,6 @@ class MediaPage extends StatefulWidget {
 class _MediaPageState extends State<MediaPage> {
   int _selectedIndex = 0;
   PageController controller = PageController();
-  List<String> _mediaUrls = [];
-  List<String> _documentUrls = [];
 
   void _navigateBottomBar(int index) {
     setState(() {
@@ -27,71 +25,12 @@ class _MediaPageState extends State<MediaPage> {
   void initState() {
     super.initState();
     controller = PageController(initialPage: _selectedIndex);
-    _fetchMediaUrls();
-    _fetchDocumentUrls();
-  }
-
-  Future<void> _fetchMediaUrls() async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-      final querySnapshot = await firestore.collection('chats').get();
-      final mediaUrls = querySnapshot.docs
-          .where((doc) => doc.data().containsKey('messageType') && doc['messageType'] == 'Image')
-          .map((doc) => doc['content'] as String)
-          .toList();
-
-      setState(() {
-        _mediaUrls = mediaUrls;
-      });
-    } catch (e) {
-      print('Error fetching media URLs: $e');
-    }
-  }
-
-  Future<void> _fetchDocumentUrls() async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-      final querySnapshot = await firestore.collection('chats').get();
-      final documentUrls = querySnapshot.docs
-          .where((doc) => doc.data().containsKey('messageType') && doc['messageType'] == 'Document')
-          .map((doc) => doc['content'] as String)
-          .toList();
-
-      setState(() {
-        _documentUrls = documentUrls;
-      });
-    } catch (e) {
-      print("Error fetching document URLs: $e");
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   automaticallyImplyLeading: true,
-      //   centerTitle: true,
-      //   backgroundColor: Theme.of(context).colorScheme.primary,
-      //   leading: IconButton(
-      //     icon: Icon(
-      //       Icons.arrow_back,
-      //       color: Colors.white,
-      //     ),
-      //     onPressed: () {
-      //       Navigator.pop(context);
-      //     },
-      //   ),
-      //   title: Text(
-      //     'Contact Info',
-      //     overflow: TextOverflow.ellipsis,
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: 18,
-      //       fontWeight: FontWeight.bold,
-      //     ),
-      //   ),
-      // ),
       body: Column(
         children: [
           Container(
