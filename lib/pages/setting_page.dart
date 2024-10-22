@@ -569,40 +569,6 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
     );
-    // showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return AlertDialog(
-    //       title: Text('Log out'),
-    //       content: Text(
-    //           'You need to log in again if you want to continue previous activities.'),
-    //       actions: [
-    //         TextButton(
-    //           onPressed: () => Navigator.pop(context),
-    //           child: Text('No', style: TextStyle(color: Colors.redAccent)),
-    //         ),
-    //         TextButton(
-    //           onPressed: () async {
-    //             bool result = await _authService.logout();
-    //             if (result) {
-    //               SharedPreferences prefs =
-    //                   await SharedPreferences.getInstance();
-    //               await prefs.clear();
-    //               _alertService.showToast(
-    //                 text: 'Successfully logged out!',
-    //                 icon: Icons.check,
-    //                 color: Colors.green,
-    //               );
-    //               _navigationService.pushReplacementNamed("/login");
-    //             }
-    //           },
-    //           child: Text('Yes',
-    //               style: TextStyle(color: Theme.of(context).primaryColor),),
-    //         ),
-    //       ],
-    //     );
-    //   },
-    // );
   }
 
   @override

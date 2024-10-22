@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:story_view/story_view.dart';
@@ -224,7 +225,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Container();
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -325,28 +326,82 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                       ),
                       Row(
                         children: [
-                          // IconButton(
-                          //   onPressed: () {
-                          //     setState(() {
-                          //       play = !play;
-                          //       if (play) {
-                          //         _storyController.play();
-                          //       } else {
-                          //         _storyController.pause();
-                          //       }
-                          //     });
-                          //   },
-                          //   icon: Icon(
-                          //     play ? Icons.pause : Icons.play_arrow,
-                          //     color: Theme.of(context).colorScheme.primary,
-                          //     size: 19,
-                          //   ),
-                          // ),
                           IconButton(
                             onPressed: () {
-                              _deleteStory(stories[0].id).whenComplete(() {
-                                Navigator.pop(context);
+                              if (play) {
+                                _storyController.pause();
+                              } else {
+                                _storyController.play();
+                              }
+
+                              setState(() {
+                                play = !play;
                               });
+                            },
+                            icon: Icon(
+                              play ? Icons.pause : Icons.play_arrow,
+                              color: Colors.redAccent,
+                              size: 19,
+                            ),
+                          ),
+
+                          IconButton(
+                            onPressed: () {
+                              _storyController.pause();
+
+                              showGeneralDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                barrierLabel: "Delete Story",
+                                transitionDuration: Duration(milliseconds: 300),
+                                pageBuilder: (context, animation, secondaryAnimation) {
+                                  return AlertDialog(
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          _storyController.play();
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text(
+                                          'No',
+                                          style: GoogleFonts.poppins().copyWith(
+                                            color: Colors.redAccent,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          _deleteStory(stories[0].id)
+                                              .whenComplete(() {
+                                            Navigator.pop(context);
+                                            _storyController.next();
+                                          });
+                                        },
+                                        child: Text(
+                                          'Yes',
+                                          style: GoogleFonts.poppins().copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    title: Text(
+                                      "Are you sure you want to delete this story?",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  );
+                                },
+                                transitionBuilder: (context, animation, secondaryAnimation, child) {
+                                  return ScaleTransition(
+                                    scale: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+                                    child: child,
+                                  );
+                                },
+                              );
                             },
                             icon: Icon(
                               Icons.delete,

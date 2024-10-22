@@ -761,9 +761,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     );
                   },
                   onLongPress: () {
-                    showDialog(
+                    showGeneralDialog(
                       context: context,
-                      builder: (BuildContext context) {
+                      barrierDismissible: true,
+                      barrierLabel: '',
+                      transitionDuration: Duration(milliseconds: 300),
+                      pageBuilder: (context, anim1, anim2) {
                         return AlertDialog(
                           actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
                           title: Text(
@@ -800,6 +803,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               ),
                             ),
                           ],
+                        );
+                      },
+                      transitionBuilder:
+                          (context, anim1, anim2, child) {
+                        return Transform.scale(
+                          scale: anim1.value,
+                          child: child,
                         );
                       },
                     );
