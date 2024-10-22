@@ -344,8 +344,7 @@ class _ChatPageState extends State<ChatPage> {
           ],
         );
       },
-      transitionBuilder:
-          (context, anim1, anim2, child) {
+      transitionBuilder: (context, anim1, anim2, child) {
         return Transform.scale(
           scale: anim1.value,
           child: child,
