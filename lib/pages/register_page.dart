@@ -1,12 +1,8 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get_it/get_it.dart';
-
 import '../consts.dart';
-import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 import '../service/auth_service.dart';
 import '../service/database_service.dart';

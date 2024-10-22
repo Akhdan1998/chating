@@ -344,6 +344,54 @@ class _UpdatesPageState extends State<UpdatesPage> {
     }
   }
 
+  void _chooseStory(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.camera_alt,
+                color: Colors.green,),
+              title: Text('Take Photo'),
+              onTap: () async {
+                Navigator.pop(context);
+                context.loaderOverlay.show();
+                await _pickAndUploadMedia(ImageSource.camera, false);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library,
+                color: Colors.redAccent,),
+              title: Text('Choose Photo from Gallery'),
+              onTap: () async {
+                Navigator.pop(context);
+                context.loaderOverlay.show();
+                await _pickAndUploadMedia(ImageSource.gallery, false);
+              },
+            ),
+            // ListTile(
+            //   leading: Icon(Icons.videocam),
+            //   title: Text('Record Video'),
+            //   onTap: () async {
+            //     Navigator.pop(context); // Tutup modal
+            //     await _pickAndUploadMedia(ImageSource.camera, true); // Ambil video
+            //   },
+            // ),
+            // ListTile(
+            //   leading: Icon(Icons.video_library),
+            //   title: Text('Choose Video from Gallery'),
+            //   onTap: () async {
+            //     Navigator.pop(context); // Tutup modal
+            //     await _pickAndUploadMedia(ImageSource.gallery, true); // Pilih video dari galeri
+            //   },
+            // ),
+          ],
+        );
+      },
+    );
+  }
+
   //kompres video
   // Future<void> _pickAndUploadMedia(ImageSource source, bool isVideo) async {
   //   final ImagePicker _picker = ImagePicker();
@@ -659,49 +707,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                         // await _requestPermission().whenComplete(() async {
                         //   await _pickAndUploadMedia(ImageSource.camera);
                         // });
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Wrap(
-                              children: <Widget>[
-                                ListTile(
-                                  leading: Icon(Icons.camera_alt,
-                                    color: Colors.green,),
-                                  title: Text('Take Photo'),
-                                  onTap: () async {
-                                    Navigator.pop(context);
-                                    await _pickAndUploadMedia(ImageSource.camera, false);
-                                  },
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.photo_library,
-                                    color: Colors.redAccent,),
-                                  title: Text('Choose Photo from Gallery'),
-                                  onTap: () async {
-                                    Navigator.pop(context);
-                                    await _pickAndUploadMedia(ImageSource.gallery, false);
-                                  },
-                                ),
-                                // ListTile(
-                                //   leading: Icon(Icons.videocam),
-                                //   title: Text('Record Video'),
-                                //   onTap: () async {
-                                //     Navigator.pop(context); // Tutup modal
-                                //     await _pickAndUploadMedia(ImageSource.camera, true); // Ambil video
-                                //   },
-                                // ),
-                                // ListTile(
-                                //   leading: Icon(Icons.video_library),
-                                //   title: Text('Choose Video from Gallery'),
-                                //   onTap: () async {
-                                //     Navigator.pop(context); // Tutup modal
-                                //     await _pickAndUploadMedia(ImageSource.gallery, true); // Pilih video dari galeri
-                                //   },
-                                // ),
-                              ],
-                            );
-                          },
-                        );
+                        _chooseStory(context);
                       },
                       icon: Icon(Icons.camera_alt),
                       iconSize: MediaQuery.of(context).size.width * 0.06,
@@ -753,49 +759,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                       if (!_isRequestingPermission) {
                         await _requestPermission().then((_) async {
                           // await _pickAndUploadMedia(ImageSource.camera);
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Wrap(
-                                children: [
-                                  ListTile(
-                                    leading: Icon(Icons.camera_alt,
-                                      color: Colors.green,),
-                                    title: Text('Take Photo'),
-                                    onTap: () async {
-                                      Navigator.pop(context);
-                                      await _pickAndUploadMedia(ImageSource.camera, false);
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: Icon(Icons.photo_library,
-                                      color: Colors.redAccent,),
-                                    title: Text('Choose Photo from Gallery'),
-                                    onTap: () async {
-                                      Navigator.pop(context);
-                                      await _pickAndUploadMedia(ImageSource.gallery, false);
-                                    },
-                                  ),
-                                  // ListTile(
-                                  //   leading: Icon(Icons.videocam),
-                                  //   title: Text('Record Video'),
-                                  //   onTap: () async {
-                                  //     Navigator.pop(context); // Tutup modal
-                                  //     await _pickAndUploadMedia(ImageSource.camera, true); // Ambil video
-                                  //   },
-                                  // ),
-                                  // ListTile(
-                                  //   leading: Icon(Icons.video_library),
-                                  //   title: Text('Choose Video from Gallery'),
-                                  //   onTap: () async {
-                                  //     Navigator.pop(context); // Tutup modal
-                                  //     await _pickAndUploadMedia(ImageSource.gallery, true); // Pilih video dari galeri
-                                  //   },
-                                  // ),
-                                ],
-                              );
-                            },
-                          );
+                          _chooseStory(context);
                         });
                       }
                     }

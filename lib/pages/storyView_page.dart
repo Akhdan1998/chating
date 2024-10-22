@@ -326,25 +326,24 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                       ),
                       Row(
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              if (play) {
-                                _storyController.pause();
-                              } else {
-                                _storyController.play();
-                              }
-
-                              setState(() {
-                                play = !play;
-                              });
-                            },
-                            icon: Icon(
-                              play ? Icons.pause : Icons.play_arrow,
-                              color: Colors.redAccent,
-                              size: 19,
-                            ),
-                          ),
-
+                          // IconButton(
+                          //   onPressed: () {
+                          //     if (play) {
+                          //       _storyController.pause();
+                          //     } else {
+                          //       _storyController.play();
+                          //     }
+                          //
+                          //     setState(() {
+                          //       play = !play;
+                          //     });
+                          //   },
+                          //   icon: Icon(
+                          //     play ? Icons.pause : Icons.play_arrow,
+                          //     color: Colors.redAccent,
+                          //     size: 19,
+                          //   ),
+                          // ),
                           IconButton(
                             onPressed: () {
                               _storyController.pause();

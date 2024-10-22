@@ -31,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   String phoneNumber = '';
   bool isButtonEnabled = false;
 
+  @override
   void initState() {
     super.initState();
     _authService = _getIt.get<AuthService>();
