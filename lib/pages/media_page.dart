@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class MediaPage extends StatefulWidget {
-  const MediaPage({super.key});
 
   @override
   State<MediaPage> createState() => _MediaPageState();

@@ -18,7 +18,8 @@ class Verifikasi extends StatefulWidget {
 class _VerifikasiState extends State<Verifikasi> {
   bool isOtpSent = false;
   late Timer _timer;
-  int _remainingTime = 60;
+  int _remainingTime = 7;
+  int _remaining = 60;
   late AlertService _alertService;
   final GetIt _getIt = GetIt.instance;
   String _verificationId = '';
@@ -28,6 +29,23 @@ class _VerifikasiState extends State<Verifikasi> {
   void initState() {
     super.initState();
     _alertService = _getIt.get<AlertService>();
+    autoSend();
+  }
+
+  void autoSend() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingTime > 0) {
+          _remainingTime--;
+        } else {
+          _timer.cancel();
+          setState(() {
+            isOtpSent = true;
+          });
+          // _sendOTP();
+        }
+      });
+    });
   }
 
   Future<void> _sendOTP() async {
@@ -40,11 +58,10 @@ class _VerifikasiState extends State<Verifikasi> {
         },
         verificationFailed: (FirebaseAuthException e) {
           _alertService.showToast(
-            text: 'Failed to send OTP: ${e.message}', // Showing in toast
+            text: 'Failed to send OTP: ${e.message}',
             icon: Icons.error,
             color: Colors.redAccent,
           );
-          // Printing more detailed information in console for debugging
           print('Error sending OTP: ${e.code} - ${e.message}');
         },
         codeSent: (verificationId, _) {
@@ -78,7 +95,7 @@ class _VerifikasiState extends State<Verifikasi> {
       );
       await _auth.signInWithCredential(credential);
       _alertService.showToast(
-          text: 'OTP Verified!', icon: Icons.check, color: Colors.green);
+          text: 'OTP Verified!', icon: Icons.check, color: Colors.green,);
     } catch (e) {
       _alertService.showToast(
         text: 'Invalid OTP Code: $e',
@@ -89,14 +106,14 @@ class _VerifikasiState extends State<Verifikasi> {
   }
 
   void _startTimer() {
-    _remainingTime = 60;
+    _remaining = 60;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_remainingTime > 0) {
           _remainingTime--;
         } else {
           _timer.cancel();
-          isOtpSent = false; // Reset the OTP status
+          isOtpSent = false;
         }
       });
     });
@@ -172,7 +189,12 @@ class _VerifikasiState extends State<Verifikasi> {
 
   Widget _buildSendOtpButton() {
     return GestureDetector(
-      onTap: _sendOTP,
+      // onTap: _sendOTP,
+      onTap: () {
+        setState(() {
+          isOtpSent = true;
+        });
+      },
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -215,7 +237,7 @@ class _VerifikasiState extends State<Verifikasi> {
   Widget _buildTimer() {
     return Center(
       child: Text(
-        _formatTimer(_remainingTime),
+        _formatTimer(_remaining),
         style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
       ),
     );
@@ -225,7 +247,7 @@ class _VerifikasiState extends State<Verifikasi> {
     return isOtpSent
         ? Container()
         : Text(
-            'If nothing is selected within 7 seconds, a code will be sent automatically via SMS.',
+            'If nothing is selected within $_remainingTime seconds, a code will be sent automatically via SMS.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14, color: Colors.grey[700]),
           );

@@ -32,6 +32,7 @@ class StorageService {
       if (e.state == TaskState.success) {
         return fileRef.getDownloadURL();
       }
+      return null;
     });
   }
 
