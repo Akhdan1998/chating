@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../consts.dart';
+import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 import '../service/auth_service.dart';
 import '../service/database_service.dart';
@@ -215,19 +216,107 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _onRegisterPressed() async {
-    if (_registerFormKey.currentState!.validate()) {
-      setState(() => isLoading = true);
-      try {
-        // Proses registrasi dan penanganan error
-      } catch (e) {
+    if (nameController.text.isEmpty) {
+      _alertService.showToast(
+        text: 'Name cannot be empty.',
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+      return;
+    }
+
+    if (numberController.text.isEmpty) {
+      _alertService.showToast(
+        text: 'Phone number cannot be empty.',
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+      return;
+    }
+
+    if (emailController.text.isEmpty) {
+      _alertService.showToast(
+        text: 'Email cannot be empty.',
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+      return;
+    }
+
+    if (passwordController.text.isEmpty) {
+      _alertService.showToast(
+        text: 'Password cannot be empty.',
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+      return;
+    }
+
+    if (!_registerFormKey.currentState!.validate()) {
+      _alertService.showToast(
+        text: 'Please fill in all fields correctly.',
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+      return;
+    }
+
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      String email = emailController.text;
+      String password = passwordController.text;
+
+      UserCredential userCredential =
+          await _authService.signup(email, password);
+
+      if (userCredential.user != null) {
+        await userCredential.user!.sendEmailVerification();
+
+        String? pfpURL;
+        if (selectedImage != null) {
+          pfpURL = await _storageService.uploadUserPfp(
+            file: selectedImage!,
+            uid: userCredential.user!.uid,
+          );
+        }
+
+        await _databaseService.createUserProfile(
+          userProfile: UserProfile(
+            uid: userCredential.user!.uid,
+            name: nameController.text,
+            pfpURL: pfpURL ?? PLACEHOLDER_PFP,
+            phoneNumber: numberController.text,
+            email: emailController.text,
+            hasUploadedStory: false,
+            isViewed: false,
+          ),
+        );
+
         _alertService.showToast(
-          text: 'Error: $e',
+          text: 'Registration successful. Please verify your email.',
+          icon: Icons.check,
+          color: Colors.green,
+        );
+        _navigationService.goBack();
+      } else {
+        _alertService.showToast(
+          text: 'Registration failed.',
           icon: Icons.error,
           color: Colors.redAccent,
         );
-      } finally {
-        setState(() => isLoading = false);
       }
+    } catch (e) {
+      _alertService.showToast(
+        text: 'Phone Number or Email has already been used.',
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
