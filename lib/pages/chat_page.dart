@@ -19,7 +19,7 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+// import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -1338,64 +1338,64 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
     _alertService = _getIt.get<AlertService>();
   }
 
-  Future<void> downloadImage(String url) async {
-    try {
-      var dio = Dio();
-      var tempDir = await getTemporaryDirectory();
-      String fullPath = tempDir.path + "/image.jpg";
-      setState(() {
-        _isDownloading = true;
-      });
-      await dio.download(
-        url,
-        fullPath,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            double progress = (received / total * 100);
-            print("Download progress: $progress%");
-            setState(() {
-              _progress = progress;
-            });
-          }
-        },
-      );
-      File file = File(fullPath);
-      if (await file.exists()) {
-        final result = await ImageGallerySaver.saveFile(file.path);
-        if (result['isSuccess']) {
-          setState(() {
-            _alertService.showToast(
-              text: 'Image downloaded successfully',
-              icon: Icons.check,
-              color: Colors.green,
-            );
-          });
-        } else {
-          setState(() {
-            _alertService.showToast(
-              text: 'Failed to save image to gallery',
-              icon: Icons.error,
-              color: Colors.red,
-            );
-          });
-        }
-      }
-    } catch (e) {
-      print(e);
-      setState(() {
-        _alertService.showToast(
-          text: 'Failed to download image $e',
-          icon: Icons.error,
-          color: Colors.red,
-        );
-      });
-    } finally {
-      setState(() {
-        _isDownloading = false;
-        _progress = 0.0;
-      });
-    }
-  }
+  // Future<void> downloadImage(String url) async {
+  //   try {
+  //     var dio = Dio();
+  //     var tempDir = await getTemporaryDirectory();
+  //     String fullPath = tempDir.path + "/image.jpg";
+  //     setState(() {
+  //       _isDownloading = true;
+  //     });
+  //     await dio.download(
+  //       url,
+  //       fullPath,
+  //       onReceiveProgress: (received, total) {
+  //         if (total != -1) {
+  //           double progress = (received / total * 100);
+  //           print("Download progress: $progress%");
+  //           setState(() {
+  //             _progress = progress;
+  //           });
+  //         }
+  //       },
+  //     );
+  //     File file = File(fullPath);
+  //     if (await file.exists()) {
+  //       final result = await ImageGallerySaver.saveFile(file.path);
+  //       if (result['isSuccess']) {
+  //         setState(() {
+  //           _alertService.showToast(
+  //             text: 'Image downloaded successfully',
+  //             icon: Icons.check,
+  //             color: Colors.green,
+  //           );
+  //         });
+  //       } else {
+  //         setState(() {
+  //           _alertService.showToast(
+  //             text: 'Failed to save image to gallery',
+  //             icon: Icons.error,
+  //             color: Colors.red,
+  //           );
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     setState(() {
+  //       _alertService.showToast(
+  //         text: 'Failed to download image $e',
+  //         icon: Icons.error,
+  //         color: Colors.red,
+  //       );
+  //     });
+  //   } finally {
+  //     setState(() {
+  //       _isDownloading = false;
+  //       _progress = 0.0;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -1439,7 +1439,7 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
         actions: [
           IconButton(
             onPressed: () async {
-              await downloadImage(widget.imageUrl);
+              // await downloadImage(widget.imageUrl);
             },
             icon: AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
@@ -1722,64 +1722,64 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     super.dispose();
   }
 
-  Future<void> _downloadVideo(String url) async {
-    try {
-      var dio = Dio();
-      var tempDir = await getTemporaryDirectory();
-      String fullPath = '${tempDir.path}/video.mp4';
-      setState(() {
-        _isDownloading = true;
-      });
-      await dio.download(
-        url,
-        fullPath,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            double progress = (received / total * 100);
-            print("Download progress: $progress%");
-            setState(() {
-              _progress = progress;
-            });
-          }
-        },
-      );
-      File file = File(fullPath);
-      if (await file.exists()) {
-        final result = await ImageGallerySaver.saveFile(file.path);
-        if (result['isSuccess']) {
-          setState(() {
-            _alertService.showToast(
-              text: 'Video downloaded successfully',
-              icon: Icons.check,
-              color: Colors.green,
-            );
-          });
-        } else {
-          setState(() {
-            _alertService.showToast(
-              text: 'Failed to save video to gallery',
-              icon: Icons.error,
-              color: Colors.red,
-            );
-          });
-        }
-      }
-    } catch (e) {
-      print(e);
-      setState(() {
-        _alertService.showToast(
-          text: 'Failed to download video $e',
-          icon: Icons.error,
-          color: Colors.red,
-        );
-      });
-    } finally {
-      setState(() {
-        _isDownloading = false;
-        _progress = 0.0;
-      });
-    }
-  }
+  // Future<void> _downloadVideo(String url) async {
+  //   try {
+  //     var dio = Dio();
+  //     var tempDir = await getTemporaryDirectory();
+  //     String fullPath = '${tempDir.path}/video.mp4';
+  //     setState(() {
+  //       _isDownloading = true;
+  //     });
+  //     await dio.download(
+  //       url,
+  //       fullPath,
+  //       onReceiveProgress: (received, total) {
+  //         if (total != -1) {
+  //           double progress = (received / total * 100);
+  //           print("Download progress: $progress%");
+  //           setState(() {
+  //             _progress = progress;
+  //           });
+  //         }
+  //       },
+  //     );
+  //     File file = File(fullPath);
+  //     if (await file.exists()) {
+  //       final result = await ImageGallerySaver.saveFile(file.path);
+  //       if (result['isSuccess']) {
+  //         setState(() {
+  //           _alertService.showToast(
+  //             text: 'Video downloaded successfully',
+  //             icon: Icons.check,
+  //             color: Colors.green,
+  //           );
+  //         });
+  //       } else {
+  //         setState(() {
+  //           _alertService.showToast(
+  //             text: 'Failed to save video to gallery',
+  //             icon: Icons.error,
+  //             color: Colors.red,
+  //           );
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     setState(() {
+  //       _alertService.showToast(
+  //         text: 'Failed to download video $e',
+  //         icon: Icons.error,
+  //         color: Colors.red,
+  //       );
+  //     });
+  //   } finally {
+  //     setState(() {
+  //       _isDownloading = false;
+  //       _progress = 0.0;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -1827,7 +1827,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
         actions: [
           IconButton(
             onPressed: () async {
-              await _downloadVideo(widget.videoUrl);
+              // await _downloadVideo(widget.videoUrl);
             },
             icon: AnimatedSwitcher(
               duration: Duration(milliseconds: 300),

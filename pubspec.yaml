@@ -53,7 +53,6 @@ dependencies:
   dio: ^5.7.0
   path_provider: ^2.1.4
   photo_view: ^0.15.0
-  image_gallery_saver: ^2.0.3
   flutter_sound: ^9.16.3
   permission_handler: ^11.3.1
   audioplayers: ^6.1.0
