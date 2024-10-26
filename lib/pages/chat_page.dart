@@ -14,18 +14,20 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'package:video_player/video_player.dart';
 import '../models/chat.dart';
@@ -1338,6 +1340,74 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
     _alertService = _getIt.get<AlertService>();
   }
 
+  Future<void> downloadImage(String url) async {
+    try {
+      setState(() {
+        _isDownloading = true;
+        _progress = 0.0;
+      });
+
+      // 1. Download image temporarily
+      final tempDir = await getTemporaryDirectory();
+      final tempFilePath = "${tempDir.path}/temp_image.jpg";
+
+      await FileDownloader.downloadFile(
+        url: url,
+        name: "temp_image.jpg",
+        onProgress: (fileName, progress) {
+          setState(() {
+            _progress = progress;
+            print("Download progress: $progress%");
+          });
+        },
+        onDownloadCompleted: (path) async {
+          // 2. Compress image
+          final compressedFilePath = "${tempDir.path}/compressed_image.jpg";
+          final compressedFile = await FlutterImageCompress.compressAndGetFile(
+            path!, // Original image path
+            compressedFilePath,
+            quality: 70, // Adjust quality as needed (0-100)
+          );
+
+          if (compressedFile != null) {
+            // 3. Save compressed image to gallery or notify success
+            setState(() {
+              _isDownloading = false;
+              _progress = 0.0;
+              _alertService.showToast(
+                text: 'Image downloaded and compressed successfully',
+                icon: Icons.check,
+                color: Colors.green,
+              );
+            });
+          }
+        },
+        onDownloadError: (error) {
+          setState(() {
+            _isDownloading = false;
+            _progress = 0.0;
+            _alertService.showToast(
+              text: 'Failed to download image: $error',
+              icon: Icons.error,
+              color: Colors.red,
+            );
+          });
+        },
+      );
+    } catch (e) {
+      print(e);
+      setState(() {
+        _isDownloading = false;
+        _progress = 0.0;
+        _alertService.showToast(
+          text: 'Failed to download image: $e',
+          icon: Icons.error,
+          color: Colors.red,
+        );
+      });
+    }
+  }
+
   // Future<void> downloadImage(String url) async {
   //   try {
   //     var dio = Dio();
@@ -1724,29 +1794,15 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
 
   // Future<void> _downloadVideo(String url) async {
   //   try {
-  //     var dio = Dio();
-  //     var tempDir = await getTemporaryDirectory();
-  //     String fullPath = '${tempDir.path}/video.mp4';
   //     setState(() {
   //       _isDownloading = true;
   //     });
-  //     await dio.download(
-  //       url,
-  //       fullPath,
-  //       onReceiveProgress: (received, total) {
-  //         if (total != -1) {
-  //           double progress = (received / total * 100);
-  //           print("Download progress: $progress%");
-  //           setState(() {
-  //             _progress = progress;
-  //           });
-  //         }
-  //       },
-  //     );
-  //     File file = File(fullPath);
-  //     if (await file.exists()) {
-  //       final result = await ImageGallerySaver.saveFile(file.path);
-  //       if (result['isSuccess']) {
+  //
+  //     // Unduh video dan simpan ke penyimpanan lokal
+  //     await FileDownloader.downloadFile(
+  //       url: url,
+  //       name: "downloaded_video.mp4",
+  //       onDownloadCompleted: (filePath) {
   //         setState(() {
   //           _alertService.showToast(
   //             text: 'Video downloaded successfully',
@@ -1754,7 +1810,8 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   //             color: Colors.green,
   //           );
   //         });
-  //       } else {
+  //       },
+  //       onDownloadError: (error) {
   //         setState(() {
   //           _alertService.showToast(
   //             text: 'Failed to save video to gallery',
@@ -1762,8 +1819,8 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   //             color: Colors.red,
   //           );
   //         });
-  //       }
-  //     }
+  //       },
+  //     );
   //   } catch (e) {
   //     print(e);
   //     setState(() {
@@ -1780,6 +1837,63 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   //     });
   //   }
   // }
+
+  Future<void> _downloadVideo(String url) async {
+    try {
+      setState(() {
+        _isDownloading = true;
+      });
+
+      // Kompres video sebelum mendownload
+      final compressedVideo = await VideoCompress.compressVideo(
+        url,
+        quality: VideoQuality.LowQuality, // Bisa pilih kualitas yang diinginkan
+        deleteOrigin: false, // Jika ingin tetap menyimpan file asli
+      );
+
+      if (compressedVideo != null) {
+        // Unduh video terkompresi dan simpan ke penyimpanan lokal
+        await FileDownloader.downloadFile(
+          url: compressedVideo.file!.path, // Menggunakan file terkompresi
+          name: "compressed_video.mp4",
+          onDownloadCompleted: (filePath) {
+            setState(() {
+              _alertService.showToast(
+                text: 'Video successfully compressed and downloaded',
+                icon: Icons.check,
+                color: Colors.green,
+              );
+            });
+          },
+          onDownloadError: (error) {
+            setState(() {
+              _alertService.showToast(
+                text: 'Failed to download compressed video',
+                icon: Icons.error,
+                color: Colors.red,
+              );
+            });
+          },
+        );
+      } else {
+        throw 'Video compression failed';
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        _alertService.showToast(
+          text: 'Failed to download video: $e',
+          icon: Icons.error,
+          color: Colors.red,
+        );
+      });
+    } finally {
+      setState(() {
+        _isDownloading = false;
+        _progress = 0.0;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1827,7 +1941,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
         actions: [
           IconButton(
             onPressed: () async {
-              // await _downloadVideo(widget.videoUrl);
+              await _downloadVideo(widget.videoUrl);
             },
             icon: AnimatedSwitcher(
               duration: Duration(milliseconds: 300),

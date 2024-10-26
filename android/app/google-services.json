@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "945345958677",
+    "project_id": "chating-d1866",
+    "storage_bucket": "chating-d1866.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945345958677:android:54ccd321535435e6678f1c",
+        "android_client_info": {
+          "package_name": "com.example.chating"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOESxWAJGXMdM-c_gz7cMf3y69zJFBhWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945345958677:android:75e958b01dcb57be678f1c",
+        "android_client_info": {
+          "package_name": "com.kolink.chating"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOESxWAJGXMdM-c_gz7cMf3y69zJFBhWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
