@@ -9,6 +9,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
@@ -22,6 +24,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as p;
+import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'package:video_player/video_player.dart';
 import '../main.dart';
@@ -76,8 +79,6 @@ class _GroupPageState extends State<GroupPage> {
   Duration position = Duration.zero;
   String? currentAudioUrl;
   PlayerState audioPlayerState = PlayerState.stopped;
-
-  // Map<ChatMessage, String> messageIdMap = {};
 
   @override
   void initState() {
@@ -1238,6 +1239,84 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     super.dispose();
   }
 
+  Future<void> _downloadVideo(String url) async {
+    try {
+      setState(() {
+        _isDownloading = true;
+        _progress = 0.0;
+      });
+
+      FileDownloader.downloadFile(
+        url: url,
+        // onProgress: (progress) {
+        //   // Update progress
+        //   print("Download progress: $progress%");
+        //   setState(() {
+        //     _progress = progress.toDouble();
+        //   });
+        // },
+        onDownloadCompleted: (filePath) async {
+          if (filePath != null) {
+            final compressedVideo = await VideoCompress.compressVideo(
+              filePath,
+              quality: VideoQuality.LowQuality,
+              deleteOrigin: true,
+            );
+
+            if (compressedVideo != null) {
+              setState(() {
+                _alertService.showToast(
+                  text: 'Video berhasil diunduh dan dikompresi di ${compressedVideo.file!.path}',
+                  icon: Icons.check,
+                  color: Colors.green,
+                );
+              });
+            } else {
+              setState(() {
+                _alertService.showToast(
+                  text: 'Gagal mengompresi video',
+                  icon: Icons.error,
+                  color: Colors.red,
+                );
+              });
+            }
+          } else {
+            setState(() {
+              _alertService.showToast(
+                text: 'Gagal menyimpan video',
+                icon: Icons.error,
+                color: Colors.red,
+              );
+            });
+          }
+        },
+        onDownloadError: (error) {
+          setState(() {
+            _alertService.showToast(
+              text: 'Gagal mengunduh video',
+              icon: Icons.error,
+              color: Colors.red,
+            );
+          });
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        _alertService.showToast(
+          text: 'Gagal mengunduh video: $e',
+          icon: Icons.error,
+          color: Colors.red,
+        );
+      });
+    } finally {
+      setState(() {
+        _isDownloading = false;
+        _progress = 0.0;
+      });
+    }
+  }
+
   // Future<void> _downloadVideo(String url) async {
   //   try {
   //     var dio = Dio();
@@ -1343,7 +1422,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
         actions: [
           IconButton(
             onPressed: () async {
-              // await _downloadVideo(widget.videoUrl);
+              await _downloadVideo(widget.videoUrl);
             },
             icon: AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
@@ -1420,7 +1499,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                     horizontal: 16.0),
                                 child: Row(
                                   mainAxisAlignment:
@@ -1509,6 +1588,71 @@ class _FullScreenImageState extends State<FullScreenImage> {
   void initState() {
     super.initState();
     _alertService = _getIt.get<AlertService>();
+  }
+
+  Future<void> downloadImage(String url) async {
+    try {
+      setState(() {
+        _isDownloading = true;
+        _progress = 0.0;
+      });
+
+      final tempDir = await getTemporaryDirectory();
+      final tempFilePath = "${tempDir.path}/temp_image.jpg";
+
+      await FileDownloader.downloadFile(
+        url: url,
+        name: "temp_image.jpg",
+        onProgress: (fileName, progress) {
+          setState(() {
+            _progress = progress;
+            print("Download progress: $progress%");
+          });
+        },
+        onDownloadCompleted: (path) async {
+          final compressedFilePath = "${tempDir.path}/compressed_image.jpg";
+          final compressedFile = await FlutterImageCompress.compressAndGetFile(
+            path,
+            compressedFilePath,
+            quality: 70,
+          );
+
+          if (compressedFile != null) {
+            setState(() {
+              _isDownloading = false;
+              _progress = 0.0;
+              _alertService.showToast(
+                text: 'Image downloaded successfully',
+                icon: Icons.check,
+                color: Colors.green,
+              );
+            });
+          }
+        },
+        onDownloadError: (error) {
+          setState(() {
+            _isDownloading = false;
+            _progress = 0.0;
+            _alertService.showToast(
+              text: 'Failed to download image: $error',
+              icon: Icons.error,
+              color: Colors.red,
+            );
+          });
+        },
+      );
+    } catch (e) {
+      print(e);
+      setState(() {
+        _isDownloading = false;
+        _progress = 0.0;
+        _alertService.showToast(
+          text: 'Failed to download image: $e',
+          icon: Icons.error,
+          color: Colors.red,
+        );
+      });
+    }
   }
 
   // Future<void> downloadImage(String url) async {
@@ -1612,7 +1756,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
         actions: [
           IconButton(
             onPressed: () async {
-              // await downloadImage(widget.imageUrl);
+              await downloadImage(widget.imageUrl);
             },
             icon: AnimatedSwitcher(
               duration: Duration(milliseconds: 300),

@@ -157,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No user data found.'));
+            return Container();
           }
           final userProfile = UserProfile.fromMap(
               snapshot.data!.docs[0].data() as Map<String, dynamic>);

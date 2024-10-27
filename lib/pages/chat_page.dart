@@ -1347,7 +1347,6 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
         _progress = 0.0;
       });
 
-      // 1. Download image temporarily
       final tempDir = await getTemporaryDirectory();
       final tempFilePath = "${tempDir.path}/temp_image.jpg";
 
@@ -1361,21 +1360,19 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
           });
         },
         onDownloadCompleted: (path) async {
-          // 2. Compress image
           final compressedFilePath = "${tempDir.path}/compressed_image.jpg";
           final compressedFile = await FlutterImageCompress.compressAndGetFile(
-            path!, // Original image path
+            path,
             compressedFilePath,
-            quality: 70, // Adjust quality as needed (0-100)
+            quality: 70,
           );
 
           if (compressedFile != null) {
-            // 3. Save compressed image to gallery or notify success
             setState(() {
               _isDownloading = false;
               _progress = 0.0;
               _alertService.showToast(
-                text: 'Image downloaded and compressed successfully',
+                text: 'Image downloaded successfully',
                 icon: Icons.check,
                 color: Colors.green,
               );
@@ -1509,7 +1506,7 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
         actions: [
           IconButton(
             onPressed: () async {
-              // await downloadImage(widget.imageUrl);
+              await downloadImage(widget.imageUrl);
             },
             icon: AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
@@ -1844,42 +1841,48 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
         _isDownloading = true;
       });
 
-      // Kompres video sebelum mendownload
-      final compressedVideo = await VideoCompress.compressVideo(
-        url,
-        quality: VideoQuality.LowQuality, // Bisa pilih kualitas yang diinginkan
-        deleteOrigin: false, // Jika ingin tetap menyimpan file asli
-      );
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = "${tempDir.path}/temp_video.mp4";
 
-      if (compressedVideo != null) {
-        // Unduh video terkompresi dan simpan ke penyimpanan lokal
-        await FileDownloader.downloadFile(
-          url: compressedVideo.file!.path, // Menggunakan file terkompresi
-          name: "compressed_video.mp4",
-          onDownloadCompleted: (filePath) {
+      await FileDownloader.downloadFile(
+        url: url,
+        name: "temp_video.mp4",
+        onDownloadCompleted: (filePath) async {
+          final compressedVideo = await VideoCompress.compressVideo(
+            filePath,
+            quality: VideoQuality.LowQuality,
+            deleteOrigin: true,
+          );
+
+          if (compressedVideo != null) {
+            final downloadsDir = Directory('/storage/emulated/0/Download');
+            final destinationPath = "${downloadsDir.path}/compressed_video.mp4";
+
+            await compressedVideo.file!.copy(destinationPath);
+
             setState(() {
               _alertService.showToast(
-                text: 'Video successfully compressed and downloaded',
+                text: 'Video berhasil dikompresi dan disimpan di Downloads',
                 icon: Icons.check,
                 color: Colors.green,
               );
             });
-          },
-          onDownloadError: (error) {
-            setState(() {
-              _alertService.showToast(
-                text: 'Failed to download compressed video',
-                icon: Icons.error,
-                color: Colors.red,
-              );
-            });
-          },
-        );
-      } else {
-        throw 'Video compression failed';
-      }
+          } else {
+            throw 'Video compression failed';
+          }
+        },
+        onDownloadError: (error) {
+          setState(() {
+            _alertService.showToast(
+              text: 'Failed to download video',
+              icon: Icons.error,
+              color: Colors.red,
+            );
+          });
+        },
+      );
     } catch (e) {
-      print(e);
+      print("Error: $e");
       setState(() {
         _alertService.showToast(
           text: 'Failed to download video: $e',
