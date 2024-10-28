@@ -13,6 +13,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setup();
+  await FirebaseApi().initNotification();
   runApp(MyApp());
 }
 

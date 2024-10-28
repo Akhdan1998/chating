@@ -110,6 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
           _pfpSelectionField(),
           SizedBox(height: 15),
           TextFieldCustom(
+            textCapitalization: TextCapitalization.sentences,
             controller: nameController,
             onSaved: (value) {
               nameController.text = value!;

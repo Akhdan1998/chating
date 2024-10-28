@@ -15,6 +15,7 @@ class TextFieldCustom extends StatefulWidget {
   final BorderSide borderSide;
   final bool filled;
   final void Function(String)? onChanged;
+  final TextCapitalization textCapitalization;
 
   const TextFieldCustom({
     super.key,
@@ -32,6 +33,7 @@ class TextFieldCustom extends StatefulWidget {
     this.borderSide = BorderSide.none,
     this.filled = true,
     this.onChanged,
+    this.textCapitalization = TextCapitalization.none,
   });
 
   @override
@@ -52,6 +54,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
     return Container(
       color: Colors.transparent,
       child: TextFormField(
+        textCapitalization: widget.textCapitalization,
         focusNode: widget.focusNode,
         keyboardType: TextInputType.emailAddress,
         obscureText: _obscureText,

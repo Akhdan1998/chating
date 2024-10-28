@@ -70,7 +70,6 @@ class FirebaseApi {
     print('Payload: ${message.data}');
   }
 
-
   Future<void> initNotification() async {
     await _firebaseMessaging.requestPermission();
     final FCMToken = await _firebaseMessaging.getToken();
