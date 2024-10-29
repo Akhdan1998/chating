@@ -110,7 +110,6 @@ class _GroupPageState extends State<GroupPage> {
       });
     });
 
-    initializeNotifications();
   }
 
   @override
@@ -558,26 +557,6 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
-  // Future<void> startRecording() async {
-  //   print('START RECORDING');
-  //   await recorder.startRecorder(toFile: 'audio.aac'); // Specify file extension
-  // }
-
-  // Future<void> stopRecording() async {
-  //   final recordedFilePath = await recorder.stopRecorder();
-  //   audioFile = File(recordedFilePath!);
-  //   print('Recorded audio: $recordedFilePath');
-  //
-  //   if (audioFile != null) {
-  //     await uploadAudioToFirebase(audioFile!);
-  //   }
-  // }
-
-  // void playAudio(String url) {
-  //   final player = AudioPlayer();
-  //   player.play(UrlSource(url));
-  // }
-
   Future initRecorder() async {
     final status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
@@ -587,16 +566,25 @@ class _GroupPageState extends State<GroupPage> {
     recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
   }
 
-  Future<void> initializeNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationSettingsAndroid,
+  Future<void> initializeNotifications(String message) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'new_message_channel',
+      'New Messages',
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: true,
     );
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      widget.group.name,
+      message,
+      platformChannelSpecifics,
+    );
   }
 
   @override
@@ -736,6 +724,16 @@ class _GroupPageState extends State<GroupPage> {
             snapshot.data == null ||
             widget.group.members.isEmpty) {
           return Container();
+        }
+
+        var messages = snapshot.data!.docs;
+        if (messages.isEmpty) {
+          return Container();
+        }
+        var newMessage = messages.last.data();
+
+        if (newMessage != null && newMessage['userId'] != currentUser?.id && newMessage['text'] != null) {
+          initializeNotifications(newMessage['text']);
         }
 
         return DashChat(
@@ -949,133 +947,6 @@ class _GroupPageState extends State<GroupPage> {
       },
     );
   }
-
-  // Widget _buildUserName(String? userName) {
-  //   return Container(
-  //     width: MediaQuery.of(context).size.width,
-  //     child: Text(
-  //       userName ?? '-',
-  //       overflow: TextOverflow.ellipsis,
-  //       style: TextStyle(
-  //         color: Colors.deepPurple.shade200,
-  //         fontSize: 15,
-  //         fontWeight: FontWeight.bold,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildMessageText(String text) {
-  //   return Container(
-  //     alignment: Alignment.centerLeft,
-  //     child: Text(
-  //       text,
-  //       style: TextStyle(
-  //         fontSize: 14,
-  //         color: Colors.black87,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildAudioPlayer(String audioUrl) {
-  //   return Container(
-  //     color: Colors.red,
-  //     height: 20,
-  //     width: double.infinity,
-  //     child: Column(
-  //       children: [
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           crossAxisAlignment: CrossAxisAlignment.center,
-  //           children: [
-  //             GestureDetector(
-  //               onTap: () async {
-  //                 setState(() {
-  //                   if (!isCurrentlyPlaying) {
-  //                     isPlaying = true;
-  //                     currentAudioUrl = audioUrl;
-  //                   } else {
-  //                     isPlaying = false;
-  //                   }
-  //                 });
-  //
-  //                 if (isPlaying) {
-  //                   await audioPlayer.play(UrlSource(audioUrl));
-  //                 } else {
-  //                   await audioPlayer.pause();
-  //                 }
-  //               },
-  //               child: Container(
-  //                 color: Colors.transparent,
-  //                 child: Icon(
-  //                   isCurrentlyPlaying
-  //                       ? Icons.pause
-  //                       : Icons.play_arrow,
-  //                 ),
-  //               ),
-  //             ),
-  //             Expanded(
-  //               child: Row(
-  //                 children: [
-  //                   Container(
-  //                     height: 10,
-  //                     width: MediaQuery.of(context).size.width - 233,
-  //                     child: Slider(
-  //                       min: 0,
-  //                       max: duration.inSeconds.toDouble(),
-  //                       value: isCurrentlyPlaying
-  //                           ? position.inSeconds.toDouble()
-  //                           : 0,
-  //                       inactiveColor: Colors.grey,
-  //                       onChanged: (value) async {
-  //                         setState(() {
-  //                           position =
-  //                               Duration(seconds: value.toInt());
-  //                         });
-  //                         await audioPlayer.seek(position);
-  //                         await audioPlayer.resume();
-  //                       },
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     isCurrentlyPlaying
-  //                         ? "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}"
-  //                         : "0:00",
-  //                     style: TextStyle(fontSize: 10),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         Container(
-  //           alignment: Alignment.centerRight,
-  //           child: Text(
-  //             DateFormat('HH:mm').format(message.createdAt),
-  //             style: TextStyle(
-  //               color: Colors.black87,
-  //               fontSize: 12,
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildMessageTime(DateTime createdAt) {
-  //   return Container(
-  //     alignment: Alignment.centerRight,
-  //     child: Text(
-  //       DateFormat('HH:mm').format(createdAt),
-  //       style: TextStyle(
-  //         color: Colors.black87,
-  //         fontSize: 11,
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _mediaMessageGallery(BuildContext context) {
     return ListTile(
