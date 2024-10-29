@@ -10,6 +10,7 @@ import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +74,7 @@ class _ChatPageState extends State<ChatPage> {
   bool _showLastSeen = true;
   List<ChatMessage> messages = [];
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  late FirebaseMessaging _firebaseMessaging;
 
   Future<String> _getPhoneNumber(String userId) async {
     var firestore = FirebaseFirestore.instance;
@@ -104,6 +106,20 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
+    _firebaseMessaging = FirebaseMessaging.instance;
+
+    // Mendapatkan token FCM
+    _firebaseMessaging.getToken().then((token) {
+      print("FCM Token: $token");
+    });
+
+    // Menerima pesan
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        print('Message received: ${message.notification!.title}');
+      }
+    });
+
     super.initState();
 
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -474,29 +490,27 @@ class _ChatPageState extends State<ChatPage> {
     recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
   }
 
-  void _showNotification(String message) async {
+  Future<void> _showNotification(String message) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      playSound: true,
+    AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
       importance: Importance.max,
       priority: Priority.high,
-    );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      widget.chatUser.name,
-      message,
-      platformChannelSpecifics,
-      payload: 'item x',
+      showWhen: false,
     );
 
-    setState(() {
-      audioPlayer.play(AssetSource('ting.mp3'));
-    });
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'New Message',
+      message,
+      platformChannelSpecifics,
+      payload: message,
+    );
   }
 
   @override
@@ -601,17 +615,19 @@ class _ChatPageState extends State<ChatPage> {
         }
 
         Chat? chat = snapshot.data!.data();
+        List<ChatMessage> messages = chat?.messages != null
+            ? _generateChatMessageList(chat!.messages!)
+            : [];
 
-        List<ChatMessage> messages = [];
-
-        if (chat != null && chat.messages != null) {
-          messages = _generateChatMessageList(chat.messages!);
-        }
+        // List<ChatMessage> messages = [];
+        // if (chat != null && chat.messages != null) {
+        //   messages = _generateChatMessageList(chat.messages!);
+        // }
 
         if (messages.isNotEmpty) {
           ChatMessage latestMessage = messages.first;
           bool isNewMessage = latestMessage.createdAt
-              .isAfter(DateTime.now().subtract(Duration(seconds: 1)));
+              .isAfter(DateTime.now().subtract(Duration(milliseconds: 500)));
 
           if (isNewMessage && latestMessage.user.id != currentUser!.id) {
             _showNotification(latestMessage.text);
