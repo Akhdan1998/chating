@@ -493,10 +493,6 @@ class _ChatPageState extends State<ChatPage> {
       platformChannelSpecifics,
       payload: 'item x',
     );
-
-    setState(() {
-      audioPlayer.play(AssetSource('ting.mp3'));
-    });
   }
 
   @override

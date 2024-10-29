@@ -246,7 +246,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
             final storyUrl = story['url'];
             if (storyUrl != null) {
               return StoryItem.pageImage(
-                imageFit: BoxFit.cover,
+                // imageFit: BoxFit.cover,
                 url: storyUrl ?? 'https://via.placeholder.com/150',
                 controller: _storyController,
                 loadingWidget: Center(
@@ -256,7 +256,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
               );
             } else {
               return StoryItem.pageImage(
-                imageFit: BoxFit.cover,
+                // imageFit: BoxFit.cover,
                 url: 'https://via.placeholder.com/150',
                 controller: _storyController,
                 loadingWidget: Center(

@@ -163,9 +163,6 @@ class _GroupPageState extends State<GroupPage> {
                 ),
               ),
             );
-
-            // Play sound
-            audioPlayer.play(AssetSource('ting.mp3'));
           }
         }
         _messages = newMessages;

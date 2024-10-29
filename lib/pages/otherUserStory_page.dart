@@ -421,7 +421,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     List<StoryItem> storyItems = widget.storyData.map((url) {
       return StoryItem.pageImage(
-        imageFit: BoxFit.cover,
+        // imageFit: BoxFit.cover,
         loadingWidget: Center(
           child: CircularProgressIndicator(),
         ),
@@ -430,7 +430,6 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
         controller: _storyController,
       );
     }).toList();
-
     return Scaffold(
       body: Stack(
         children: [
@@ -504,18 +503,17 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
                         replyController.text = value!;
                       },
                       decoration: InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
                           border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.grey.withOpacity(0.3),
-                        hintText: 'Reply...',
-                        hintStyle: TextStyle(color: Colors.white)
-                      ),
+                          filled: true,
+                          fillColor: Colors.grey.withOpacity(0.3),
+                          hintText: 'Reply...',
+                          hintStyle: TextStyle(color: Colors.white)),
                     ),
                   ),
                   SizedBox(width: 10),
