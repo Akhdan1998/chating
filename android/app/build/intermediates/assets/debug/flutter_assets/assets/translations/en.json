@@ -1,0 +1,23 @@
+{
+  "welcome": "Welcome to Appskabs",
+  "privacy_policy": "Privacy Policy ",
+  "agree_and_continue": "Agree and continue",
+  "terms_of_service": " Terms of Service",
+  "read_our": "Read our ",
+  "tap_to_accept": "Tap \"Agree and continue\" to accept the",
+  "head_title_number": "Enter your phone number",
+  "head_title_email": "Enter your email",
+  "title_number": "Appskabs needs to verify your phone number, Carrier fees may apply. ",
+  "title_email": "Appskabs needs to verify your email, Carrier fees may apply. ",
+  "subtitle_number": "What is my phone number?",
+  "subtitle_email": "What is my email?",
+  "login_number": "Sign in with phone number",
+  "login_email": "Sign in with email",
+  "in": "Login",
+  "next": "Next",
+  "member": "Not a member? ",
+  "register": "Register now",
+  "go": "Let's get going!",
+  "title_register": "Register an account using the form below",
+  "have_account": "Already have an account? "
+}

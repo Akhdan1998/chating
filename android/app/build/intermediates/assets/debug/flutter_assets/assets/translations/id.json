@@ -1,0 +1,23 @@
+{
+  "welcome": "Selamat datang di Appskabs",
+  "privacy_policy": "Kebijakan Privasi ",
+  "agree_and_continue": "Setuju dan lanjutkan",
+  "terms_of_service": " Ketentuan Layanan",
+  "read_our": "Baca ",
+  "tap_to_accept": "Ketuk \"Setuju dan lanjutkan\" untuk menerima",
+  "head_title_number": "Masukkan nomor telepon Anda",
+  "head_title_email": "Masukkan email Anda",
+  "title_number": "Appskabs perlu memverifikasi nomor telepon Anda, Biaya operator mungkin berlaku. ",
+  "title_email": "Appskabs perlu memverifikasi email Anda, Biaya operator mungkin berlaku. ",
+  "subtitle_number": "Berapa nomor telepon saya?",
+  "subtitle_email": "Apa email saya?",
+  "login_number": "Masuk dengan nomor telepon",
+  "login_email": "Masuk dengan email",
+  "in": "Masuk",
+  "next": "Selanjutnya",
+  "member": "Belum menjadi anggota? ",
+  "register": "Daftar sekarang",
+  "go": "Ayo mulai!",
+  "title_register": "Daftarkan akun menggunakan formulir di bawah ini",
+  "have_account": "Sudah punya akun? "
+}

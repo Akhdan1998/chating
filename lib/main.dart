@@ -18,7 +18,7 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(
-      supportedLocales: [Locale('en'), Locale('id'), Locale('kr')],
+      supportedLocales: [Locale('en'), Locale('id'), Locale('ko')],
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
       child: MyApp(),

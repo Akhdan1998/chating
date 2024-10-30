@@ -32,7 +32,7 @@ class _BoardingState extends State<Boarding> {
         return 'Bahasa Indonesia';
       case 'en':
         return 'English';
-      case 'kr':
+      case 'ko':
         return 'Korea';
       default:
         return 'English'; // Default language
@@ -192,7 +192,7 @@ class _BoardingState extends State<Boarding> {
         newLocale = Locale('en');
         break;
       case 'Korea':
-        newLocale = Locale('kr');
+        newLocale = Locale('ko');
         break;
       default:
         newLocale = Locale('en');
