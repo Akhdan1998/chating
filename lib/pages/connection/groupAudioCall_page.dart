@@ -6,10 +6,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../models/group.dart';
-import '../models/user_profile.dart';
-import '../service/alert_service.dart';
-import '../utils.dart';
+import '../../models/group.dart';
+import '../../models/user_profile.dart';
+import '../../service/alert_service.dart';
+import '../../utils.dart';
 
 class GroupAudioCallScreen extends StatefulWidget {
   late final Group grup;

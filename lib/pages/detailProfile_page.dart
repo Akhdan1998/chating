@@ -1,10 +1,10 @@
 import 'package:chating/pages/media_page.dart';
-import 'package:chating/pages/videoCall.dart';
+import 'package:chating/pages/connection/videoCall.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/fitur.dart';
 import '../models/user_profile.dart';
-import 'audioCall.dart';
+import 'connection/audioCall.dart';
 
 class DetailprofilePage extends StatefulWidget {
   final UserProfile chatUser;

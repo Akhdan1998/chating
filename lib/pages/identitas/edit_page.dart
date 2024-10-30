@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import '../consts.dart';
-import '../service/alert_service.dart';
-import '../service/storage_service.dart';
-import '../widgets/textfield.dart';
+import '../../consts.dart';
+import '../../service/alert_service.dart';
+import '../../service/storage_service.dart';
+import '../../widgets/textfield.dart';
 
 class EditPage extends StatefulWidget {
   final UserProfile userProfile;
@@ -257,10 +257,4 @@ class _EditPageState extends State<EditPage> {
       ),
     );
   }
-
-// final ButtonStyle style = ElevatedButton.styleFrom(
-//     textStyle:
-//         GoogleFonts.poppins().copyWith(fontSize: 14, color: Colors.white),
-//     backgroundColor: Theme.of(context).colorScheme.primary,
-// );
 }

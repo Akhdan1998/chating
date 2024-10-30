@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:chating/pages/storyView_page.dart';
+import 'package:chating/pages/Story/storyView_page.dart';
 import 'package:chating/pages/otherUserStory_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -11,11 +11,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:story_view/controller/story_controller.dart';
-import '../models/user_profile.dart';
-import '../service/alert_service.dart';
-import '../service/auth_service.dart';
-import '../service/database_service.dart';
-import '../service/navigation_service.dart';
+import '../../models/user_profile.dart';
+import '../../service/alert_service.dart';
+import '../../service/auth_service.dart';
+import '../../service/database_service.dart';
+import '../../service/navigation_service.dart';
 import 'package:image/image.dart' as img;
 
 class UpdatesPage extends StatefulWidget {

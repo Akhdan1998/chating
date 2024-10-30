@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import '../pages/home_page.dart';
-import '../pages/panggilan_page.dart';
+import '../pages/connection/home_page.dart';
+import '../pages/connection/panggilan_page.dart';
 import '../pages/setting_page.dart';
-import '../pages/updates.dart';
+import '../pages/Story/updates.dart';
 
 class Navigasi extends StatefulWidget {
   const Navigasi({super.key});

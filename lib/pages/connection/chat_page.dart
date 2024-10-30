@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chating/models/user_profile.dart';
-import 'package:chating/pages/videoCall.dart';
+import 'package:chating/pages/connection/videoCall.dart';
 import 'package:chating/service/media_service.dart';
 import 'package:chating/service/storage_service.dart';
 import 'package:chating/utils.dart';
@@ -31,14 +31,14 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'package:video_player/video_player.dart';
-import '../models/chat.dart';
-import '../models/message.dart' as chat;
-import '../models/message.dart';
-import '../service/alert_service.dart';
-import '../service/auth_service.dart';
-import '../service/database_service.dart';
+import '../../models/chat.dart';
+import '../../models/message.dart' as chat;
+import '../../models/message.dart';
+import '../../service/alert_service.dart';
+import '../../service/auth_service.dart';
+import '../../service/database_service.dart';
 import 'audioCall.dart';
-import 'detailProfile_page.dart';
+import '../detailProfile_page.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 
 class ChatPage extends StatefulWidget {
@@ -108,12 +108,10 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     _firebaseMessaging = FirebaseMessaging.instance;
 
-    // Mendapatkan token FCM
     _firebaseMessaging.getToken().then((token) {
       print("FCM Token: $token");
     });
 
-    // Menerima pesan
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {
         print('Message received: ${message.notification!.title}');

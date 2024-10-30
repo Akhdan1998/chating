@@ -1,14 +1,17 @@
-import 'package:chating/pages/verifikasi_page.dart';
+import 'package:chating/main.dart';
+import 'package:chating/pages/identitas/verifikasi_page.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../consts.dart';
-import '../service/alert_service.dart';
-import '../service/auth_service.dart';
-import '../service/navigation_service.dart';
-import '../widgets/textfield.dart';
+import '../../consts.dart';
+import '../../service/alert_service.dart';
+import '../../service/auth_service.dart';
+import '../../service/navigation_service.dart';
+import '../../widgets/textfield.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -53,6 +56,22 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey.shade900,
+        leading: Container(),
+        centerTitle: true,
+        title: Text(
+            (cardEmail == true) ? 'head_title_email'.tr() : 'head_title_number'.tr(),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, color: Colors.white,)),
+        ],
+      ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
@@ -62,36 +81,52 @@ class _LoginPageState extends State<LoginPage> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _logo(),
-                // _loginCard(),
-                if (cardEmail == true) _loginCard(),
-                SizedBox(height: 15),
-                (cardEmail == true)
-                    ? GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            cardEmail = !cardEmail;
-                          });
-                        },
-                        child: Container(
-                          color: Colors.transparent,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Sign in with phone number',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
-                          ),
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(text: (cardEmail == true) ? 'title_email'.tr() : 'title_number'.tr(), style: TextStyle(fontSize: 15),),
+                      TextSpan(
+                        text: (cardEmail == true) ? 'subtitle_email'.tr() : 'subtitle_number'.tr(),
+                        style: TextStyle(color: Colors.blue, fontSize: 15,),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            // Aksi ketika "Ketentuan Layanan" ditekan
+                            print('WKWKWKWKWK');
+                          },
+                      ),
+                    ],
+                  ),
+              ),
+              _logo(),
+              // _loginCard(),
+              if (cardEmail == true) _loginCard(),
+              SizedBox(height: 15),
+              (cardEmail == true)
+                  ? GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          cardEmail = !cardEmail;
+                        });
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'login_number'.tr(),
+                          style: TextStyle(color: Colors.white, fontSize: 12),
                         ),
-                      )
-                    : Container(),
-                SizedBox(height: 20),
-                _createAnAccountLink(),
-              ],
-            ),
+                      ),
+                    )
+                  : Container(),
+              SizedBox(height: 20),
+              _createAnAccountLink(),
+            ],
           ),
         ),
       ),
@@ -264,23 +299,23 @@ class _LoginPageState extends State<LoginPage> {
   Widget _logo() {
     return Column(
       children: [
-        Image.asset('assets/splash.png', scale: 6),
-        const SizedBox(height: 10),
-        const Text(
-          'Welcome to AppsKabs!',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const Text(
-          'Connect easily, anytime, anywhere.',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 16,
-          ),
-        ),
+        // Image.asset('assets/splash.png', scale: 6),
+        // const SizedBox(height: 10),
+        // const Text(
+        //   'Welcome to AppsKabs!',
+        //   style: TextStyle(
+        //     fontSize: 22,
+        //     fontWeight: FontWeight.bold,
+        //     color: Colors.white,
+        //   ),
+        // ),
+        // const Text(
+        //   'Connect easily, anytime, anywhere.',
+        //   style: TextStyle(
+        //     color: Colors.white70,
+        //     fontSize: 16,
+        //   ),
+        // ),
         if (!cardEmail) const SizedBox(height: 20),
         if (!cardEmail) _buildEmailCard(),
         const SizedBox(height: 20),
@@ -317,6 +352,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildPhoneField() {
     return IntlPhoneField(
+      autofocus: true,
       controller: phoneController,
       keyboardType: TextInputType.phone,
       invalidNumberMessage: '',
@@ -372,8 +408,8 @@ class _LoginPageState extends State<LoginPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Next',
+              child: Text(
+                'next'.tr(),
                 style: TextStyle(fontSize: 16, color: Colors.white),
               ),
               onPressed: _handleNextButtonPressed,
@@ -427,10 +463,10 @@ class _LoginPageState extends State<LoginPage> {
           cardEmail = !cardEmail;
         });
       },
-      child: const Align(
+      child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          'Sign in with email',
+          'login_email'.tr(),
           style: TextStyle(color: Colors.white, fontSize: 12),
         ),
       ),
@@ -465,6 +501,7 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       children: [
         TextFieldCustom(
+          autoFocus: true,
           controller: emailController,
           onSaved: (value) {
             emailController.text = value!;
@@ -507,7 +544,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               child: Text(
-                'Login',
+                'in'.tr(),
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -569,24 +606,24 @@ class _LoginPageState extends State<LoginPage> {
   Widget _createAnAccountLink() {
     return (cardEmail == false)
         ? Container()
-        : GestureDetector(
-            onTap: () {
-              _navigationService.pushNamed("/register");
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Not a member?', style: TextStyle(color: Colors.white70)),
-                SizedBox(width: 5),
-                Text(
-                  'Register now',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+        : RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        children: [
+          TextSpan(text: 'member'.tr(), style: TextStyle(color: Colors.white70),),
+          TextSpan(
+            text: 'register'.tr(),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
-          );
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _navigationService.pushNamed("/register");
+              },
+          ),
+        ],
+      ),
+    );
   }
 }

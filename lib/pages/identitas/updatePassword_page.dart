@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../consts.dart';
-import '../service/alert_service.dart';
-import '../service/auth_service.dart';
-import '../widgets/textfield.dart';
+import '../../consts.dart';
+import '../../service/alert_service.dart';
+import '../../service/auth_service.dart';
+import '../../widgets/textfield.dart';
 
 class UpdatePasswordPage extends StatefulWidget {
   final UserProfile userProfile;

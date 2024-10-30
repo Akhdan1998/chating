@@ -6,8 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:story_view/story_view.dart';
 
-import '../models/user_profile.dart';
-import '../service/alert_service.dart';
+import '../../models/user_profile.dart';
+import '../../service/alert_service.dart';
 
 class StoryViewerScreen extends StatefulWidget {
   final UserProfile userProfile;

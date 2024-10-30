@@ -2,6 +2,7 @@ import 'package:chating/service/auth_service.dart';
 import 'package:chating/service/navigation_service.dart';
 import 'package:chating/utils.dart';
 import 'package:chating/widgets/navigasi.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
@@ -14,7 +15,15 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setup();
   await FirebaseApi().initNotification();
-  runApp(MyApp());
+  await EasyLocalization.ensureInitialized();
+  runApp(
+    EasyLocalization(
+      supportedLocales: [Locale('en'), Locale('id'), Locale('kr')],
+      path: 'assets/translations',
+      fallbackLocale: Locale('en'),
+      child: MyApp(),
+    ),
+  );
 }
 
 Future<void> setup() async {
@@ -52,6 +61,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     final NavigationService navigationService = _getIt<NavigationService>();
     return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       navigatorKey: navigationService.navigatorKey,
       color: Colors.blueGrey,
       debugShowCheckedModeBanner: false,
@@ -85,7 +97,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pushReplacementNamed(
         context,
-        _authService.user != null ? "/navigasi" : "/login",
+        _authService.user != null ? "/navigasi" : "/onBoarding",
       );
     });
   }

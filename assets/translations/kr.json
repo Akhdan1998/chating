@@ -1,0 +1,23 @@
+{
+  "welcome": "Appskabs 에 오신 것을 환영합니다",
+  "privacy_policy": "개인 정보 보호 정책 ",
+  "agree_and_continue": "동의하고 계속 진행하세요",
+  "terms_of_service": " 서비스 약관",
+  "read_our": "읽다 ",
+  "tap_to_accept": "동의하려면 '동의 및 계속'을 탭하세요.",
+  "head_title_1": "전화번호를 입력하세요",
+  "head_title_2": "이메일을 입력하세요",
+  "title_1": "Appskabs 에서는 전화번호를 확인해야 하며, 이동통신사 수수료가 적용될 수 있습니다. ",
+  "title_2": "Appskabs 는 이메일을 확인해야 하며 이동통신사 수수료가 적용될 수 있습니다. ",
+  "subtitle_1": "내 전화번호는 무엇입니까?",
+  "subtitle_2": "내 이메일은 무엇입니까?",
+  "login_number": "전화번호로 로그인",
+  "login_email": "이메일로 로그인",
+  "in": "입력하다",
+  "next": "뿐만 아니라",
+  "member": "아직 회원이 아니신가요? ",
+  "register": "지금 등록하세요",
+  "go": "시작하자!",
+  "title_register": "아래 양식을 사용하여 계정을 등록하세요",
+  "have_account": "이미 계정이 있나요? "
+}

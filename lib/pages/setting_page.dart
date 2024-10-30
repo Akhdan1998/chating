@@ -1,5 +1,5 @@
-import 'package:chating/pages/edit_page.dart';
-import 'package:chating/pages/updatePassword_page.dart';
+import 'package:chating/pages/identitas/edit_page.dart';
+import 'package:chating/pages/identitas/updatePassword_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

@@ -5,6 +5,7 @@ class TextFieldCustom extends StatefulWidget {
   final bool obscureText;
   final bool icon;
   final bool readOnly;
+  final bool autoFocus;
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final double height;
@@ -23,6 +24,7 @@ class TextFieldCustom extends StatefulWidget {
     this.obscureText = false,
     this.icon = false,
     this.readOnly = false,
+    this.autoFocus = false,
     this.controller,
     this.focusNode,
     required this.height,
@@ -54,6 +56,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
     return Container(
       color: Colors.transparent,
       child: TextFormField(
+        autofocus: widget.autoFocus,
         textCapitalization: widget.textCapitalization,
         focusNode: widget.focusNode,
         keyboardType: TextInputType.emailAddress,

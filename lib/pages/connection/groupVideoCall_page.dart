@@ -5,9 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../models/group.dart';
-import '../models/user_profile.dart';
-import '../utils.dart';
+import '../../models/group.dart';
+import '../../models/user_profile.dart';
+import '../../utils.dart';
 
 class GroupVideoCallScreen extends StatefulWidget {
   late final Group grup;

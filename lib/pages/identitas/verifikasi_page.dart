@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get_it/get_it.dart';
-import '../service/alert_service.dart';
+import '../../service/alert_service.dart';
 
 class Verifikasi extends StatefulWidget {
   final String phoneNumber;

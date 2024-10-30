@@ -1,9 +1,10 @@
-import 'package:chating/pages/home_page.dart';
-import 'package:chating/pages/login_page.dart';
-import 'package:chating/pages/register_page.dart';
+import 'package:chating/pages/connection/home_page.dart';
+import 'package:chating/pages/identitas/login_page.dart';
+import 'package:chating/pages/identitas/register_page.dart';
 import 'package:flutter/material.dart';
-import '../pages/updatePassword_page.dart';
-import '../pages/verifikasi_page.dart';
+import '../pages/identitas/onBoarding.dart';
+import '../pages/identitas/updatePassword_page.dart';
+import '../pages/identitas/verifikasi_page.dart';
 import '../widgets/navigasi.dart';
 
 class NavigationService {
@@ -14,6 +15,7 @@ class NavigationService {
     '/home': (context) => HomePage(),
     '/register': (context) => RegisterPage(),
     '/navigasi': (context) => Navigasi(),
+    '/onBoarding': (context) => Boarding(),
   };
 
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;

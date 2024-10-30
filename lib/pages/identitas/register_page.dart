@@ -1,16 +1,17 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import '../consts.dart';
-import '../models/user_profile.dart';
-import '../service/alert_service.dart';
-import '../service/auth_service.dart';
-import '../service/database_service.dart';
-import '../service/media_service.dart';
-import '../service/navigation_service.dart';
-import '../service/storage_service.dart';
-import '../widgets/textfield.dart';
+import '../../consts.dart';
+import '../../models/user_profile.dart';
+import '../../service/alert_service.dart';
+import '../../service/auth_service.dart';
+import '../../service/database_service.dart';
+import '../../service/media_service.dart';
+import '../../service/navigation_service.dart';
+import '../../service/storage_service.dart';
+import '../../widgets/textfield.dart';
 
 class RegisterPage extends StatefulWidget {
   RegisterPage({super.key});
@@ -83,7 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          "Let's get going!",
+          "go".tr(),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
@@ -92,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         SizedBox(height: 8),
         Text(
-          'Register an account using the form below',
+          'title_register'.tr(),
           style: TextStyle(
             fontSize: 16,
             color: Colors.white,
@@ -110,6 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
           _pfpSelectionField(),
           SizedBox(height: 15),
           TextFieldCustom(
+            autoFocus: true,
             textCapitalization: TextCapitalization.sentences,
             controller: nameController,
             onSaved: (value) {
@@ -206,10 +208,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 padding: EdgeInsets.symmetric(vertical: 15),
               ),
               child: Text(
-                'Register',
+                'register'.tr(),
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.blueGrey,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -325,14 +328,14 @@ class _RegisterPageState extends State<RegisterPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('Already have an account? ',
+        Text('have_account'.tr(),
           style: TextStyle(
             color: Colors.white,
           ),),
         GestureDetector(
           onTap: () => _navigationService.goBack(),
           child: Text(
-            'Login',
+            'in'.tr(),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
