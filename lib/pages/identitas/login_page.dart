@@ -108,21 +108,37 @@ class _LoginPageState extends State<LoginPage> {
               if (cardEmail == true) _loginCard(),
               SizedBox(height: 15),
               (cardEmail == true)
-                  ? GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          cardEmail = !cardEmail;
-                        });
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'login_number'.tr(),
-                          style: TextStyle(color: Colors.white, fontSize: 12),
+                  ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            cardEmail = !cardEmail;
+                          });
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'login_number'.tr(),
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
                         ),
                       ),
-                    )
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          color: Colors.transparent,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'pass'.tr(),
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                   : Container(),
               SizedBox(height: 20),
               _createAnAccountLink(),

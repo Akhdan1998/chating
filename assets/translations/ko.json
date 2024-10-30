@@ -19,5 +19,6 @@
   "register": "지금 등록하세요",
   "go": "시작하자!",
   "title_register": "아래 양식을 사용하여 계정을 등록하세요",
-  "have_account": "이미 계정이 있나요? "
+  "have_account": "이미 계정이 있나요? ",
+  "pass": "비밀번호를 잊으셨나요"
 }
