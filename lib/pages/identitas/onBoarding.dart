@@ -52,33 +52,33 @@ class _BoardingState extends State<Boarding> {
       body: SafeArea(
         child: Column(
           children: [
-            Image.asset('assets/boarding.png', scale: 4,),
+            Image.asset('assets/boarding.png', scale: 3,),
             Container(
               padding: EdgeInsets.only(left: 20, right: 20, top: 10),
               child: Center(
                 child: Column(
                   children: [
-                    Text('welcome'.tr(), style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold,),),
+                    Text('welcome'.tr(), style: GoogleFonts.poppins(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold,),),
                     SizedBox(height: 15),
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: TextStyle(color: Colors.black, fontSize: 18),
+                        style: GoogleFonts.poppins(color: Colors.black, fontSize: 18,),
                         children: [
-                          TextSpan(text: 'read_our'.tr()),
+                          TextSpan(text: 'read_our'.tr(), style: GoogleFonts.poppins(),),
                           TextSpan(
                             text: 'privacy_policy'.tr(),
-                            style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold,),
+                            style: GoogleFonts.poppins(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold,),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 // Aksi ketika "Kebijakan Privasi" ditekan
                                 print('Kebijakan Privasi ditekan'.tr());
                               },
                           ),
-                          TextSpan(text: 'tap_to_accept'.tr()),
+                          TextSpan(text: 'tap_to_accept'.tr(), style: GoogleFonts.poppins(),),
                           TextSpan(
                             text: 'terms_of_service'.tr(),
-                            style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold,),
+                            style: GoogleFonts.poppins(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold,),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 // Aksi ketika "Ketentuan Layanan" ditekan
@@ -128,15 +128,15 @@ class _BoardingState extends State<Boarding> {
                       },
                       children: [
                         ListTile(
-                          title: Text('Bahasa Indonesia'),
+                          title: Text('Bahasa Indonesia', style: GoogleFonts.poppins(),),
                           onTap: () => _changeLanguage('Bahasa Indonesia'),
                         ),
                         ListTile(
-                          title: Text('English'),
+                          title: Text('English', style: GoogleFonts.poppins(),),
                           onTap: () => _changeLanguage('English'),
                         ),
                         ListTile(
-                          title: Text('Korea'),
+                          title: Text('Korea', style: GoogleFonts.poppins(),),
                           onTap: () => _changeLanguage('Korea'),
                         ),
                       ],
@@ -172,8 +172,7 @@ class _BoardingState extends State<Boarding> {
               },
               child: Text(
                 'agree_and_continue'.tr(),
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white,),
               ),
             ),
           ),

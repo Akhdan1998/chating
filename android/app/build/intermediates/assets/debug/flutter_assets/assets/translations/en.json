@@ -19,5 +19,10 @@
   "register": "Register now",
   "go": "Let's get going!",
   "title_register": "Register an account using the form below",
-  "have_account": "Already have an account? "
+  "have_account": "Already have an account? ",
+  "pass": "Forgot password",
+  "email": "Email",
+  "password": "Password",
+  "name": "Name",
+  "phone_number": "Phone number"
 }

@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../consts.dart';
 import '../../models/user_profile.dart';
 import '../../service/alert_service.dart';
@@ -21,22 +22,20 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  File? selectedImage;
   final GetIt _getIt = GetIt.instance;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _registerFormKey = GlobalKey();
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  bool isLoading = false;
-
   late AuthService _authService;
   late AlertService _alertService;
   late MediaService _mediaService;
   late NavigationService _navigationService;
   late StorageService _storageService;
   late DatabaseService _databaseService;
+  File? selectedImage;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -85,8 +84,8 @@ class _RegisterPageState extends State<RegisterPage> {
       children: [
         Text(
           "go".tr(),
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w500,
             fontSize: 24,
             color: Colors.white,
           ),
@@ -94,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
         SizedBox(height: 8),
         Text(
           'title_register'.tr(),
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 16,
             color: Colors.white,
           ),
@@ -119,7 +118,7 @@ class _RegisterPageState extends State<RegisterPage> {
             },
             validationRegEx: NAME_VALIDATION_REGEX,
             height: MediaQuery.of(context).size.height * 0.1,
-            hintText: 'Name',
+            hintText: 'name'.tr(),
             obscureText: false,
           ),
           SizedBox(height: 10),
@@ -141,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
             },
             validationRegEx: EMAIL_VALIDATION_REGEX,
             height: MediaQuery.of(context).size.height * 0.1,
-            hintText: 'Email',
+            hintText: 'email'.tr(),
             obscureText: false,
           ),
           SizedBox(height: 10),
@@ -152,7 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
             },
             validationRegEx: PASSWORD_VALIDATION_REGEX,
             height: MediaQuery.of(context).size.height * 0.1,
-            hintText: 'Password',
+            hintText: 'password'.tr(),
             obscureText: true,
           ),
           SizedBox(height: 20),
@@ -187,9 +186,12 @@ class _RegisterPageState extends State<RegisterPage> {
               shape: BoxShape.circle,
               color: Theme.of(context).colorScheme.primary,
             ),
-            child: Icon(Icons.add, size: 17, color: Colors.white,),
+            child: Icon(
+              Icons.add,
+              size: 17,
+              color: Colors.white,
+            ),
           ),
-
         ],
       ),
     );
@@ -197,8 +199,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _registerButton() {
     return isLoading
-        ? CircularProgressIndicator(
-            color: Colors.white)
+        ? CircularProgressIndicator(color: Colors.white)
         : SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -209,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               child: Text(
                 'register'.tr(),
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.blueGrey,
                   fontWeight: FontWeight.bold,
@@ -328,15 +329,17 @@ class _RegisterPageState extends State<RegisterPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('have_account'.tr(),
-          style: TextStyle(
+        Text(
+          'have_account'.tr(),
+          style: GoogleFonts.poppins(
             color: Colors.white,
-          ),),
+          ),
+        ),
         GestureDetector(
           onTap: () => _navigationService.goBack(),
           child: Text(
             'in'.tr(),
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../consts.dart';
@@ -32,8 +33,10 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
   bool isLoad = false;
   bool cardEmail = false;
+  bool forgotPass = false;
   String phoneNumber = '';
   bool isButtonEnabled = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -61,15 +64,20 @@ class _LoginPageState extends State<LoginPage> {
         leading: Container(),
         centerTitle: true,
         title: Text(
-            (cardEmail == true) ? 'head_title_email'.tr() : 'head_title_number'.tr(),
-          style: TextStyle(
-            fontSize: 15,
+          (cardEmail == true)
+              ? 'head_title_email'.tr()
+              : 'head_title_number'.tr(),
+          style: GoogleFonts.poppins(fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+            color: Colors.white,),
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, color: Colors.white,)),
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.more_vert,
+                color: Colors.white,
+              )),
         ],
       ),
       body: Container(
@@ -87,21 +95,29 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    children: [
-                      TextSpan(text: (cardEmail == true) ? 'title_email'.tr() : 'title_number'.tr(), style: TextStyle(fontSize: 15),),
-                      TextSpan(
-                        text: (cardEmail == true) ? 'subtitle_email'.tr() : 'subtitle_number'.tr(),
-                        style: TextStyle(color: Colors.blue, fontSize: 15,),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            // Aksi ketika "Ketentuan Layanan" ditekan
-                            print('WKWKWKWKWK');
-                          },
-                      ),
-                    ],
-                  ),
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: (cardEmail == true)
+                          ? 'title_email'.tr()
+                          : 'title_number'.tr(),
+                      style: GoogleFonts.poppins(fontSize: 15),
+                    ),
+                    TextSpan(
+                      text: (cardEmail == true)
+                          ? 'subtitle_email'.tr()
+                          : 'subtitle_number'.tr(),
+                      style: GoogleFonts.poppins(color: Colors.blue,
+                        fontSize: 15,),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          // Aksi ketika "Ketentuan Layanan" ditekan
+                          print('WKWKWKWKWK');
+                        },
+                    ),
+                  ],
+                ),
               ),
               _logo(),
               // _loginCard(),
@@ -109,36 +125,40 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 15),
               (cardEmail == true)
                   ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            cardEmail = !cardEmail;
-                          });
-                        },
-                        child: Container(
-                          color: Colors.transparent,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'login_number'.tr(),
-                            style: TextStyle(color: Colors.white, fontSize: 12),
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              cardEmail = !cardEmail;
+                            });
+                          },
+                          child: Container(
+                            color: Colors.transparent,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'login_number'.tr(),
+                              style:GoogleFonts.poppins(color: Colors.white, fontSize: 12,),
+                            ),
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          color: Colors.transparent,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'pass'.tr(),
-                            style: TextStyle(color: Colors.white, fontSize: 12),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              forgotPass = !forgotPass;
+                            });
+                          },
+                          child: Container(
+                            color: Colors.transparent,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'pass'.tr(),
+                              style: GoogleFonts.poppins(color: Colors.white, fontSize: 12,),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
+                      ],
+                    )
                   : Container(),
               SizedBox(height: 20),
               _createAnAccountLink(),
@@ -394,7 +414,7 @@ class _LoginPageState extends State<LoginPage> {
     return TextFieldCustom(
       controller: nameController,
       height: MediaQuery.of(context).size.height * 0.1,
-      hintText: 'Name',
+      hintText: 'name'.tr(),
       borderRadius: 10,
       fillColor: Colors.white,
       borderSide: BorderSide(color: Colors.blue, width: 2.0),
@@ -426,7 +446,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: Text(
                 'next'.tr(),
-                style: TextStyle(fontSize: 16, color: Colors.white),
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.white,),
               ),
               onPressed: _handleNextButtonPressed,
             ),
@@ -439,7 +459,7 @@ class _LoginPageState extends State<LoginPage> {
         isLoad = true;
       });
 
-      Future.delayed(const Duration(milliseconds: 500), () {
+      Future.delayed(Duration(milliseconds: 500), () {
         setState(() {
           isLoad = false;
         });
@@ -483,7 +503,7 @@ class _LoginPageState extends State<LoginPage> {
         alignment: Alignment.centerLeft,
         child: Text(
           'login_email'.tr(),
-          style: TextStyle(color: Colors.white, fontSize: 12),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 12,),
         ),
       ),
     );
@@ -507,7 +527,32 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           _loginForm(),
           SizedBox(height: 10),
-          _loginButton(),
+          isLoading
+              ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                )
+              : SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueGrey,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      forgotPass ? 'Reset' : 'Login',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    onPressed:
+                        forgotPass ? _sendPasswordResetEmail : _handleLogin,
+                  ),
+                ),
         ],
       ),
     );
@@ -523,52 +568,44 @@ class _LoginPageState extends State<LoginPage> {
             emailController.text = value!;
           },
           validationRegEx: EMAIL_VALIDATION_REGEX,
-          hintText: 'Email',
+          hintText: 'email'.tr(),
           obscureText: false,
           height: MediaQuery.of(context).size.height * 0.1,
           borderSide: BorderSide(color: Colors.purple, width: 2.0),
         ),
-        SizedBox(height: 10),
-        TextFieldCustom(
-          controller: passwordController,
-          onSaved: (value) {
-            passwordController.text = value!;
-          },
-          validationRegEx: PASSWORD_VALIDATION_REGEX,
-          hintText: 'Password',
-          obscureText: true,
-          height: MediaQuery.of(context).size.height * 0.1,
-          borderSide: BorderSide(color: Colors.purple, width: 2.0),
-        ),
+        if (!forgotPass) ...[
+          SizedBox(height: 10),
+          TextFieldCustom(
+            controller: passwordController,
+            onSaved: (value) {
+              passwordController.text = value!;
+            },
+            validationRegEx: PASSWORD_VALIDATION_REGEX,
+            hintText: 'password'.tr(),
+            obscureText: true,
+            height: MediaQuery.of(context).size.height * 0.1,
+            borderSide: BorderSide(color: Colors.purple, width: 2.0),
+          ),
+        ],
       ],
     );
   }
 
-  Widget _loginButton() {
-    return isLoading
-        ? CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
-          )
-        : SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueGrey,
-                padding: EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                'in'.tr(),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: _handleLogin,
-            ),
-          );
+  Future<void> _sendPasswordResetEmail() async {
+    try {
+      await _auth.sendPasswordResetEmail(email: emailController.text);
+      _alertService.showToast(
+        text: 'Email reset kata sandi telah dikirim!',
+        icon: Icons.check,
+        color: Colors.green,
+      );
+    } catch (e) {
+      _alertService.showToast(
+        text: e.toString(),
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+    }
   }
 
   Future<void> _handleLogin() async {
@@ -623,23 +660,26 @@ class _LoginPageState extends State<LoginPage> {
     return (cardEmail == false)
         ? Container()
         : RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-        children: [
-          TextSpan(text: 'member'.tr(), style: TextStyle(color: Colors.white70),),
-          TextSpan(
-            text: 'register'.tr(),
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'member'.tr(),
+                  style: GoogleFonts.poppins(color: Colors.white70),
+                ),
+                TextSpan(
+                  text: 'register'.tr(),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      _navigationService.pushNamed("/register");
+                    },
+                ),
+              ],
             ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                _navigationService.pushNamed("/register");
-              },
-          ),
-        ],
-      ),
-    );
+          );
   }
 }

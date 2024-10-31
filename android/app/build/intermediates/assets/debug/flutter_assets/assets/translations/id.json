@@ -19,5 +19,10 @@
   "register": "Daftar sekarang",
   "go": "Ayo mulai!",
   "title_register": "Daftarkan akun menggunakan formulir di bawah ini",
-  "have_account": "Sudah punya akun? "
+  "have_account": "Sudah punya akun? ",
+  "pass": "Lupa kata sandi",
+  "email": "Surel",
+  "password": "Kata sandi",
+  "name": "Nama",
+  "phone_number": "Nomor telepon"
 }
