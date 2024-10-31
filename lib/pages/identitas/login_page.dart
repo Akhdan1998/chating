@@ -1,5 +1,6 @@
 import 'package:chating/main.dart';
 import 'package:chating/pages/identitas/verifikasi_page.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../consts.dart';
 import '../../service/alert_service.dart';
@@ -22,7 +24,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController nameController = TextEditingController();
+  // final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
@@ -67,9 +69,11 @@ class _LoginPageState extends State<LoginPage> {
           (cardEmail == true)
               ? 'head_title_email'.tr()
               : 'head_title_number'.tr(),
-          style: GoogleFonts.poppins(fontSize: 15,
+          style: GoogleFonts.poppins(
+            fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: Colors.white,),
+            color: Colors.white,
+          ),
         ),
         actions: [
           IconButton(
@@ -108,8 +112,10 @@ class _LoginPageState extends State<LoginPage> {
                       text: (cardEmail == true)
                           ? 'subtitle_email'.tr()
                           : 'subtitle_number'.tr(),
-                      style: GoogleFonts.poppins(color: Colors.blue,
-                        fontSize: 15,),
+                      style: GoogleFonts.poppins(
+                        color: Colors.blue,
+                        fontSize: 15,
+                      ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Aksi ketika "Ketentuan Layanan" ditekan
@@ -138,7 +144,10 @@ class _LoginPageState extends State<LoginPage> {
                             alignment: Alignment.centerLeft,
                             child: Text(
                               'login_number'.tr(),
-                              style:GoogleFonts.poppins(color: Colors.white, fontSize: 12,),
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ),
@@ -153,7 +162,10 @@ class _LoginPageState extends State<LoginPage> {
                             alignment: Alignment.centerLeft,
                             child: Text(
                               'pass'.tr(),
-                              style: GoogleFonts.poppins(color: Colors.white, fontSize: 12,),
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ),
@@ -378,8 +390,8 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           _buildPhoneField(),
           SizedBox(height: 10),
-          _buildNameField(),
-          SizedBox(height: 10),
+          // _buildNameField(),
+          // SizedBox(height: 10),
           _buildNextButton(),
         ],
       ),
@@ -410,30 +422,30 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildNameField() {
-    return TextFieldCustom(
-      controller: nameController,
-      height: MediaQuery.of(context).size.height * 0.1,
-      hintText: 'name'.tr(),
-      borderRadius: 10,
-      fillColor: Colors.white,
-      borderSide: BorderSide(color: Colors.blue, width: 2.0),
-      filled: true,
-      validationRegEx: NAME_VALIDATION_REGEX,
-      onChanged: (value) {
-        setState(() {});
-      },
-      onSaved: (value) {
-        nameController.text = value!;
-      },
-    );
-  }
+  // Widget _buildNameField() {
+  //   return TextFieldCustom(
+  //     controller: nameController,
+  //     height: MediaQuery.of(context).size.height * 0.1,
+  //     hintText: 'name'.tr(),
+  //     borderRadius: 10,
+  //     fillColor: Colors.white,
+  //     borderSide: BorderSide(color: Colors.blue, width: 2.0),
+  //     filled: true,
+  //     validationRegEx: NAME_VALIDATION_REGEX,
+  //     onChanged: (value) {
+  //       setState(() {});
+  //     },
+  //     onSaved: (value) {
+  //       nameController.text = value!;
+  //     },
+  //   );
+  // }
 
   Widget _buildNextButton() {
     return isLoad
-        ? const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
-          )
+        ? const Center(
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey)))
         : SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -446,51 +458,344 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: Text(
                 'next'.tr(),
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.white,),
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
               ),
-              onPressed: _handleNextButtonPressed,
+              onPressed: dialogConfirm,
             ),
           );
   }
 
-  void _handleNextButtonPressed() {
-    if (phoneNumber.isEmpty || nameController.text.isEmpty) {
-      setState(() {
-        isLoad = true;
-      });
-
-      Future.delayed(Duration(milliseconds: 500), () {
-        setState(() {
-          isLoad = false;
-        });
-        _alertService.showToast(
-          text: 'Please fill in both fields.',
-          icon: Icons.error,
-          color: Colors.redAccent,
+  void dialogConfirm() {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: '',
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, anim1, anim2) {
+        return AlertDialog(
+          actionsPadding:
+              const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+          title: Text('Apakah ini nomor yang benar?'.tr(),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          content: Text(phoneNumber, style: const TextStyle(fontSize: 15)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('No',
+                  style: GoogleFonts.poppins(
+                      color: Colors.redAccent, fontWeight: FontWeight.bold)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                dialogInformation(context);
+              },
+              child: Text('Yes',
+                  style: GoogleFonts.poppins(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold)),
+            ),
+          ],
         );
-      });
-    } else {
-      setState(() {
-        isLoad = true;
-      });
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Verifikasi(
-            phoneNumber: phoneNumber,
-            nama: nameController.text,
-          ),
-        ),
-      ).whenComplete(() {
-        setState(() {
-          isLoad = false;
-          phoneNumber = '';
-          phoneController.clear();
-          nameController.clear();
-        });
-      });
-    }
+      },
+      transitionBuilder: (context, anim1, anim2, child) {
+        return Transform.scale(scale: anim1.value, child: child);
+      },
+    );
   }
+
+  void dialogInformation(BuildContext context) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: '',
+      transitionDuration: Duration(milliseconds: 300),
+      pageBuilder: (context, anim1, anim2) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              alignment: Alignment.center,
+              width: 300,
+              height: 120,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
+              ),
+              child: Icon(
+                Icons.contacts_outlined,
+                color: Colors.white,
+                size: 40,
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 20, right: 20, left: 20),
+              width: 300,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Kontak',
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Untuk memverifikasi nomor dan mengirim pesan ke teman dan keluarga dengan mudah, izinkan Appskabs mengakses daftar kontak Anda.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Nanti',
+                          style: GoogleFonts.poppins().copyWith(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          PermissionStatus status = await Permission.contacts.request();
+
+                          if (status.isGranted) {
+                            Iterable<Contact> contacts = await ContactsService.getContacts();
+
+                            contacts.forEach((contact) {
+                              print(contact.displayName);
+                              print(contact.phones);
+                            });
+
+                            _handleNextButtonPressed().whenComplete(() {
+                              Navigator.pop(context);
+                            });
+
+                          } else if (status.isDenied) {
+                            print('Izin ditolak');
+                          } else if (status.isPermanentlyDenied) {
+                            openAppSettings();
+                          }
+                        },
+                        child: Text(
+                          'next'.tr(),
+                          style: GoogleFonts.poppins().copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+      transitionBuilder: (context, anim1, anim2, child) {
+        return Transform.scale(scale: anim1.value, child: child);
+      },
+    );
+  }
+
+  // void _handleNextButtonPressed() {
+  //   if (phoneNumber.isEmpty) {
+  //     _alertService.showToast(
+  //               text: 'Please fill in both fields.',
+  //               icon: Icons.error,
+  //               color: Colors.redAccent,
+  //             );
+  //     return;
+  //   }
+  //
+  //   setState(() => isLoad = true);
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => Verifikasi(
+  //         phoneNumber: phoneNumber,
+  //         // nama: nameController.text,
+  //       ),
+  //     ),
+  //   ).whenComplete(() {
+  //     setState(() {
+  //       isLoad = false;
+  //       phoneNumber = '';
+  //       phoneController.clear();
+  //       // nameController.clear();
+  //     });
+  //   });
+  // }
+
+  Future<void> _handleNextButtonPressed() {
+    if (phoneNumber.isEmpty) {
+      _alertService.showToast(
+        text: 'Please fill in both fields.',
+        icon: Icons.error,
+        color: Colors.redAccent,
+      );
+      return Future.value();
+    }
+
+    setState(() => isLoad = true);
+
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Verifikasi(
+          phoneNumber: phoneNumber,
+          // nama: nameController.text,
+        ),
+      ),
+    ).whenComplete(() {
+      setState(() {
+        isLoad = false;
+        phoneNumber = '';
+        phoneController.clear();
+        // nameController.clear();
+      });
+    });
+  }
+
+  // Widget _buildNextButton() {
+  //   return isLoad
+  //       ? const CircularProgressIndicator(
+  //           valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+  //         )
+  //       : SizedBox(
+  //           width: double.infinity,
+  //           child: ElevatedButton(
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Colors.blueGrey,
+  //               padding: const EdgeInsets.symmetric(vertical: 15),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //             ),
+  //             child: Text(
+  //               'next'.tr(),
+  //               style: GoogleFonts.poppins(
+  //                 fontSize: 16,
+  //                 color: Colors.white,
+  //               ),
+  //             ),
+  //             onPressed: dialogConfirm,
+  //           ),
+  //         );
+  // }
+  //
+  // void dialogConfirm() {
+  //   showGeneralDialog(
+  //     context: context,
+  //     barrierDismissible: true,
+  //     barrierLabel: '',
+  //     transitionDuration: Duration(milliseconds: 300),
+  //     pageBuilder: (context, anim1, anim2) {
+  //       return AlertDialog(
+  //         actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
+  //         title: Text(
+  //           'Apakah ini nomor yang benar?'.tr(),
+  //           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+  //         ),
+  //         content: Text(
+  //           phoneNumber,
+  //           style: TextStyle(fontSize: 15),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.pop(context);
+  //             },
+  //             child: Text(
+  //               'No',
+  //               style: GoogleFonts.poppins().copyWith(
+  //                 color: Colors.redAccent,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //           ),
+  //           TextButton(
+  //             onPressed: _handleNextButtonPressed,
+  //             child: Text(
+  //               'Yes',
+  //               style: GoogleFonts.poppins().copyWith(
+  //                 color: Theme.of(context).colorScheme.primary,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //     transitionBuilder: (context, anim1, anim2, child) {
+  //       return Transform.scale(
+  //         scale: anim1.value,
+  //         child: child,
+  //       );
+  //     },
+  //   );
+  // }
+  //
+  // void _handleNextButtonPressed() {
+  //   if (phoneNumber.isEmpty || nameController.text.isEmpty) {
+  //     setState(() {
+  //       isLoad = true;
+  //     });
+  //
+  //     Future.delayed(Duration(milliseconds: 500), () {
+  //       setState(() {
+  //         isLoad = false;
+  //       });
+  //       _alertService.showToast(
+  //         text: 'Please fill in both fields.',
+  //         icon: Icons.error,
+  //         color: Colors.redAccent,
+  //       );
+  //     });
+  //   } else {
+  //     setState(() {
+  //       isLoad = true;
+  //     });
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => Verifikasi(
+  //           phoneNumber: phoneNumber,
+  //           nama: nameController.text,
+  //         ),
+  //       ),
+  //     ).whenComplete(() {
+  //       setState(() {
+  //         isLoad = false;
+  //         phoneNumber = '';
+  //         phoneController.clear();
+  //         nameController.clear();
+  //       });
+  //     });
+  //   }
+  // }
 
   Widget _buildSignInWithEmailText() {
     return GestureDetector(
@@ -503,7 +808,10 @@ class _LoginPageState extends State<LoginPage> {
         alignment: Alignment.centerLeft,
         child: Text(
           'login_email'.tr(),
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 12,),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 12,
+          ),
         ),
       ),
     );

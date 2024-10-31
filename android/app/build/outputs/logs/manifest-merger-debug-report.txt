@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 application
-INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:23:5-57:19
+INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:24:5-58:19
 MERGED from [:cloud_firestore] /Users/akhdanhabibie/StudioProjects/chating/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
 MERGED from [:cloud_firestore] /Users/akhdanhabibie/StudioProjects/chating/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
 MERGED from [:firebase_analytics] /Users/akhdanhabibie/StudioProjects/chating/build/firebase_analytics/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-19:19
@@ -126,15 +126,16 @@ MERGED from [com.google.android.play:core-common:2.0.3] /Users/akhdanhabibie/.gr
 	android:name
 		INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml
 manifest
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-69:12
-INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-69:12
-INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-69:12
-INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-69:12
-MERGED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-69:12
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-70:12
+INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-70:12
+INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-70:12
+INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-70:12
+MERGED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-70:12
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-23:12
 MERGED from [:audio_waveforms] /Users/akhdanhabibie/StudioProjects/chating/build/audio_waveforms/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:audioplayers_android] /Users/akhdanhabibie/StudioProjects/chating/build/audioplayers_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:cloud_firestore] /Users/akhdanhabibie/StudioProjects/chating/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
+MERGED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-24:12
 MERGED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-21:12
 MERGED from [:firebase_analytics] /Users/akhdanhabibie/StudioProjects/chating/build/firebase_analytics/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-21:12
 MERGED from [:firebase_app_check] /Users/akhdanhabibie/StudioProjects/chating/build/firebase_app_check/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
@@ -290,18 +291,18 @@ INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/debug/
 INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/debug/AndroidManifest.xml:1:1-7:12
 	package
 		INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-69:12
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-70:12
 		INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/debug/AndroidManifest.xml
 	android:versionName
 		INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-69:12
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-70:12
 		INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/debug/AndroidManifest.xml
 	xmlns:tools
 		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:2:5-51
 		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:2:5-51
 	android:versionCode
 		INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-69:12
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:1-70:12
 		INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/debug/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:1:11-69
@@ -311,24 +312,28 @@ ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/Andr
 		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:6:9-33
 	android:name
 		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:5:9-47
+uses-permission#android.permission.READ_CONTACTS
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:8:5-72
+	android:name
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:8:22-69
 uses-permission#android.permission.CAMERA
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:8:5-64
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:9:5-64
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-65
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-65
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:8:22-62
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:9:22-62
 uses-permission#android.permission.RECORD_AUDIO
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:9:5-70
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:10:5-70
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:12:5-71
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:12:5-71
 MERGED from [com.github.canardoux:flutter_sound_core:9.16.3] /Users/akhdanhabibie/.gradle/caches/transforms-3/c56f9bbab99d05d8c74aaa4d39d8841f/transformed/jetified-flutter_sound_core-9.16.3/AndroidManifest.xml:10:5-71
 MERGED from [com.github.canardoux:flutter_sound_core:9.16.3] /Users/akhdanhabibie/.gradle/caches/transforms-3/c56f9bbab99d05d8c74aaa4d39d8841f/transformed/jetified-flutter_sound_core-9.16.3/AndroidManifest.xml:10:5-71
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:9:22-68
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:10:22-68
 uses-permission#android.permission.INTERNET
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:10:5-66
-MERGED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:10:5-66
-MERGED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:10:5-66
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:11:5-66
+MERGED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:11:5-66
+MERGED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:11:5-66
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-67
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-67
 MERGED from [:firebase_analytics] /Users/akhdanhabibie/StudioProjects/chating/build/firebase_analytics/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-67
@@ -360,23 +365,23 @@ MERGED from [com.google.android.gms:play-services-measurement-sdk-api:22.1.2] /U
 MERGED from [com.google.android.datatransport:transport-backend-cct:3.1.9] /Users/akhdanhabibie/.gradle/caches/transforms-3/d0bc756a3ca8d5b918f40dcfe08f138d/transformed/jetified-transport-backend-cct-3.1.9/AndroidManifest.xml:25:5-67
 MERGED from [com.google.android.datatransport:transport-backend-cct:3.1.9] /Users/akhdanhabibie/.gradle/caches/transforms-3/d0bc756a3ca8d5b918f40dcfe08f138d/transformed/jetified-transport-backend-cct-3.1.9/AndroidManifest.xml:25:5-67
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:10:22-64
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:11:22-64
 uses-permission#android.permission.MODIFY_AUDIO_SETTINGS
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:12:5-79
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:13:5-79
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:14:5-80
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:14:5-80
 MERGED from [com.github.canardoux:flutter_sound_core:9.16.3] /Users/akhdanhabibie/.gradle/caches/transforms-3/c56f9bbab99d05d8c74aaa4d39d8841f/transformed/jetified-flutter_sound_core-9.16.3/AndroidManifest.xml:9:5-80
 MERGED from [com.github.canardoux:flutter_sound_core:9.16.3] /Users/akhdanhabibie/.gradle/caches/transforms-3/c56f9bbab99d05d8c74aaa4d39d8841f/transformed/jetified-flutter_sound_core-9.16.3/AndroidManifest.xml:9:5-80
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:12:22-77
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:13:22-77
 uses-permission#android.permission.ACCESS_WIFI_STATE
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:13:5-75
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:14:5-75
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-76
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-76
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:13:22-73
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:14:22-73
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:14:5-78
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:15:5-78
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:16:5-79
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:16:5-79
 MERGED from [:firebase_analytics] /Users/akhdanhabibie/StudioProjects/chating/build/firebase_analytics/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-79
@@ -420,47 +425,47 @@ MERGED from [com.google.android.datatransport:transport-runtime:3.1.9] /Users/ak
 MERGED from [io.grpc:grpc-android:1.62.2] /Users/akhdanhabibie/.gradle/caches/transforms-3/c8246ef3fded4b61f6a7d206f621024f/transformed/jetified-grpc-android-1.62.2/AndroidManifest.xml:7:5-79
 MERGED from [io.grpc:grpc-android:1.62.2] /Users/akhdanhabibie/.gradle/caches/transforms-3/c8246ef3fded4b61f6a7d206f621024f/transformed/jetified-grpc-android-1.62.2/AndroidManifest.xml:7:5-79
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:14:22-76
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:15:22-76
 uses-permission#android.permission.BLUETOOTH
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:15:5-67
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:16:5-67
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:19:5-68
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:19:5-68
 MERGED from [com.github.canardoux:flutter_sound_core:9.16.3] /Users/akhdanhabibie/.gradle/caches/transforms-3/c56f9bbab99d05d8c74aaa4d39d8841f/transformed/jetified-flutter_sound_core-9.16.3/AndroidManifest.xml:7:5-68
 MERGED from [com.github.canardoux:flutter_sound_core:9.16.3] /Users/akhdanhabibie/.gradle/caches/transforms-3/c56f9bbab99d05d8c74aaa4d39d8841f/transformed/jetified-flutter_sound_core-9.16.3/AndroidManifest.xml:7:5-68
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:15:22-65
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:16:22-65
 uses-permission#android.permission.BLUETOOTH_CONNECT
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:16:5-75
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:17:5-75
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:21:5-76
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:21:5-76
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:16:22-73
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:17:22-73
 uses-permission#android.permission.READ_PHONE_STATE
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:17:5-74
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:18:5-74
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-75
 MERGED from [:agora_rtc_engine] /Users/akhdanhabibie/StudioProjects/chating/build/agora_rtc_engine/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-75
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:17:22-72
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:18:22-72
 uses-permission#android.permission.BLUETOOTH_SCAN
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:18:5-72
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:19:5-72
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:18:22-70
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:19:22-70
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:19:5-79
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:20:5-79
 MERGED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-11:38
 MERGED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-11:38
 	android:maxSdkVersion
 		ADDED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:11:9-35
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:19:22-77
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:20:22-77
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:20:5-80
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:21:5-80
 MERGED from [:video_compress] /Users/akhdanhabibie/StudioProjects/chating/build/video_compress/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-81
 MERGED from [:video_compress] /Users/akhdanhabibie/StudioProjects/chating/build/video_compress/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-81
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:20:22-78
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:21:22-78
 uses-permission#android.permission.POST_NOTIFICATIONS
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:21:5-76
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:22:5-76
 MERGED from [:firebase_messaging] /Users/akhdanhabibie/StudioProjects/chating/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-77
 MERGED from [:firebase_messaging] /Users/akhdanhabibie/StudioProjects/chating/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-77
 MERGED from [:flutter_local_notifications] /Users/akhdanhabibie/StudioProjects/chating/build/flutter_local_notifications/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-77
@@ -468,21 +473,23 @@ MERGED from [:flutter_local_notifications] /Users/akhdanhabibie/StudioProjects/c
 MERGED from [com.google.firebase:firebase-messaging:24.0.3] /Users/akhdanhabibie/.gradle/caches/transforms-3/e2a490a04034c89ed145dbfcd60fa3e3/transformed/jetified-firebase-messaging-24.0.3/AndroidManifest.xml:23:5-77
 MERGED from [com.google.firebase:firebase-messaging:24.0.3] /Users/akhdanhabibie/.gradle/caches/transforms-3/e2a490a04034c89ed145dbfcd60fa3e3/transformed/jetified-firebase-messaging-24.0.3/AndroidManifest.xml:23:5-77
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:21:22-74
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:22:22-74
 queries
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:63:5-68:15
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:64:5-69:15
+MERGED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-22:15
+MERGED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-22:15
 MERGED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-19:15
 MERGED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-19:15
 intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:64:9-67:18
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:65:9-68:18
 action#android.intent.action.PROCESS_TEXT
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:65:13-72
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:66:13-72
 	android:name
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:65:21-70
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:66:21-70
 data
-ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:66:13-50
+ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:67:13-50
 	android:mimeType
-		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:66:19-48
+		ADDED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml:67:19-48
 uses-sdk
 INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/akhdanhabibie/StudioProjects/chating/android/app/src/main/AndroidManifest.xml
@@ -495,6 +502,8 @@ MERGED from [:audioplayers_android] /Users/akhdanhabibie/StudioProjects/chating/
 MERGED from [:audioplayers_android] /Users/akhdanhabibie/StudioProjects/chating/build/audioplayers_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:cloud_firestore] /Users/akhdanhabibie/StudioProjects/chating/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:cloud_firestore] /Users/akhdanhabibie/StudioProjects/chating/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:firebase_analytics] /Users/akhdanhabibie/StudioProjects/chating/build/firebase_analytics/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
@@ -859,6 +868,18 @@ ADDED from [:cloud_firestore] /Users/akhdanhabibie/StudioProjects/chating/build/
 		ADDED from [:cloud_firestore] /Users/akhdanhabibie/StudioProjects/chating/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
 	android:name
 		ADDED from [:cloud_firestore] /Users/akhdanhabibie/StudioProjects/chating/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-134
+intent#action:name:android.accounts.AccountAuthenticator
+ADDED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-12:18
+action#android.accounts.AccountAuthenticator
+ADDED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-76
+	android:name
+		ADDED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:11:21-73
+intent#action:name:android.intent.action.VIEW+data:host:com.android.contacts+data:mimeType:vnd.android.cursor.item/*+data:scheme:content
+ADDED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:14:9-21:18
+action#android.intent.action.VIEW
+ADDED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-65
+	android:name
+		ADDED from [:contacts_service] /Users/akhdanhabibie/StudioProjects/chating/build/contacts_service/intermediates/merged_manifest/debug/AndroidManifest.xml:15:21-62
 intent#action:name:android.intent.action.GET_CONTENT+data:mimeType:*/*
 ADDED from [:file_picker] /Users/akhdanhabibie/StudioProjects/chating/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:14:9-18:18
 action#android.intent.action.GET_CONTENT
@@ -1041,10 +1062,6 @@ ADDED from [com.google.firebase:firebase-auth:23.1.0] /Users/akhdanhabibie/.grad
 		ADDED from [com.google.firebase:firebase-auth:23.1.0] /Users/akhdanhabibie/.gradle/caches/transforms-3/eb204ebf900b4fe58c25d8a315333212/transformed/jetified-firebase-auth-23.1.0/AndroidManifest.xml:30:13-80
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:firebase.auth+data:path:/+data:scheme:genericidp
 ADDED from [com.google.firebase:firebase-auth:23.1.0] /Users/akhdanhabibie/.gradle/caches/transforms-3/eb204ebf900b4fe58c25d8a315333212/transformed/jetified-firebase-auth-23.1.0/AndroidManifest.xml:35:13-45:29
-action#android.intent.action.VIEW
-ADDED from [com.google.firebase:firebase-auth:23.1.0] /Users/akhdanhabibie/.gradle/caches/transforms-3/eb204ebf900b4fe58c25d8a315333212/transformed/jetified-firebase-auth-23.1.0/AndroidManifest.xml:36:17-69
-	android:name
-		ADDED from [com.google.firebase:firebase-auth:23.1.0] /Users/akhdanhabibie/.gradle/caches/transforms-3/eb204ebf900b4fe58c25d8a315333212/transformed/jetified-firebase-auth-23.1.0/AndroidManifest.xml:36:25-66
 category#android.intent.category.DEFAULT
 ADDED from [com.google.firebase:firebase-auth:23.1.0] /Users/akhdanhabibie/.gradle/caches/transforms-3/eb204ebf900b4fe58c25d8a315333212/transformed/jetified-firebase-auth-23.1.0/AndroidManifest.xml:38:17-76
 	android:name

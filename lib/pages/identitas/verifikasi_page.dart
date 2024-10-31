@@ -7,9 +7,9 @@ import '../../service/alert_service.dart';
 
 class Verifikasi extends StatefulWidget {
   final String phoneNumber;
-  final String nama;
+  // final String nama;
 
-  Verifikasi({required this.phoneNumber, required this.nama});
+  Verifikasi({required this.phoneNumber});
 
   @override
   _VerifikasiState createState() => _VerifikasiState();

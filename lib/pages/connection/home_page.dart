@@ -8,6 +8,7 @@ import 'package:chating/service/database_service.dart';
 import 'package:chating/service/navigation_service.dart';
 import 'package:chating/widgets/chat_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_storage/firebase_storage.dart';
@@ -644,6 +645,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
+  Future<List<Contact>> _fetchContacts() async {
+    // Pastikan izin telah diberikan sebelum mengambil kontak
+    PermissionStatus status = await Permission.contacts.request();
+    if (status.isGranted) {
+      return await ContactsService.getContacts().then((contacts) => contacts.toList());
+    } else {
+      return [];
+    }
+  }
+
   void _bottomSheetContach(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
@@ -665,7 +676,38 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Expanded(child: _chatList()),
+                    Expanded(
+                      child: FutureBuilder<List<Contact>>(
+                        future: _fetchContacts(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Terjadi kesalahan'));
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(child: Text('Tidak ada kontak yang ditemukan'));
+                          } else {
+                            return ListView.builder(
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                final contact = snapshot.data![index];
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    child: Text(contact.initials()),
+                                  ),
+                                  title: Text(contact.displayName ?? 'Tidak ada nama'),
+                                  subtitle: Text(
+                                    contact.phones!.isNotEmpty
+                                        ? contact.phones!.first.value ?? ''
+                                        : '',
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ),
                   ],
                 ),
               );
