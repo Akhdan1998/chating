@@ -460,7 +460,17 @@ class _LoginPageState extends State<LoginPage> {
                 'next'.tr(),
                 style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
               ),
-              onPressed: dialogConfirm,
+              onPressed:  () {
+                if (phoneNumber.isNotEmpty) {
+                  dialogConfirm();
+                } else {
+                  _alertService.showToast(
+                    text: 'Please fill in both fields.',
+                    icon: Icons.error,
+                    color: Colors.redAccent,
+                  );
+                }
+              },
             ),
           );
   }
@@ -650,15 +660,6 @@ class _LoginPageState extends State<LoginPage> {
   // }
 
   Future<void> _handleNextButtonPressed() {
-    if (phoneNumber.isEmpty) {
-      _alertService.showToast(
-        text: 'Please fill in both fields.',
-        icon: Icons.error,
-        color: Colors.redAccent,
-      );
-      return Future.value();
-    }
-
     setState(() => isLoad = true);
 
     return Navigator.push(

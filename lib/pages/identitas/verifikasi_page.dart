@@ -1,12 +1,20 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../consts.dart';
 import '../../service/alert_service.dart';
+import '../../widgets/textfield.dart';
+import 'package:flutter/foundation.dart' as foundation;
 
 class Verifikasi extends StatefulWidget {
   final String phoneNumber;
+
   // final String nama;
 
   Verifikasi({required this.phoneNumber});
@@ -17,6 +25,8 @@ class Verifikasi extends StatefulWidget {
 
 class _VerifikasiState extends State<Verifikasi> {
   bool isOtpSent = false;
+  bool isName = false;
+  bool isLoading = false;
   late Timer _timer;
   int _remainingTime = 7;
   int _remaining = 60;
@@ -24,6 +34,9 @@ class _VerifikasiState extends State<Verifikasi> {
   final GetIt _getIt = GetIt.instance;
   String _verificationId = '';
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  File? selectedImage;
+  final TextEditingController nameController = TextEditingController();
+  bool showEmojiPicker = false;
 
   @override
   void initState() {
@@ -95,7 +108,10 @@ class _VerifikasiState extends State<Verifikasi> {
       );
       await _auth.signInWithCredential(credential);
       _alertService.showToast(
-          text: 'OTP Verified!', icon: Icons.check, color: Colors.green,);
+        text: 'OTP Verified!',
+        icon: Icons.check,
+        color: Colors.green,
+      );
     } catch (e) {
       _alertService.showToast(
         text: 'Invalid OTP Code: $e',
@@ -134,44 +150,202 @@ class _VerifikasiState extends State<Verifikasi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildContent(),
-            _buildFooter(),
-          ],
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        leading: (isName)
+            ? Container()
+            : IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.arrow_back),
+              ),
+        actions: [
+          (isName)
+              ? IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.more_vert),
+          )
+              : Container(),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildContent(),
+              _buildFooter(),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Verify OTP Code', style: _headerStyle),
-        SizedBox(height: 10),
-        Text(
-          isOtpSent
-              ? 'Enter the OTP code you received via SMS at ${widget.phoneNumber}'
-              : 'Please select a method below to get the OTP code.',
-          style: _bodyStyle,
-        ),
-        SizedBox(height: isOtpSent ? 30 : 10),
-        isOtpSent
-            ? Container()
-            : Image.asset(
-                'assets/verifikasi.jpg',
+    return (isName)
+        ? Container(
+            height: MediaQuery.of(context).size.height - 145,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Info profil'.tr(),
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Mohon berikan nama dan foto profil (opsional) Anda'.tr(),
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(fontSize: 15),
+                    ),
+                    SizedBox(height: 30),
+                    GestureDetector(
+                      onTap: () async {},
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: selectedImage != null
+                                ? FileImage(selectedImage!)
+                                : NetworkImage(PLACEHOLDER_PFP)
+                                    as ImageProvider,
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              size: 17,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFieldCustom(
+                            autoFocus: true,
+                            textCapitalization: TextCapitalization.sentences,
+                            controller: nameController,
+                            onSaved: (value) {
+                              nameController.text = value!;
+                            },
+                            validationRegEx: NAME_VALIDATION_REGEX,
+                            height: MediaQuery.of(context).size.height * 0.1,
+                            hintText: 'name'.tr(),
+                            obscureText: false,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        IconButton(
+                          icon: Icon(Icons
+                              .emoji_emotions_outlined), // Ikon untuk emoji
+                          onPressed: () {
+                            setState(() {
+                              showEmojiPicker =
+                                  !showEmojiPicker; // Tampilkan/hide emoji picker
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    if (showEmojiPicker)
+                      EmojiPicker(
+                        onBackspacePressed: () {
+                          if (nameController.text.isNotEmpty) {
+                            nameController.text = nameController.text
+                                .substring(0, nameController.text.length - 1);
+                          }
+                        },
+                        textEditingController: nameController,
+                        config: Config(
+                          height: 210,
+                          checkPlatformCompatibility: true,
+                          emojiViewConfig: EmojiViewConfig(
+                            emojiSizeMax: 20 *
+                                (foundation.defaultTargetPlatform ==
+                                        TargetPlatform.android
+                                    ? 1.20
+                                    : 1.0),
+                          ),
+                          viewOrderConfig: ViewOrderConfig(
+                            top: EmojiPickerItem.categoryBar,
+                            middle: EmojiPickerItem.emojiView,
+                          ),
+                          skinToneConfig: SkinToneConfig(),
+                          categoryViewConfig: CategoryViewConfig(),
+                          bottomActionBarConfig: BottomActionBarConfig(),
+                        ),
+                      ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: _registerButton(),
+                ),
+              ],
+            ),
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Verify OTP Code', style: _headerStyle),
+              SizedBox(height: 10),
+              Text(
+                isOtpSent
+                    ? 'Enter the OTP code you received via SMS at ${widget.phoneNumber}'
+                    : 'Please select a method below to get the OTP code.',
+                style: _bodyStyle,
               ),
-        SizedBox(height: isOtpSent ? 10 : 20),
-        isOtpSent ? _buildOtpField() : _buildSendOtpButton(),
-        SizedBox(height: 30),
-        if (isOtpSent) _buildTimer(),
-      ],
-    );
+              SizedBox(height: isOtpSent ? 30 : 10),
+              isOtpSent
+                  ? Container()
+                  : Image.asset(
+                      'assets/verifikasi.jpg',
+                    ),
+              SizedBox(height: isOtpSent ? 10 : 20),
+              isOtpSent ? _buildOtpField() : _buildSendOtpButton(),
+              SizedBox(height: 30),
+              if (isOtpSent) _buildTimer(),
+            ],
+          );
+  }
+
+  Widget _registerButton() {
+    return isLoading
+        ? CircularProgressIndicator(color: Colors.white)
+        : SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 15),
+              ),
+              child: Text(
+                'next'.tr(),
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.blueGrey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
   }
 
   Widget _buildOtpField() {
@@ -183,7 +357,12 @@ class _VerifikasiState extends State<Verifikasi> {
       borderColor: Theme.of(context).colorScheme.primary,
       focusedBorderColor: Theme.of(context).colorScheme.primary,
       showFieldAsBox: true,
-      onSubmit: (String otpCode) => _verifyOTP(otpCode),
+      onSubmit: (String otpCode) {
+        setState(() {
+          isName = true;
+        });
+        _verifyOTP(otpCode);
+      },
     );
   }
 
