@@ -24,5 +24,10 @@
   "email": "Email",
   "password": "Password",
   "name": "Name",
-  "phone_number": "Phone number"
+  "phone_number": "Phone number",
+  "validasi": "Is this number correct?",
+  "no": "No",
+  "yes": "Yes",
+  "contact": "Contact",
+  "desk": "To easily verify numbers and send messages to friends and family, let Appskabs access your contact list."
 }

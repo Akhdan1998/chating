@@ -24,5 +24,10 @@
   "email": "이메일",
   "password": "비밀번호",
   "name": "이름",
-  "phone_number": "전화 번호"
+  "phone_number": "전화 번호",
+  "validasi": "이 숫자가 맞나요?",
+  "no": "아니요",
+  "yes": "예",
+  "contact": "연락하다",
+  "desk": "쉽게 번호를 확인하고 친구와 가족에게 메시지를 보내려면 Appskabs가 연락처 목록에 액세스할 수 있도록 허용하세요."
 }

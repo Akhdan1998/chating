@@ -24,5 +24,10 @@
   "email": "Surel",
   "password": "Kata sandi",
   "name": "Nama",
-  "phone_number": "Nomor telepon"
+  "phone_number": "Nomor telepon",
+  "validasi": "Apakah ini nomor yang benar?",
+  "no": "Tidak",
+  "yes": "Ya",
+  "contact": "Kontak",
+  "desk": "Untuk memverifikasi nomor dan mengirim pesan ke teman dan keluarga dengan mudah, izinkan Appskabs mengakses daftar kontak Anda."
 }

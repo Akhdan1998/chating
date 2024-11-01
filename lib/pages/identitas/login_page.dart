@@ -60,121 +60,126 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blueGrey.shade900,
-        leading: Container(),
-        centerTitle: true,
-        title: Text(
-          (cardEmail == true)
-              ? 'head_title_email'.tr()
-              : 'head_title_number'.tr(),
-          style: GoogleFonts.poppins(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blueGrey.shade900,
+          leading: Container(),
+          centerTitle: true,
+          title: Text(
+            (cardEmail == true)
+                ? 'head_title_email'.tr()
+                : 'head_title_number'.tr(),
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
+          actions: [
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.more_vert,
+                  color: Colors.white,
+                ),),
+          ],
         ),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.more_vert,
-                color: Colors.white,
-              )),
-        ],
-      ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blueGrey.shade900, Colors.blueGrey.shade700],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+        body: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blueGrey.shade900, Colors.blueGrey.shade700],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-        ),
-        height: MediaQuery.of(context).size.height,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: (cardEmail == true)
-                          ? 'title_email'.tr()
-                          : 'title_number'.tr(),
-                      style: GoogleFonts.poppins(fontSize: 15),
-                    ),
-                    TextSpan(
-                      text: (cardEmail == true)
-                          ? 'subtitle_email'.tr()
-                          : 'subtitle_number'.tr(),
-                      style: GoogleFonts.poppins(
-                        color: Colors.blue,
-                        fontSize: 15,
+          height: MediaQuery.of(context).size.height,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: (cardEmail == true)
+                            ? 'title_email'.tr()
+                            : 'title_number'.tr(),
+                        style: GoogleFonts.poppins(fontSize: 15),
                       ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          // Aksi ketika "Ketentuan Layanan" ditekan
-                          print('WKWKWKWKWK');
-                        },
-                    ),
-                  ],
+                      TextSpan(
+                        text: (cardEmail == true)
+                            ? 'subtitle_email'.tr()
+                            : 'subtitle_number'.tr(),
+                        style: GoogleFonts.poppins(
+                          color: Colors.blue,
+                          fontSize: 15,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            // Aksi ketika "Ketentuan Layanan" ditekan
+                            print('WKWKWKWKWK');
+                          },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              _logo(),
-              // _loginCard(),
-              if (cardEmail == true) _loginCard(),
-              SizedBox(height: 15),
-              (cardEmail == true)
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              cardEmail = !cardEmail;
-                            });
-                          },
-                          child: Container(
-                            color: Colors.transparent,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'login_number'.tr(),
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 12,
+                _logo(),
+                // _loginCard(),
+                if (cardEmail == true) _loginCard(),
+                SizedBox(height: 15),
+                (cardEmail == true)
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                cardEmail = !cardEmail;
+                              });
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'login_number'.tr(),
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              forgotPass = !forgotPass;
-                            });
-                          },
-                          child: Container(
-                            color: Colors.transparent,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'pass'.tr(),
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 12,
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                forgotPass = !forgotPass;
+                              });
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'pass'.tr(),
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  : Container(),
-              SizedBox(height: 20),
-              _createAnAccountLink(),
-            ],
+                        ],
+                      )
+                    : Container(),
+                SizedBox(height: 20),
+                _createAnAccountLink(),
+              ],
+            ),
           ),
         ),
       ),
@@ -399,6 +404,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildPhoneField() {
+    String _getInitialCountryCode(BuildContext context) {
+      Locale locale = Localizations.localeOf(context);
+      switch (locale.languageCode) {
+        case 'id':
+          return 'ID';
+        case 'en':
+          return 'US';
+        case 'ko':
+          return 'KR';
+        default:
+          return 'US';
+      }
+    }
+
     return IntlPhoneField(
       autofocus: true,
       controller: phoneController,
@@ -413,7 +432,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         counterText: '',
       ),
-      initialCountryCode: 'ID',
+      initialCountryCode: _getInitialCountryCode(context),
       onChanged: (phone) {
         setState(() {
           phoneNumber = phone.completeNumber;
@@ -460,7 +479,7 @@ class _LoginPageState extends State<LoginPage> {
                 'next'.tr(),
                 style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
               ),
-              onPressed:  () {
+              onPressed: () {
                 if (phoneNumber.isNotEmpty) {
                   dialogConfirm();
                 } else {
@@ -485,25 +504,25 @@ class _LoginPageState extends State<LoginPage> {
         return AlertDialog(
           actionsPadding:
               const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-          title: Text('Apakah ini nomor yang benar?'.tr(),
+          title: Text('validasi'.tr(),
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           content: Text(phoneNumber, style: const TextStyle(fontSize: 15)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('No',
+              child: Text('no'.tr(),
                   style: GoogleFonts.poppins(
-                      color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                      color: Colors.redAccent, fontWeight: FontWeight.bold,),),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 dialogInformation(context);
               },
-              child: Text('Yes',
+              child: Text('yes'.tr(),
                   style: GoogleFonts.poppins(
                       color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold)),
+                      fontWeight: FontWeight.bold),),
             ),
           ],
         );
@@ -557,22 +576,27 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Kontak',
-                      style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Untuk memverifikasi nomor dan mengirim pesan ke teman dan keluarga dengan mudah, izinkan Appskabs mengakses daftar kontak Anda.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'contact'.tr(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'desk'.tr(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -582,7 +606,7 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.pop(context);
                           },
                           child: Text(
-                            'Nanti',
+                            'no'.tr(),
                             style: GoogleFonts.poppins().copyWith(
                               color: Colors.redAccent,
                               fontWeight: FontWeight.bold,
