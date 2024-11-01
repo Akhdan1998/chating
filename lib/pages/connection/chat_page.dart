@@ -323,11 +323,11 @@ class _ChatPageState extends State<ChatPage> {
           actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
           title: Text(
             'Delete Message',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold,),
           ),
           content: Text(
             'Are you sure you want to delete this message?',
-            style: TextStyle(fontSize: 15),
+            style: GoogleFonts.poppins(fontSize: 15),
           ),
           actions: [
             TextButton(
@@ -677,7 +677,7 @@ class _ChatPageState extends State<ChatPage> {
                     spans.add(
                       TextSpan(
                         text: text.substring(lastMatchEnd, match.start),
-                        style: TextStyle(color: Colors.black87, fontSize: 15),
+                        style: GoogleFonts.poppins(color: Colors.black87, fontSize: 15,),
                       ),
                     );
                   }
@@ -685,7 +685,7 @@ class _ChatPageState extends State<ChatPage> {
                   spans.add(
                     TextSpan(
                       text: match.group(0),
-                      style: TextStyle(color: Colors.blue),
+                      style: GoogleFonts.poppins(color: Colors.blue),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () => _launchURL(match.group(0)!),
                     ),
@@ -696,7 +696,7 @@ class _ChatPageState extends State<ChatPage> {
                 if (lastMatchEnd < text.length) {
                   spans.add(TextSpan(
                     text: text.substring(lastMatchEnd),
-                    style: TextStyle(color: Colors.black87, fontSize: 15),
+                    style: GoogleFonts.poppins(color: Colors.black87, fontSize: 15,),
                   ));
                 }
 
@@ -767,7 +767,7 @@ class _ChatPageState extends State<ChatPage> {
                                 isCurrentlyPlaying
                                     ? "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}"
                                     : "0:00",
-                                style: TextStyle(fontSize: 10),
+                                style: GoogleFonts.poppins(fontSize: 10),
                               ),
                             ],
                           ),
@@ -778,10 +778,8 @@ class _ChatPageState extends State<ChatPage> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         DateFormat('HH:mm').format(message.createdAt),
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 12,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.black87,
+                          fontSize: 12,),
                       ),
                     ),
                   ],
@@ -796,7 +794,7 @@ class _ChatPageState extends State<ChatPage> {
                       onTap: () => _launchURL(message.text),
                       errorBody: 'Show my custom error body',
                       errorTitle: 'Show my custom error title',
-                      bodyStyle: TextStyle(fontSize: 12),
+                      bodyStyle: GoogleFonts.poppins(fontSize: 12),
                       errorWidget: Container(
                         height: 200,
                         width: MediaQuery.of(context).size.width,
@@ -818,10 +816,8 @@ class _ChatPageState extends State<ChatPage> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         DateFormat('HH:mm').format(message.createdAt),
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 12,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.black87,
+                          fontSize: 12,),
                       ),
                     ),
                   ],
@@ -839,10 +835,8 @@ class _ChatPageState extends State<ChatPage> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         DateFormat('HH:mm').format(message.createdAt),
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 12,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.black87,
+                          fontSize: 12,),
                       ),
                     ),
                   ],
@@ -986,11 +980,12 @@ class _ChatPageState extends State<ChatPage> {
 
           return Text(
             lastSeenMessage,
-            style: TextStyle(color: Colors.white, fontSize: 11),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 11,),
           );
         }
 
-        return Center(child: Text('No data available'));
+        return Center(child: Text('No data available',
+            style: GoogleFonts.poppins(),),);
       },
     );
   }
@@ -1499,18 +1494,14 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
           children: [
             Text(
               widget.chatUser.name.toString(),
-              style: TextStyle(
-                color: Colors.white,
+              style: GoogleFonts.poppins(color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+                fontWeight: FontWeight.bold,),
             ),
             Text(
               day,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white,
+                fontSize: 10,),
             ),
           ],
         ),
@@ -1538,11 +1529,9 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: GoogleFonts.poppins(color: Colors.white,
                             fontSize: 7,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            fontWeight: FontWeight.bold,),
                         ),
                       ],
                     )
@@ -1672,18 +1661,14 @@ class _PDFViewPageState extends State<PDFViewPage> {
           children: [
             Text(
               widget.fileName.toString(),
-              style: TextStyle(
-                color: Colors.white,
+              style: GoogleFonts.poppins(color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+                fontWeight: FontWeight.bold,),
             ),
             Text(
               day,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white,
+                fontSize: 10,),
             ),
           ],
         ),
@@ -1713,11 +1698,9 @@ class _PDFViewPageState extends State<PDFViewPage> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: GoogleFonts.poppins(color: Colors.white,
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            fontWeight: FontWeight.bold,),
                         ),
                       ],
                     )
@@ -1937,18 +1920,14 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
           children: [
             Text(
               widget.chatUser.name.toString(),
-              style: TextStyle(
-                color: Colors.white,
+              style: GoogleFonts.poppins(color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+                fontWeight: FontWeight.bold,),
             ),
             Text(
               day,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white,
+                fontSize: 10,),
             ),
           ],
         ),
@@ -1976,11 +1955,9 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: GoogleFonts.poppins(color: Colors.white,
                             fontSize: 7,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            fontWeight: FontWeight.bold,),
                         ),
                       ],
                     )
@@ -2040,11 +2017,11 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                                   children: [
                                     Text(
                                       _formatDuration(position),
-                                      style: TextStyle(color: Colors.black),
+                                      style: GoogleFonts.poppins(color: Colors.black),
                                     ),
                                     Text(
                                       _formatDuration(duration),
-                                      style: TextStyle(color: Colors.black),
+                                      style: GoogleFonts.poppins(color: Colors.black),
                                     ),
                                   ],
                                 ),
