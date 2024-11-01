@@ -515,114 +515,134 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void dialogInformation(BuildContext context) {
+    bool confirm = false;
+
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: '',
       transitionDuration: Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              width: 300,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
+        return StatefulBuilder(builder: (context, setState) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                width: 300,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ),
+                child: Icon(
+                  Icons.contacts_outlined,
+                  color: Colors.white,
+                  size: 40,
                 ),
               ),
-              child: Icon(
-                Icons.contacts_outlined,
-                color: Colors.white,
-                size: 40,
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 20, right: 20, left: 20),
-              width: 300,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10),
+              Container(
+                padding: EdgeInsets.only(top: 20, right: 20, left: 20),
+                width: 300,
+                height: 208,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Kontak',
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Untuk memverifikasi nomor dan mengirim pesan ke teman dan keluarga dengan mudah, izinkan Appskabs mengakses daftar kontak Anda.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Nanti',
+                            style: GoogleFonts.poppins().copyWith(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        confirm
+                            ? Container(
+                          width: 10,
+                          height: 10,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : TextButton(
+                          onPressed: () async {
+                            setState(() {
+                              confirm = true;
+                            });
+
+                            PermissionStatus status =
+                            await Permission.contacts.request();
+
+                            if (status.isGranted) {
+                              Iterable<Contact> contacts =
+                              await ContactsService.getContacts();
+
+                              contacts.forEach((contact) {
+                                print(contact.displayName);
+                                print(contact.phones);
+                              });
+
+                              _handleNextButtonPressed().whenComplete(() {
+                                setState(() {
+                                  confirm = false;
+                                });
+                                Navigator.pop(context);
+                              });
+                            } else if (status.isDenied) {
+                              print('Izin ditolak');
+                            } else if (status.isPermanentlyDenied) {
+                              openAppSettings();
+                            }
+                          },
+                          child: Text(
+                            'next'.tr(),
+                            style: GoogleFonts.poppins().copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Kontak',
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Untuk memverifikasi nomor dan mengirim pesan ke teman dan keluarga dengan mudah, izinkan Appskabs mengakses daftar kontak Anda.',
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          'Nanti',
-                          style: GoogleFonts.poppins().copyWith(
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          PermissionStatus status = await Permission.contacts.request();
-
-                          if (status.isGranted) {
-                            Iterable<Contact> contacts = await ContactsService.getContacts();
-
-                            contacts.forEach((contact) {
-                              print(contact.displayName);
-                              print(contact.phones);
-                            });
-
-                            _handleNextButtonPressed().whenComplete(() {
-                              Navigator.pop(context);
-                            });
-
-                          } else if (status.isDenied) {
-                            print('Izin ditolak');
-                          } else if (status.isPermanentlyDenied) {
-                            openAppSettings();
-                          }
-                        },
-                        child: Text(
-                          'next'.tr(),
-                          style: GoogleFonts.poppins().copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
+            ],
+          );
+        });
       },
       transitionBuilder: (context, anim1, anim2, child) {
         return Transform.scale(scale: anim1.value, child: child);

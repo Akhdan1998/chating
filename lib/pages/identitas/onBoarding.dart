@@ -52,18 +52,18 @@ class _BoardingState extends State<Boarding> {
       body: SafeArea(
         child: Column(
           children: [
-            Image.asset('assets/boarding.png', scale: 3,),
+            Image.asset('assets/boarding.png', scale: 3.5,),
             Container(
               padding: EdgeInsets.only(left: 20, right: 20, top: 10),
               child: Center(
                 child: Column(
                   children: [
-                    Text('welcome'.tr(), style: GoogleFonts.poppins(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold,),),
+                    Text('welcome'.tr(), style: GoogleFonts.poppins(color: Colors.black, fontSize: 21, fontWeight: FontWeight.bold,),),
                     SizedBox(height: 15),
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: GoogleFonts.poppins(color: Colors.black, fontSize: 18,),
+                        style: GoogleFonts.poppins(color: Colors.black, fontSize: 17,),
                         children: [
                           TextSpan(text: 'read_our'.tr(), style: GoogleFonts.poppins(),),
                           TextSpan(

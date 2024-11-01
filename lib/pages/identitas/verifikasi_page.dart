@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../consts.dart';
 import '../../service/alert_service.dart';
+import '../../service/media_service.dart';
 import '../../widgets/textfield.dart';
 import 'package:flutter/foundation.dart' as foundation;
 
@@ -37,11 +38,13 @@ class _VerifikasiState extends State<Verifikasi> {
   File? selectedImage;
   final TextEditingController nameController = TextEditingController();
   bool showEmojiPicker = false;
+  late MediaService _mediaService;
 
   @override
   void initState() {
     super.initState();
     _alertService = _getIt.get<AlertService>();
+    _mediaService = _getIt.get<MediaService>();
     autoSend();
   }
 
@@ -101,23 +104,33 @@ class _VerifikasiState extends State<Verifikasi> {
   }
 
   Future<void> _verifyOTP(String otpCode) async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
         smsCode: otpCode,
       );
       await _auth.signInWithCredential(credential);
+
       _alertService.showToast(
         text: 'OTP Verified!',
         icon: Icons.check,
         color: Colors.green,
       );
+
     } catch (e) {
+      print('OTP ERROR $e');
       _alertService.showToast(
-        text: 'Invalid OTP Code: $e',
+        text: 'Invalid OTP Code, please try again.',
         icon: Icons.error,
         color: Colors.redAccent,
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -207,7 +220,14 @@ class _VerifikasiState extends State<Verifikasi> {
                     ),
                     SizedBox(height: 30),
                     GestureDetector(
-                      onTap: () async {},
+                      onTap: () async {
+                        File? file = await _mediaService.getImageFromGalleryImage();
+                        if (file != null) {
+                          setState(() {
+                            selectedImage = file;
+                          });
+                        }
+                      },
                       child: Stack(
                         alignment: Alignment.bottomRight,
                         children: [
@@ -253,11 +273,11 @@ class _VerifikasiState extends State<Verifikasi> {
                         SizedBox(width: 10),
                         IconButton(
                           icon: Icon(Icons
-                              .emoji_emotions_outlined), // Ikon untuk emoji
+                              .emoji_emotions_outlined),
                           onPressed: () {
                             setState(() {
                               showEmojiPicker =
-                                  !showEmojiPicker; // Tampilkan/hide emoji picker
+                                  !showEmojiPicker;
                             });
                           },
                         ),
@@ -288,7 +308,6 @@ class _VerifikasiState extends State<Verifikasi> {
                           ),
                           skinToneConfig: SkinToneConfig(),
                           categoryViewConfig: CategoryViewConfig(),
-                          bottomActionBarConfig: BottomActionBarConfig(),
                         ),
                       ),
                   ],
