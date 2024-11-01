@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chating/models/user_profile.dart';
 import 'package:chating/pages/connection/chat_page.dart';
+import 'package:chating/pages/connection/chat_screen.dart';
 import 'package:chating/service/auth_service.dart';
 import 'package:chating/service/database_service.dart';
 import 'package:chating/service/navigation_service.dart';
@@ -79,13 +80,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       print('Uploading video: ${file.path}');
 
       // Nama file untuk video
-      String fileName = 'stories/videos/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+      String fileName =
+          'stories/videos/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
 
       try {
         UploadTask uploadTask = FirebaseStorage.instance
             .ref()
             .child(fileName)
-            .putFile(file);  // Unggah file video langsung tanpa kompresi
+            .putFile(file); // Unggah file video langsung tanpa kompresi
 
         TaskSnapshot taskSnapshot = await uploadTask;
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
@@ -126,7 +128,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         );
         print('Failed to upload video: $e');
       }
-
     } else {
       // Proses kompresi untuk gambar
       print('File size before compression: ${file.lengthSync()} bytes');
@@ -144,13 +145,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       print('File size after compression: ${compressedImage.length} bytes');
 
       // Nama file untuk gambar
-      String fileName = 'stories/images/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+      String fileName =
+          'stories/images/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
 
       try {
         UploadTask uploadTask = FirebaseStorage.instance
             .ref()
             .child(fileName)
-            .putFile(File(compressedFilePath));  // Unggah file gambar yang telah dikompresi
+            .putFile(File(
+                compressedFilePath)); // Unggah file gambar yang telah dikompresi
 
         TaskSnapshot taskSnapshot = await uploadTask;
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
@@ -353,7 +356,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   // }
 
   Future<void> _requestPermission() async {
-    if (await Permission.camera.request().isGranted && await Permission.storage.request().isGranted) {
+    if (await Permission.camera.request().isGranted &&
+        await Permission.storage.request().isGranted) {
       // Permission granted, do nothing
     } else {
       // Handle permission denied
@@ -448,7 +452,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       groupController.clear();
       selectedUserIndexes.clear();
       selectedImage = null;
-      // Navigator.pop(context);
     }
   }
 
@@ -471,9 +474,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     bool _isLoading = false;
     var userProfiles = await _databaseService.getUserProfiles().first;
     setState(() {
-      _users = userProfiles.docs
-          .map((doc) => doc.data() as UserProfile)
-          .toList();
+      _users =
+          userProfiles.docs.map((doc) => doc.data() as UserProfile).toList();
     });
     showModalBottomSheet<void>(
       context: context,
@@ -497,9 +499,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
+                      Text(
                         'Add members',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -568,7 +570,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           itemCount: _users.length,
                           itemBuilder: (context, index) {
                             UserProfile user = _users[index];
-                            bool isSelected = selectedUserIndexes.contains(index);
+                            bool isSelected =
+                                selectedUserIndexes.contains(index);
                             return GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -616,7 +619,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
                                               image: DecorationImage(
-                                                image: NetworkImage(user.pfpURL!),
+                                                image:
+                                                    NetworkImage(user.pfpURL!),
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -646,10 +650,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<List<Contact>> _fetchContacts() async {
-    // Pastikan izin telah diberikan sebelum mengambil kontak
     PermissionStatus status = await Permission.contacts.request();
     if (status.isGranted) {
-      return await ContactsService.getContacts().then((contacts) => contacts.toList());
+      return await ContactsService.getContacts()
+          .then((contacts) => contacts.toList());
     } else {
       return [];
     }
@@ -660,59 +664,73 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return SafeArea(
-          child: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Container(
-                height: 850,
-                padding: EdgeInsets.only(top: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'New Chat',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: 850,
+              padding: EdgeInsets.only(top: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'New Chat',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Expanded(
-                      child: FutureBuilder<List<Contact>>(
-                        future: _fetchContacts(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text('Terjadi kesalahan'));
-                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Center(child: Text('Tidak ada kontak yang ditemukan'));
-                          } else {
-                            return ListView.builder(
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (context, index) {
-                                final contact = snapshot.data![index];
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    child: Text(contact.initials()),
-                                  ),
-                                  title: Text(contact.displayName ?? 'Tidak ada nama'),
-                                  subtitle: Text(
-                                    contact.phones!.isNotEmpty
-                                        ? contact.phones!.first.value ?? ''
-                                        : '',
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                        },
-                      ),
+                  ),
+                  Expanded(
+                    child: FutureBuilder<List<Contact>>(
+                      future: _fetchContacts(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error loading contacts'));
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return Center(
+                              child: Text('Tidak ada kontak yang ditemukan'));
+                        } else {
+                          return ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final contact = snapshot.data![index];
+
+                              return ListTile(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatScreen(
+                                        contact:
+                                            contact, // Pass the entire contact object
+                                      ),
+                                    ),
+                                  );
+                                },
+                                leading: CircleAvatar(
+                                  child: Text(contact.initials()),
+                                ),
+                                title: Text(contact.displayName ?? '-'),
+                                subtitle: Text(
+                                  contact.phones!.isNotEmpty
+                                      ? contact.phones!.first.value ?? ''
+                                      : '',
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      },
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
@@ -725,8 +743,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         return Wrap(
           children: <Widget>[
             ListTile(
-              leading: Icon(Icons.camera_alt,
-                color: Colors.green,),
+              leading: Icon(
+                Icons.camera_alt,
+                color: Colors.green,
+              ),
               title: Text('Take Photo'),
               onTap: () async {
                 Navigator.pop(context);
@@ -735,8 +755,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               },
             ),
             ListTile(
-              leading: Icon(Icons.photo_library,
-                color: Colors.redAccent,),
+              leading: Icon(
+                Icons.photo_library,
+                color: Colors.redAccent,
+              ),
               title: Text('Choose Photo from Gallery'),
               onTap: () async {
                 Navigator.pop(context);
@@ -803,7 +825,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               child: Container(
                                 color: Colors.transparent,
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('New Group'),
                                     SizedBox(width: 20),
@@ -855,7 +878,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ),
             Text(
               'Chat',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -870,8 +893,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _createGroupButton(
-      void Function(void Function()) setState, bool isLoading, BuildContext context) {
+  Widget _createGroupButton(void Function(void Function()) setState,
+      bool isLoading, BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: MaterialButton(
@@ -959,9 +982,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   color: Colors.white,
                 ),
               )
-            : const Text(
+            : Text(
                 'Create Group',
-                style: TextStyle(color: Colors.white),
+                style: GoogleFonts.poppins(color: Colors.white),
               ),
       ),
     );
@@ -974,10 +997,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         switchInCurve: Curves.easeIn,
         useDefaultLoading: true,
         child: Container(
-          color: Colors.white,
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: _chatListAndGroups()
-        ),
+            color: Colors.white,
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: _chatListAndGroups()),
       ),
     );
   }
@@ -988,6 +1010,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: Text(
           "The user is not authenticated or the user collection is not initialized. Please log out and log back in.",
           textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(),
         ),
       );
     }
@@ -1080,10 +1103,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       transitionDuration: Duration(milliseconds: 300),
                       pageBuilder: (context, anim1, anim2) {
                         return AlertDialog(
-                          actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
+                          actionsPadding:
+                              EdgeInsets.only(top: 1, bottom: 5, right: 10),
                           title: Text(
                             'Delete chat with ${user.name}',
-                            style: TextStyle(fontSize: 15),
+                            style: GoogleFonts.poppins(fontSize: 15),
                           ),
                           actions: [
                             TextButton(
@@ -1092,7 +1116,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               },
                               child: Text(
                                 'Cancel',
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Colors.redAccent,
                                 ),
                               ),
@@ -1101,14 +1125,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               onPressed: () {
                                 Navigator.pop(context);
                                 _alertService.showToast(
-                                  text: 'All messages with ${user.name} were successfully deleted!',
+                                  text:
+                                      'All messages with ${user.name} were successfully deleted!',
                                   icon: Icons.info,
                                   color: Colors.red,
                                 );
                               },
                               child: Text(
                                 'Yes',
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -1117,8 +1142,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           ],
                         );
                       },
-                      transitionBuilder:
-                          (context, anim1, anim2, child) {
+                      transitionBuilder: (context, anim1, anim2, child) {
                         return Transform.scale(
                           scale: anim1.value,
                           child: child,
@@ -1136,7 +1160,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
                 List<String> memberNames = group.members.map((memberId) {
                   final user = users.firstWhere(
-                        (user) => user.uid == memberId,
+                    (user) => user.uid == memberId,
                     orElse: () => UserProfile(
                       uid: memberId,
                       name: 'You',
@@ -1154,7 +1178,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   ),
                   title: Text(
                     group.name,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1163,7 +1187,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     memberNamesStr,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 12,
                       fontWeight: FontWeight.w100,
                     ),
@@ -1183,14 +1207,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
+                          actionsPadding:
+                              EdgeInsets.only(top: 1, bottom: 5, right: 10),
                           title: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 'Do you want to exit the group "${group.name}"?',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 15),
+                                style: GoogleFonts.poppins(fontSize: 15),
                               ),
                               SizedBox(height: 5),
                               Container(
@@ -1202,8 +1227,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 child: Text(
                                   'Only group admins will be notified that you leave the group.',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
+                                  style: GoogleFonts.poppins(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -1225,17 +1251,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             ),
                             TextButton(
                               onPressed: () async {
-                                await _databaseService.leaveGroup(group.id, _authService.user!.uid);
+                                await _databaseService.leaveGroup(
+                                    group.id, _authService.user!.uid);
                                 Navigator.pop(context);
                                 _alertService.showToast(
-                                  text: 'You have left the group "${group.name}"',
+                                  text:
+                                      'You have left the group "${group.name}"',
                                   icon: Icons.info,
                                   color: Colors.orange,
                                 );
                               },
                               child: Text(
                                 'Yes',
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -1252,106 +1280,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 child: CircularProgressIndicator(
                   color: Theme.of(context).colorScheme.primary,
                 ),
-              );
-            },
-          );
-        }
-        return Center(
-          child: CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _chatList() {
-    return StreamBuilder(
-      stream: _databaseService.getUserProfiles(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Container();
-        }
-
-        if (snapshot.hasData && snapshot.data != null) {
-          final users = snapshot.data!.docs;
-          return ListView.builder(
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              UserProfile user = users[index].data();
-              return ChatTile(
-                userProfile: user,
-                onTap: () async {
-                  final chatExists = await _databaseService.checkChatExist(
-                    _authService.user!.uid,
-                    user.uid!,
-                  );
-                  if (!chatExists) {
-                    await _databaseService.createNewChat(
-                      _authService.user!.uid,
-                      user.uid!,
-                    );
-                  }
-                  setState(() {
-                    if (!_users.contains(user)) {
-                      _users.add(user);
-                    }
-                    // selectedUser = user;
-                  });
-                  _navigationService.push(
-                    MaterialPageRoute(builder: (context) {
-                      return ChatPage(
-                        chatUser: user,
-                      );
-                    }),
-                  );
-                },
-                onLongPress: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
-                        title: Text(
-                          'Delete chat with ${user.name}',
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'Cancel',
-                              style: TextStyle(
-                                color: Colors.redAccent,
-                                // fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              _alertService.showToast(
-                                text:
-                                'All messages with ${user.name} were successfully deleted!',
-                                icon: Icons.info,
-                                color: Colors.red,
-                              );
-                            },
-                            child: Text(
-                              'Yes',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
               );
             },
           );

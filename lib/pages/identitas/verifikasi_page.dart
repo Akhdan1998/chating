@@ -176,9 +176,9 @@ class _VerifikasiState extends State<Verifikasi> {
         actions: [
           (isName)
               ? IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.more_vert),
-          )
+                  onPressed: () {},
+                  icon: Icon(Icons.more_vert),
+                )
               : Container(),
         ],
       ),

@@ -561,17 +561,14 @@ class _ChatPageState extends State<ChatPage> {
                       Text(
                         widget.chatUser.name.toString(),
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white,
+                        style: GoogleFonts.poppins(color: Colors.white,
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          fontWeight: FontWeight.bold,),
                       ),
                       _isVisible
                           ? Text(
                               'Click here for contact info',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 11),
+                              style: GoogleFonts.poppins(color: Colors.white, fontSize: 11,),
                             )
                           : _showLastSeen
                               ? lastSeen()

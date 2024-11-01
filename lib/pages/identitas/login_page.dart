@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blueGrey.shade900,
-          leading: Container(),
+          automaticallyImplyLeading: false,
           centerTitle: true,
           title: Text(
             (cardEmail == true)

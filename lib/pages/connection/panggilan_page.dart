@@ -170,56 +170,51 @@ class AllCallsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: 15, right: 15),
-      child: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('call_history')
-                  .orderBy('callDate', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+      child: Expanded(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('call_history')
+              .orderBy('callDate', descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Center(child: Text('No call history found.'));
+            }
+
+            final callHistory = snapshot.data!.docs;
+
+            return ListView.builder(
+              itemCount: callHistory.length * 2 - 1,
+              itemBuilder: (context, index) {
+                if (index.isEven) {
+                  final call =
+                      callHistory[index ~/ 2].data() as Map<String, dynamic>;
+                  final DateTime callDate =
+                      (call['callDate'] as Timestamp?)?.toDate() ??
+                          DateTime.now();
+                  final String dayDate = DateFormat('EEEE, d').format(callDate);
+                  final String dayTime = DateFormat.Hm().format(callDate);
+
+                  return CallItem(
+                    name: call['callerName'] ?? '',
+                    date: dayDate,
+                    time: dayTime,
+                    callType: call['type'] ?? '',
+                    avatarUrl: call['callerImage'] ?? '',
+                    callerPhoneNumber: call['callerPhoneNumber'] ?? '',
+                    duration: call['duration'] ?? 0,
+                  );
+                } else {
+                  // If the index is odd, return a Divider
+                  return Divider(height: 1);
                 }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('No call history found.'));
-                }
-
-                final callHistory = snapshot.data!.docs;
-
-                return ListView.builder(
-                  itemCount: callHistory.length,
-                  itemBuilder: (context, index) {
-                    final call =
-                        callHistory[index].data() as Map<String, dynamic>;
-                    final DateTime callDate =
-                        (call['callDate'] as Timestamp?)?.toDate() ??
-                            DateTime.now();
-                    final String dayDate = DateFormat('EEEE, d').format(callDate);
-                    final String dayTime = DateFormat.Hm().format(callDate);
-
-                    return Column(
-                      children: [
-                        SizedBox(height: 15),
-                        CallItem(
-                          name: call['callerName'] ?? '',
-                          date: dayDate,
-                          time: dayTime,
-                          callType: call['type'] ?? '',
-                          avatarUrl: call['callerImage'] ?? '',
-                          callerPhoneNumber: call['callerPhoneNumber'] ?? '',
-                          duration: call['duration'] ?? 0,
-                        ),
-                        // SizedBox(height: 5),
-                      ],
-                    );
-                  },
-                );
               },
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -256,10 +251,6 @@ class _CallItemState extends State<CallItem> {
       onTap: () {},
       child: Container(
         padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.grey.shade200,
-        ),
         child: Row(
           children: [
             CircleAvatar(
@@ -287,7 +278,9 @@ class _CallItemState extends State<CallItem> {
                       Row(
                         children: [
                           Icon(
-                            widget.callType == 'voice' ? Icons.call : Icons.videocam,
+                            widget.callType == 'voice'
+                                ? Icons.call
+                                : Icons.videocam,
                             size: 15,
                           ),
                           SizedBox(width: 5),
