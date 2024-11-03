@@ -8,6 +8,7 @@ import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -322,12 +323,12 @@ class _ChatPageState extends State<ChatPage> {
         return AlertDialog(
           actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
           title: Text(
-            'Delete Message',
+            'del'.tr(),
             style: StyleText(fontSize: 16,
               fontWeight: FontWeight.bold,),
           ),
           content: Text(
-            'Are you sure you want to delete this message?',
+            'desk_del'.tr(),
             style: StyleText(fontSize: 15),
           ),
           actions: [
@@ -336,7 +337,7 @@ class _ChatPageState extends State<ChatPage> {
                 Navigator.pop(context);
               },
               child: Text(
-                'No',
+                'no'.tr(),
                 style: StyleText(color: Colors.redAccent,
                   fontWeight: FontWeight.bold,),
               ),
@@ -347,7 +348,7 @@ class _ChatPageState extends State<ChatPage> {
                 Navigator.of(context).pop();
               },
               child: Text(
-                'Yes',
+                'yes'.tr(),
                 style: StyleText(color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,),
               ),
@@ -379,7 +380,7 @@ class _ChatPageState extends State<ChatPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text('Copy'),
+                title: Text('copy'.tr(), style: StyleText(),),
                 trailing: Icon(
                   Icons.copy,
                   size: 19,
@@ -388,7 +389,7 @@ class _ChatPageState extends State<ChatPage> {
                   Clipboard.setData(ClipboardData(text: message.text))
                       .whenComplete(() {
                     _alertService.showToast(
-                      text: 'Copy',
+                      text: 'copy'.tr(),
                       icon: Icons.copy,
                       color: Colors.green,
                     );
@@ -398,7 +399,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
               Divider(height: 0),
               ListTile(
-                title: Text('Delete'),
+                title: Text('delete'.tr()),
                 trailing: Icon(
                   Icons.delete,
                   size: 20,
@@ -564,7 +565,7 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       _isVisible
                           ? Text(
-                              'Click here for contact info',
+                              'info'.tr(),
                               style: StyleText(color: Colors.white,
                                 fontSize: 11,),
                             )
@@ -792,8 +793,8 @@ class _ChatPageState extends State<ChatPage> {
                       link: message.text,
                       showMultimedia: true,
                       onTap: () => _launchURL(message.text),
-                      errorBody: 'Show my custom error body',
-                      errorTitle: 'Show my custom error title',
+                      errorBody: 'link_body'.tr(),
+                      errorTitle: 'link_title'.tr(),
                       bodyStyle: StyleText(fontSize: 12),
                       errorWidget: Container(
                         height: 200,
@@ -987,7 +988,7 @@ class _ChatPageState extends State<ChatPage> {
 
         return Center(
           child: Text(
-            'No data available',
+            'data_available'.tr(),
             style: StyleText(color: Colors.grey),
           ),
         );

@@ -7,6 +7,7 @@ import 'package:chating/pages/connection/chat_screen.dart';
 import 'package:chating/service/auth_service.dart';
 import 'package:chating/service/database_service.dart';
 import 'package:chating/service/navigation_service.dart';
+import 'package:chating/utils.dart';
 import 'package:chating/widgets/chat_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -501,8 +502,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Add members',
-                        style: GoogleFonts.poppins(
+                        'add_member'.tr(),
+                        style: StyleText(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -523,7 +524,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   } else {
                                     setState(() {
                                       _alertService.showToast(
-                                        text: 'No image selected!',
+                                        text: 'no_image'.tr(),
                                         icon: Icons.warning,
                                         color: Colors.orange,
                                       );
@@ -559,7 +560,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               },
                               validationRegEx: NAME_VALIDATION_REGEX,
                               height: MediaQuery.of(context).size.height * 0.1,
-                              hintText: 'Group Name (optional)',
+                              hintText: 'group_name'.tr(),
                               obscureText: false,
                             ),
                           ),
@@ -613,7 +614,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(user.name ?? '-'),
+                                          Text(user.name ?? '-', style: StyleText(),),
                                           Container(
                                             width: 20,
                                             height: 20,
@@ -674,8 +675,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'New Chat',
-                    style: GoogleFonts.poppins(
+                    'new_chat'.tr(),
+                    style: StyleText(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -688,11 +689,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
-                          return Center(child: Text('Error loading contacts'));
+                          return Center(child: CircularProgressIndicator());
                         } else if (!snapshot.hasData ||
                             snapshot.data!.isEmpty) {
                           return Center(
-                              child: Text('Tidak ada kontak yang ditemukan'.tr(), style: GoogleFonts.poppins(),));
+                            child: Text(
+                              'data_available'.tr(),
+                              style: StyleText(
+                                color: Colors.grey,
+                              ),
+                            ),
+                          );
                         } else {
                           return ListView.builder(
                             itemCount: snapshot.data!.length,
@@ -715,11 +722,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 leading: CircleAvatar(
                                   child: Text(contact.initials()),
                                 ),
-                                title: Text(contact.displayName ?? '-'),
+                                title: Text(contact.displayName ?? '-', style: StyleText(),),
                                 subtitle: Text(
                                   contact.phones!.isNotEmpty
                                       ? contact.phones!.first.value ?? ''
-                                      : '',
+                                      : '', style: StyleText(),
                                 ),
                               );
                             },
@@ -742,13 +749,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       context: context,
       builder: (BuildContext context) {
         return Wrap(
-          children: <Widget>[
+          children: [
             ListTile(
               leading: Icon(
                 Icons.camera_alt,
                 color: Colors.green,
               ),
-              title: Text('Take Photo'),
+              title: Text(
+                'take_photo'.tr(),
+                style: StyleText(),
+              ),
               onTap: () async {
                 Navigator.pop(context);
                 context.loaderOverlay.show();
@@ -760,7 +770,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 Icons.photo_library,
                 color: Colors.redAccent,
               ),
-              title: Text('Choose Photo from Gallery'),
+              title: Text(
+                'choose_photo'.tr(),
+                style: StyleText(),
+              ),
               onTap: () async {
                 Navigator.pop(context);
                 context.loaderOverlay.show();
@@ -815,12 +828,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             child: GestureDetector(
                               onTap: () async {
                                 Navigator.pop(context);
-                                // var userProfiles = await _databaseService.getUserProfiles().first;
-                                // setState(() {
-                                //   _users = userProfiles.docs
-                                //       .map((doc) => doc.data() as UserProfile)
-                                //       .toList();
-                                // });
                                 _showModalBottomSheet(context);
                               },
                               child: Container(
@@ -829,7 +836,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('New Group'),
+                                    Text(
+                                      'new_group'.tr(),
+                                      style: StyleText(),
+                                    ),
                                     SizedBox(width: 20),
                                     Icon(
                                       Icons.group,
@@ -879,7 +889,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ),
             Text(
               'chat'.tr(),
-              style: GoogleFonts.poppins(
+              style: StyleText(
                 color: Colors.white,
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -907,7 +917,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
           if (selectedUserIndexes.length < 2) {
             _alertService.showToast(
-              text: 'Select at least 2 users to create a group',
+              text: 'condition_grup_new_1'.tr(),
               icon: Icons.warning,
               color: Colors.orange,
             );
@@ -919,7 +929,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
           if (selectedImage == null) {
             _alertService.showToast(
-              text: 'Select an image for the group',
+              text: 'condition_grup_new_2'.tr(),
               icon: Icons.warning,
               color: Colors.orange,
             );
@@ -931,7 +941,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
           if (groupController.text.trim().isEmpty) {
             _alertService.showToast(
-              text: 'Enter a name for the group',
+              text: 'condition_grup_new_3'.tr(),
               icon: Icons.warning,
               color: Colors.orange,
             );
@@ -965,7 +975,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           } catch (e) {
             print('Error uploading image: $e');
             _alertService.showToast(
-              text: 'Failed to upload image!',
+              text: 'failed_upload_image'.tr(),
               icon: Icons.error,
               color: Colors.red,
             );
@@ -984,8 +994,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ),
               )
             : Text(
-                'Create Group',
-                style: GoogleFonts.poppins(color: Colors.white),
+                'create_grup'.tr(),
+                style: StyleText(color: Colors.white),
               ),
       ),
     );
@@ -1009,9 +1019,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (_authService.user == null) {
       return Center(
         child: Text(
-          "The user is not authenticated or the user collection is not initialized. Please log out and log back in.",
+          "relog".tr(),
           textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(),
+          style: StyleText(color: Colors.grey),
         ),
       );
     }
@@ -1039,7 +1049,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
           if (userSnapshot.docs == null || groupSnapshot.docs == null) {
             return Center(
-              child: Text('No data available'.tr(), style: GoogleFonts.poppins(),),
+              child: Text(
+                'data_available'.tr(),
+                style: StyleText(),
+              ),
             );
           }
 
@@ -1107,8 +1120,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           actionsPadding:
                               EdgeInsets.only(top: 1, bottom: 5, right: 10),
                           title: Text(
-                            'Delete chat with ${user.name}'.tr(),
-                            style: GoogleFonts.poppins(fontSize: 15),
+                            'del_with ${user.name}'.tr(),
+                            style: StyleText(fontSize: 15),
                           ),
                           actions: [
                             TextButton(
@@ -1116,25 +1129,24 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 Navigator.pop(context);
                               },
                               child: Text(
-                                'Cancel'.tr(),
-                                style: GoogleFonts.poppins(
-                                  color: Colors.redAccent,
-                                ),
+                                'cancel'.tr(),
+                                style: StyleText(color: Colors.redAccent),
                               ),
                             ),
                             TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
                                 _alertService.showToast(
-                                  text:
-                                      'All messages with ${user.name} were successfully deleted!'.tr(),
+                                  text: 'all'.tr() +
+                                      ' ${user.name} ' +
+                                      'successfully'.tr(),
                                   icon: Icons.info,
                                   color: Colors.red,
                                 );
                               },
                               child: Text(
-                                'Yes',
-                                style: GoogleFonts.poppins(
+                                'yes'.tr(),
+                                style: StyleText(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -1179,7 +1191,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   ),
                   title: Text(
                     group.name,
-                    style: GoogleFonts.poppins(
+                    style: StyleText(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1188,9 +1200,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     memberNamesStr,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12
-                    ),
+                    style: StyleText(fontSize: 12),
                   ),
                   onTap: () {
                     _navigationService.push(
@@ -1213,9 +1223,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Do you want to exit the group "${group.name}"?'.tr(),
+                                'exit'.tr() + " ${group.name}?",
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(fontSize: 15),
+                                style: StyleText(fontSize: 15),
                               ),
                               SizedBox(height: 5),
                               Container(
@@ -1225,9 +1235,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   color: Colors.blueGrey.shade100,
                                 ),
                                 child: Text(
-                                  'Only group admins will be notified that you leave the group.'.tr(),
+                                  'leave'.tr(),
                                   textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
+                                  style: StyleText(
                                     color:
                                         Theme.of(context).colorScheme.primary,
                                     fontSize: 12,
@@ -1243,10 +1253,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 Navigator.pop(context);
                               },
                               child: Text(
-                                'Cancel'.tr(),
-                                style: GoogleFonts.poppins().copyWith(
-                                  color: Colors.redAccent,
-                                ),
+                                'cancel'.tr(),
+                                style: StyleText(color: Colors.redAccent),
                               ),
                             ),
                             TextButton(
@@ -1255,15 +1263,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     group.id, _authService.user!.uid);
                                 Navigator.pop(context);
                                 _alertService.showToast(
-                                  text:
-                                      'You have left the group "${group.name}"',
+                                  text: 'left_group' + " ${group.name}?",
                                   icon: Icons.info,
                                   color: Colors.orange,
                                 );
                               },
                               child: Text(
                                 'yes'.tr(),
-                                style: GoogleFonts.poppins(
+                                style: StyleText(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),

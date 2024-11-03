@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../models/group.dart';
@@ -364,16 +365,20 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
                   children: [
                     Text(
                       widget.grup.name,
-                      style: StyleText(color: Colors.white,
+                      style: StyleText(
+                        color: Colors.white,
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
                       _secondUserJoined
                           ? _formatDuration(_duration)
-                          : 'Waiting for other participants...',
-                      style: StyleText(color: Colors.white,
-                        fontSize: 14,),
+                          : 'wait'.tr(),
+                      style: StyleText(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),

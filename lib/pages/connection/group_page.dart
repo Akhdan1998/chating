@@ -426,11 +426,11 @@ class _GroupPageState extends State<GroupPage> {
         return AlertDialog(
           actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
           title: Text(
-            'Delete Message',
+            'del'.tr(),
             style: StyleText(fontSize: 16, fontWeight: FontWeight.bold,),
           ),
           content: Text(
-            'Are you sure you want to delete this message?',
+            'desk_del'.tr(),
             style: StyleText(fontSize: 15),
           ),
           actions: [
@@ -439,7 +439,7 @@ class _GroupPageState extends State<GroupPage> {
                 Navigator.pop(context);
               },
               child: Text(
-                'No',
+                'no'.tr(),
                 style: StyleText(color: Colors.redAccent,
                   fontWeight: FontWeight.bold,),
               ),
@@ -458,7 +458,7 @@ class _GroupPageState extends State<GroupPage> {
                   });
 
                   _alertService.showToast(
-                    text: 'Message deleted',
+                    text: 'del'.tr(),
                     icon: Icons.check,
                     color: Colors.green,
                   );
@@ -645,7 +645,7 @@ class _GroupPageState extends State<GroupPage> {
                     ),
                     Text(
                       _isVisible
-                          ? 'Click here for group info'
+                          ? 'info_grup'.tr()
                           : memberNames.join(", "),
                       overflow: TextOverflow.ellipsis,
                       style: StyleText(color: Colors.white,
@@ -702,7 +702,7 @@ class _GroupPageState extends State<GroupPage> {
     if (!_isInGroup) {
       return Center(
         child: Text(
-          "You have left the group",
+          "out_grup".tr(),
           style: StyleText(fontSize: 15, color: Colors.grey,),
         ),
       );
@@ -815,8 +815,8 @@ class _GroupPageState extends State<GroupPage> {
                       link: firstURL,
                       showMultimedia: true,
                       onTap: () => _launchURL(firstURL),
-                      errorBody: 'Show my custom error body',
-                      errorTitle: 'Show my custom error title',
+                      errorBody: 'link_body'.tr(),
+                      errorTitle: 'link_title'.tr(),
                       bodyStyle: StyleText(fontSize: 12),
                       errorWidget: Container(
                         height: 200,
