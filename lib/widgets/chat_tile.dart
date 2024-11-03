@@ -1,4 +1,6 @@
+import 'package:chating/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/user_profile.dart';
 
 class ChatTile extends StatelessWidget {
@@ -21,17 +23,12 @@ class ChatTile extends StatelessWidget {
       ),
       title: Text(
         userProfile.name ?? '',
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
+        style: StyleText(fontSize: 15,
+          fontWeight: FontWeight.w600,),
       ),
       subtitle: Text(
         userProfile.phoneNumber ?? '-',
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w100,
-        ),
+        style: StyleText(fontSize: 12),
       ),
     );
   }

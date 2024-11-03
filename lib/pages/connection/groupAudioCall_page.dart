@@ -233,11 +233,9 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
               children: [
                 Text(
                   'You',
-                  style: TextStyle(
-                    color: Colors.white,
+                  style: StyleText(color: Colors.white,
                     fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    fontWeight: FontWeight.bold,),
                 ),
                 CircleAvatar(
                   backgroundImage: NetworkImage(widget.users.first.pfpURL!),
@@ -289,11 +287,9 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
             children: [
               Text(
                 widget.users.first.name!,
-                style: TextStyle(
-                  color: Colors.white,
+                style: StyleText(color: Colors.white,
                   fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
+                  fontWeight: FontWeight.bold,),
               ),
               CircleAvatar(
                 backgroundImage: NetworkImage(widget.users.first.pfpURL!),
@@ -352,20 +348,16 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
               children: [
                 Text(
                   widget.grup.name,
-                  style: TextStyle(
-                    color: Colors.white,
+                  style: StyleText(color: Colors.white,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    fontWeight: FontWeight.bold,),
                 ),
                 Text(
                   _isJoined
                       ? _formatDuration(_secondsElapsed)
                       : 'Waiting for other participants...',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
+                  style: StyleText(color: Colors.white,
+                    fontSize: 14,),
                 ),
               ],
             ),

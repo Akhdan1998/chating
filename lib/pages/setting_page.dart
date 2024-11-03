@@ -1,6 +1,7 @@
 import 'package:chating/pages/identitas/edit_page.dart';
 import 'package:chating/pages/identitas/updatePassword_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -11,6 +12,7 @@ import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 import '../service/auth_service.dart';
 import '../service/navigation_service.dart';
+import '../utils.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -56,8 +58,8 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(subtitle, style: TextStyle(fontSize: 12)),
+                  Text(title, style: StyleText(fontWeight: FontWeight.bold)),
+                  Text(subtitle, style: StyleText(fontSize: 12)),
                 ],
               ),
             ),
@@ -84,8 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: Text(
                 'No',
-                style: GoogleFonts.poppins()
-                    .copyWith(
+                style: StyleText(
                   color: Colors.redAccent,
                   fontWeight: FontWeight.bold,
                 ),
@@ -108,7 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: Text(
                 'Yes',
-                style: GoogleFonts.poppins().copyWith(
+                style: StyleText(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
@@ -117,7 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
           title: Text(
               'You need to log in again if you want to continue previous activities.',
-              style: TextStyle(fontSize: 15)),
+              style: StyleText(fontSize: 15)),
         );
       },
       transitionBuilder:
@@ -136,12 +137,10 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'Settings',
-          style: TextStyle(
-            fontSize: 30,
+          'setting'.tr(),
+          style: StyleText(fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+            color: Colors.white,),
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -191,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Divider(endIndent: 20, indent: 20),
                           _buildListTile(
                             icon: Icons.settings,
-                            title: 'Settings',
+                            title: 'setting'.tr(),
                             subtitle: 'Notifications, Language, etc.',
                             onTap: () {},
                             iconColor: Colors.blue,
@@ -254,21 +253,17 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(userProfile.name ?? '-',
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),),
+                                  Text(
+                                    userProfile.name ?? '-',
+                                    style: StyleText(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
                                   Text(
                                     userProfile.email ?? '-',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 10,
-                                    ),
+                                    style: StyleText(fontSize: 10),
                                   ),
                                   Text(
                                     userProfile.phoneNumber ?? '-',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 10,
-                                    ),
+                                    style: StyleText(fontSize: 10),
                                   ),
                                 ],
                               ),

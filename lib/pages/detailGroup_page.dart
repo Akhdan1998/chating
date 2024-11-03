@@ -280,7 +280,7 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
           ),
         ],
         title: Text(
-          'Contact Info',
+          'Group Info',
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: Colors.white,

@@ -1,3 +1,4 @@
+import 'package:chating/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
@@ -308,17 +309,13 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                             children: [
                               Text(
                                 'My Story',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
+                                style: StyleText(color: Colors.white,
+                                  fontSize: 15,),
                               ),
                               Text(
                                 _timestamp,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
+                                style: StyleText(color: Colors.white,
+                                  fontSize: 12,),
                               ),
                             ],
                           ),
@@ -390,7 +387,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                                     ],
                                     title: Text(
                                       "Are you sure you want to delete this story?",
-                                      style: TextStyle(fontSize: 15),
+                                      style: StyleText(fontSize: 15),
                                     ),
                                   );
                                 },
@@ -430,9 +427,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                         children: [
                           Text(
                             '${_seenStories.length}',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
+                            style: StyleText(color: Colors.white),
                           ),
                           SizedBox(width: 5),
                           Icon(

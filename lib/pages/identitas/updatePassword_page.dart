@@ -1,4 +1,5 @@
 import 'package:chating/models/user_profile.dart';
+import 'package:chating/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -175,7 +176,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
             child: ElevatedButton(
               style: style, // Use the defined style here
               onPressed: _updatePassword,
-              child: Text('Update Password', style: TextStyle(color: Colors.white),),
+              child: Text('Update Password', style: StyleText(color: Colors.white),),
             ),
           );
   }

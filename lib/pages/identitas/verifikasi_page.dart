@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:chating/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -209,14 +210,13 @@ class _VerifikasiState extends State<Verifikasi> {
                   children: [
                     Text(
                       'Info profil'.tr(),
-                      style: GoogleFonts.poppins(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                      style: StyleText(fontSize: 16, fontWeight: FontWeight.w600,),
                     ),
                     SizedBox(height: 10),
                     Text(
                       'Mohon berikan nama dan foto profil (opsional) Anda'.tr(),
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 15),
+                      style: StyleText(fontSize: 15),
                     ),
                     SizedBox(height: 30),
                     GestureDetector(
@@ -357,11 +357,9 @@ class _VerifikasiState extends State<Verifikasi> {
               ),
               child: Text(
                 'next'.tr(),
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
+                style: StyleText(fontSize: 16,
                   color: Colors.blueGrey,
-                  fontWeight: FontWeight.bold,
-                ),
+                  fontWeight: FontWeight.bold,),
               ),
             ),
           );

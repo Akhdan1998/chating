@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:chating/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -84,19 +85,15 @@ class _RegisterPageState extends State<RegisterPage> {
       children: [
         Text(
           "go".tr(),
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w500,
+          style: StyleText(fontWeight: FontWeight.w500,
             fontSize: 24,
-            color: Colors.white,
-          ),
+            color: Colors.white,),
         ),
         SizedBox(height: 8),
         Text(
           'title_register'.tr(),
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            color: Colors.white,
-          ),
+          style: StyleText(fontSize: 16,
+            color: Colors.white,),
         ),
       ],
     );
@@ -210,11 +207,9 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               child: Text(
                 'register'.tr(),
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
+                style: StyleText(fontSize: 16,
                   color: Colors.blueGrey,
-                  fontWeight: FontWeight.bold,
-                ),
+                  fontWeight: FontWeight.bold,),
               ),
             ),
           );
@@ -331,18 +326,14 @@ class _RegisterPageState extends State<RegisterPage> {
       children: [
         Text(
           'have_account'.tr(),
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-          ),
+          style: StyleText(color: Colors.white),
         ),
         GestureDetector(
           onTap: () => _navigationService.goBack(),
           child: Text(
             'in'.tr(),
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            style: StyleText(fontWeight: FontWeight.bold,
+              color: Colors.white,),
           ),
         ),
       ],

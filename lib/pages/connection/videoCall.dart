@@ -4,7 +4,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:chating/models/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../service/alert_service.dart';
@@ -429,19 +428,15 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   children: [
                     Text(
                       widget.userProfile.name!,
-                      style: TextStyle(
-                        color: Colors.white,
+                      style: StyleText(color: Colors.white,
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                        fontWeight: FontWeight.bold,),
                     ),
                     Text(
                       _remoteUid != null
                           ? _formatDuration(_secondsElapsed)
                           : 'Ringing...',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
+                      style: StyleText(color: Colors.white),
                     ),
                   ],
                 ),

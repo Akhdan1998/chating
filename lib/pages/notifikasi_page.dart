@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:chating/utils.dart';
 import 'package:flutter/material.dart';
 
 import '../models/group.dart';
@@ -32,7 +33,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                 children: [
                   Text(
                     'Sound Notification',
-                    style: TextStyle(
+                    style: StyleText(
                       fontSize: 15,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -62,7 +63,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                       : 'You will be notified of all messages in this chat.',
                   textAlign:
                       (isNotif == true) ? TextAlign.left : TextAlign.center,
-                  style: TextStyle(
+                  style: StyleText(
                     color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
@@ -80,12 +81,13 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                   width: MediaQuery.sizeOf(context).width,
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     (isNotif == true) ? 'Muted' : 'Sound it out',
-                    style: TextStyle(
+                    style: StyleText(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
@@ -120,7 +122,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
             Text(
               'Notification',
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: StyleText(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -129,7 +131,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
             Text(
               widget.group.name,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: StyleText(
                 color: Colors.white,
                 fontSize: 11,
               ),
@@ -155,7 +157,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                 children: [
                   Text(
                     (isNotif == true) ? 'Mute Notifications' : 'Sound it out',
-                    style: TextStyle(
+                    style: StyleText(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

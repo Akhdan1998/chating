@@ -1,3 +1,4 @@
+import 'package:chating/utils.dart';
 import 'package:flutter/material.dart';
 
 class TextFieldCustom extends StatefulWidget {
@@ -72,7 +73,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
             borderSide: widget.borderSide,
           ),
           hintText: widget.hintText,
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+          hintStyle: StyleText(color: Theme.of(context).colorScheme.primary),
           suffixIcon: widget.obscureText
               ? IconButton(
                   icon: Icon(

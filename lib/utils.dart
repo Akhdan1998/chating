@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chating/service/alert_service.dart';
 import 'package:chating/service/auth_service.dart';
@@ -6,9 +8,12 @@ import 'package:chating/service/media_service.dart';
 import 'package:chating/service/navigation_service.dart';
 import 'package:chating/service/storage_service.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/src/painting/text_style.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'main.dart';
 
@@ -76,4 +81,16 @@ class FirebaseApi {
     print('TOKEN: $FCMToken');
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
   }
+}
+
+TextStyle StyleText({
+  double fontSize = 15,
+  FontWeight fontWeight = FontWeight.normal,
+  Color color = Colors.black,
+}) {
+  return GoogleFonts.poppins(
+    fontSize: fontSize,
+    fontWeight: fontWeight,
+    color: color,
+  );
 }

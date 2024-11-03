@@ -1,3 +1,4 @@
+import 'package:chating/utils.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
               width: 37,
               height: 37,
               child: CircleAvatar(
-                child: Text(widget.contact.initials()),
+                child: Text(widget.contact.initials(), style: StyleText(),),
               ),
             ),
             SizedBox(width: 15),
@@ -47,20 +48,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 Text(
                   widget.contact.displayName!,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
+                  style: StyleText(color: Colors.white,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    fontWeight: FontWeight.bold,),
                 ),
                 Text(
                   widget.contact.phones!.isNotEmpty
                       ? widget.contact.phones!.first.value ?? ''
                       : '',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 11,
-                  ),
+                  style: StyleText(color: Colors.white,
+                    fontSize: 11,),
                 ),
               ],
             ),

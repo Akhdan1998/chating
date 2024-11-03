@@ -1,5 +1,6 @@
 import 'package:chating/main.dart';
 import 'package:chating/pages/identitas/verifikasi_page.dart';
+import 'package:chating/utils.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -73,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
             (cardEmail == true)
                 ? 'head_title_email'.tr()
                 : 'head_title_number'.tr(),
-            style: GoogleFonts.poppins(
+            style: StyleText(
               fontSize: 15,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -81,11 +82,12 @@ class _LoginPageState extends State<LoginPage> {
           ),
           actions: [
             IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.more_vert,
-                  color: Colors.white,
-                ),),
+              onPressed: () {},
+              icon: Icon(
+                Icons.more_vert,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
         body: Container(
@@ -110,13 +112,16 @@ class _LoginPageState extends State<LoginPage> {
                         text: (cardEmail == true)
                             ? 'title_email'.tr()
                             : 'title_number'.tr(),
-                        style: GoogleFonts.poppins(fontSize: 15),
+                        style: StyleText(
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
                       ),
                       TextSpan(
                         text: (cardEmail == true)
                             ? 'subtitle_email'.tr()
                             : 'subtitle_number'.tr(),
-                        style: GoogleFonts.poppins(
+                        style: StyleText(
                           color: Colors.blue,
                           fontSize: 15,
                         ),
@@ -148,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 'login_number'.tr(),
-                                style: GoogleFonts.poppins(
+                                style: StyleText(
                                   color: Colors.white,
                                   fontSize: 12,
                                 ),
@@ -166,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 'pass'.tr(),
-                                style: GoogleFonts.poppins(
+                                style: StyleText(
                                   color: Colors.white,
                                   fontSize: 12,
                                 ),
@@ -369,7 +374,7 @@ class _LoginPageState extends State<LoginPage> {
         //     fontSize: 16,
         //   ),
         // ),
-        if (!cardEmail) const SizedBox(height: 20),
+        if (!cardEmail) SizedBox(height: 20),
         if (!cardEmail) _buildEmailCard(),
         const SizedBox(height: 20),
         if (!cardEmail) _buildSignInWithEmailText(),
@@ -477,7 +482,10 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: Text(
                 'next'.tr(),
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
+                style: StyleText(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
               ),
               onPressed: () {
                 if (phoneNumber.isNotEmpty) {
@@ -505,24 +513,37 @@ class _LoginPageState extends State<LoginPage> {
           actionsPadding:
               const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           title: Text('validasi'.tr(),
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-          content: Text(phoneNumber, style: const TextStyle(fontSize: 15)),
+              style: StyleText(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              )),
+          content: Text(
+            phoneNumber,
+            style: StyleText(fontSize: 15),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('no'.tr(),
-                  style: GoogleFonts.poppins(
-                      color: Colors.redAccent, fontWeight: FontWeight.bold,),),
+              child: Text(
+                'no'.tr(),
+                style: StyleText(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 dialogInformation(context);
               },
-              child: Text('yes'.tr(),
-                  style: GoogleFonts.poppins(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold),),
+              child: Text(
+                'yes'.tr(),
+                style: StyleText(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );
@@ -583,7 +604,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         Text(
                           'contact'.tr(),
-                          style: GoogleFonts.poppins(
+                          style: StyleText(
                             fontSize: 15,
                             color: Colors.black87,
                           ),
@@ -591,7 +612,7 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 10),
                         Text(
                           'desk'.tr(),
-                          style: GoogleFonts.poppins(
+                          style: StyleText(
                             fontSize: 13,
                             color: Colors.black87,
                           ),
@@ -607,7 +628,7 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           child: Text(
                             'no'.tr(),
-                            style: GoogleFonts.poppins().copyWith(
+                            style: StyleText(
                               color: Colors.redAccent,
                               fontWeight: FontWeight.bold,
                             ),
@@ -615,50 +636,51 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         confirm
                             ? Container(
-                          width: 10,
-                          height: 10,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        )
+                                width: 10,
+                                height: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
                             : TextButton(
-                          onPressed: () async {
-                            setState(() {
-                              confirm = true;
-                            });
+                                onPressed: () async {
+                                  setState(() {
+                                    confirm = true;
+                                  });
 
-                            PermissionStatus status =
-                            await Permission.contacts.request();
+                                  PermissionStatus status =
+                                      await Permission.contacts.request();
 
-                            if (status.isGranted) {
-                              Iterable<Contact> contacts =
-                              await ContactsService.getContacts();
+                                  if (status.isGranted) {
+                                    Iterable<Contact> contacts =
+                                        await ContactsService.getContacts();
 
-                              contacts.forEach((contact) {
-                                print(contact.displayName);
-                                print(contact.phones);
-                              });
+                                    contacts.forEach((contact) {
+                                      print(contact.displayName);
+                                      print(contact.phones);
+                                    });
 
-                              _handleNextButtonPressed().whenComplete(() {
-                                setState(() {
-                                  confirm = false;
-                                });
-                                Navigator.pop(context);
-                              });
-                            } else if (status.isDenied) {
-                              print('Izin ditolak');
-                            } else if (status.isPermanentlyDenied) {
-                              openAppSettings();
-                            }
-                          },
-                          child: Text(
-                            'next'.tr(),
-                            style: GoogleFonts.poppins().copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                                    _handleNextButtonPressed().whenComplete(() {
+                                      setState(() {
+                                        confirm = false;
+                                      });
+                                      Navigator.pop(context);
+                                    });
+                                  } else if (status.isDenied) {
+                                    print('Izin ditolak');
+                                  } else if (status.isPermanentlyDenied) {
+                                    openAppSettings();
+                                  }
+                                },
+                                child: Text(
+                                  'next'.tr(),
+                                  style: StyleText(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                       ],
                     ),
                   ],
@@ -853,7 +875,7 @@ class _LoginPageState extends State<LoginPage> {
         alignment: Alignment.centerLeft,
         child: Text(
           'login_email'.tr(),
-          style: GoogleFonts.poppins(
+          style: StyleText(
             color: Colors.white,
             fontSize: 12,
           ),
@@ -896,7 +918,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: Text(
                       forgotPass ? 'Reset' : 'Login',
-                      style: GoogleFonts.poppins(
+                      style: StyleText(
                         fontSize: 16,
                         color: Colors.white,
                         fontWeight: FontWeight.w400,
@@ -1018,11 +1040,11 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 TextSpan(
                   text: 'member'.tr(),
-                  style: GoogleFonts.poppins(color: Colors.white70),
+                  style: StyleText(color: Colors.white70),
                 ),
                 TextSpan(
                   text: 'register'.tr(),
-                  style: GoogleFonts.poppins(
+                  style: StyleText(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

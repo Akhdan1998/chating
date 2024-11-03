@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../pages/connection/home_page.dart';
 import '../pages/connection/panggilan_page.dart';
@@ -68,21 +69,21 @@ class _NavigasiState extends State<Navigasi> {
             selectedItemColor: Theme.of(context).colorScheme.primary,
             onTap: _navigateBottomBar,
             type: BottomNavigationBarType.fixed,
-            items: const [
+            items: [
               BottomNavigationBarItem(
-                label: 'Updates',
+                label: 'update'.tr(),
                 icon: Icon(Icons.update),
               ),
               BottomNavigationBarItem(
-                label: 'Calling',
+                label: 'calling'.tr(),
                 icon: Icon(Icons.phone),
               ),
               BottomNavigationBarItem(
-                label: 'Chat',
+                label: 'chat'.tr(),
                 icon: Icon(Icons.chat),
               ),
               BottomNavigationBarItem(
-                label: 'Settings',
+                label: 'setting'.tr(),
                 icon: Icon(Icons.settings),
               ),
             ],

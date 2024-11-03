@@ -1,4 +1,6 @@
+import 'package:chating/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -137,7 +139,7 @@ class _PanggilanPageState extends State<PanggilanPage> {
             Container(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Calling',
+                'calling'.tr(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 30,

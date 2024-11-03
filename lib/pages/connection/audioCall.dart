@@ -300,19 +300,15 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             children: [
               Text(
                 widget.userProfile.name!,
-                style: TextStyle(
-                  color: Colors.white,
+                style: StyleText(color: Colors.white,
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                  fontWeight: FontWeight.bold,),
               ),
               Text(
                 _remoteUid != null
                     ? _formatDuration(_secondsElapsed)
                     : 'Ringing...',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+                style: StyleText(color: Colors.white),
               ),
             ],
           ),

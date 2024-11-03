@@ -19,6 +19,7 @@ class StorageService {
       if (e.state == TaskState.success) {
         return fileRef.getDownloadURL();
       }
+      return null;
     });
   }
 
@@ -48,19 +49,4 @@ class StorageService {
       return null;
     }
   }
-
-  // Future<String?> saveChatImageToStorage({required File file, required String chatID}) async {
-  //   try {
-  //     String fileName = p.basename(file.path);
-  //     Reference storageRef = _firebaseStorage.ref().child('chats/$chatID/images/$fileName');
-  //     UploadTask uploadTask = storageRef.putFile(file);
-  //     TaskSnapshot snapshot = await uploadTask;
-  //     String downloadURL = await snapshot.ref.getDownloadURL();
-  //     return downloadURL;
-  //   } catch (e) {
-  //     print('Error uploading image: $e');
-  //     return null;
-  //   }
-  // }
-
 }

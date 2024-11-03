@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:chating/utils.dart';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -425,11 +427,11 @@ class _GroupPageState extends State<GroupPage> {
           actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
           title: Text(
             'Delete Message',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: StyleText(fontSize: 16, fontWeight: FontWeight.bold,),
           ),
           content: Text(
             'Are you sure you want to delete this message?',
-            style: TextStyle(fontSize: 15),
+            style: StyleText(fontSize: 15),
           ),
           actions: [
             TextButton(
@@ -438,10 +440,8 @@ class _GroupPageState extends State<GroupPage> {
               },
               child: Text(
                 'No',
-                style: GoogleFonts.poppins().copyWith(
-                  color: Colors.redAccent,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: StyleText(color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,),
               ),
             ),
             TextButton(
@@ -474,11 +474,9 @@ class _GroupPageState extends State<GroupPage> {
                 Navigator.pop(context);
               },
               child: Text(
-                'Yes',
-                style: GoogleFonts.poppins().copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+                'yes'.tr(),
+                style: StyleText(color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,),
               ),
             ),
           ],
@@ -641,21 +639,17 @@ class _GroupPageState extends State<GroupPage> {
                     Text(
                       widget.group.name,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white,
+                      style: StyleText(color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                        fontWeight: FontWeight.bold,),
                     ),
                     Text(
                       _isVisible
                           ? 'Click here for group info'
                           : memberNames.join(", "),
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                      ),
+                      style: StyleText(color: Colors.white,
+                        fontSize: 11,),
                     ),
                   ],
                 ),
@@ -709,7 +703,7 @@ class _GroupPageState extends State<GroupPage> {
       return Center(
         child: Text(
           "You have left the group",
-          style: TextStyle(fontSize: 15, color: Colors.grey),
+          style: StyleText(fontSize: 15, color: Colors.grey,),
         ),
       );
     }
@@ -786,7 +780,7 @@ class _GroupPageState extends State<GroupPage> {
                   textSpans.add(
                     TextSpan(
                       text: message.text.substring(lastMatchEnd, match.start),
-                      style: TextStyle(color: Colors.black87, fontSize: 15),
+                      style: StyleText(color: Colors.black87, fontSize: 15,),
                     ),
                   );
                 }
@@ -794,7 +788,7 @@ class _GroupPageState extends State<GroupPage> {
                 textSpans.add(
                   TextSpan(
                     text: match.group(0),
-                    style: TextStyle(color: Colors.blue),
+                    style: StyleText(color: Colors.blue),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () => _launchURL(match.group(0)!),
                   ),
@@ -806,7 +800,7 @@ class _GroupPageState extends State<GroupPage> {
               if (lastMatchEnd < message.text.length) {
                 textSpans.add(TextSpan(
                   text: message.text.substring(lastMatchEnd),
-                  style: TextStyle(color: Colors.black87, fontSize: 15),
+                  style: StyleText(color: Colors.black87, fontSize: 15,),
                 ));
               }
 
@@ -823,7 +817,7 @@ class _GroupPageState extends State<GroupPage> {
                       onTap: () => _launchURL(firstURL),
                       errorBody: 'Show my custom error body',
                       errorTitle: 'Show my custom error title',
-                      bodyStyle: TextStyle(fontSize: 12),
+                      bodyStyle: StyleText(fontSize: 12),
                       errorWidget: Container(
                         height: 200,
                         width: MediaQuery.of(context).size.width,
@@ -843,10 +837,8 @@ class _GroupPageState extends State<GroupPage> {
                     alignment: Alignment.centerRight,
                     child: Text(
                       DateFormat('HH:mm').format(message.createdAt),
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 12,
-                      ),
+                      style: StyleText(color: Colors.black87,
+                        fontSize: 12,),
                     ),
                   ),
                 ],
@@ -1272,18 +1264,14 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
           children: [
             Text(
               widget.chatUser.firstName!,
-              style: TextStyle(
-                color: Colors.white,
+              style: StyleText(color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+                fontWeight: FontWeight.bold,),
             ),
             Text(
               day,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-              ),
+              style: StyleText(color: Colors.white,
+                fontSize: 10,),
             ),
           ],
         ),
@@ -1311,11 +1299,9 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: StyleText(color: Colors.white,
                             fontSize: 7,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            fontWeight: FontWeight.bold,),
                         ),
                       ],
                     )
@@ -1368,18 +1354,18 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                             children: [
                               Padding(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 16.0),
+                                    horizontal: 16),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       _formatDuration(position),
-                                      style: TextStyle(color: Colors.black),
+                                      style: StyleText(),
                                     ),
                                     Text(
                                       _formatDuration(duration),
-                                      style: TextStyle(color: Colors.black),
+                                      style: StyleText(),
                                     ),
                                   ],
                                 ),
@@ -1606,18 +1592,14 @@ class _FullScreenImageState extends State<FullScreenImage> {
           children: [
             Text(
               widget.chatUser.firstName.toString(),
-              style: TextStyle(
-                color: Colors.white,
+              style: StyleText(color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+                fontWeight: FontWeight.bold,),
             ),
             Text(
               day,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-              ),
+              style: StyleText(color: Colors.white,
+                fontSize: 10,),
             ),
           ],
         ),
@@ -1645,11 +1627,9 @@ class _FullScreenImageState extends State<FullScreenImage> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: StyleText(color: Colors.white,
                             fontSize: 7,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            fontWeight: FontWeight.bold,),
                         ),
                       ],
                     )
@@ -1779,18 +1759,14 @@ class _PDFViewPageState extends State<PDFViewPage> {
           children: [
             Text(
               widget.fileName.toString(),
-              style: TextStyle(
-                color: Colors.white,
+              style: StyleText(color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+                fontWeight: FontWeight.bold,),
             ),
             Text(
               day,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-              ),
+              style: StyleText(color: Colors.white,
+                fontSize: 10,),
             ),
           ],
         ),
@@ -1820,11 +1796,9 @@ class _PDFViewPageState extends State<PDFViewPage> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: StyleText(color: Colors.white,
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            fontWeight: FontWeight.bold,),
                         ),
                       ],
                     )

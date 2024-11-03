@@ -29,5 +29,9 @@
   "no": "No",
   "yes": "Yes",
   "contact": "Contact",
-  "desk": "To easily verify numbers and send messages to friends and family, let Appskabs access your contact list."
+  "desk": "To easily verify numbers and send messages to friends and family, let Appskabs access your contact list.",
+  "chat": "Chat",
+  "setting": "Settings",
+  "calling": "Calling",
+  "update": "Updates"
 }

@@ -1,3 +1,4 @@
+import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -101,11 +102,9 @@ class _MediaPageState extends State<MediaPage> {
                           ),
                           child: Text(
                             'Media',
-                            style: TextStyle(
-                              fontSize: 16,
+                            style: StyleText(fontSize: 16,
                               color: _selectedIndex == 0
-                                  ? Colors.white : Theme.of(context).colorScheme.primary,
-                            ),
+                                  ? Colors.white : Theme.of(context).colorScheme.primary,),
                           ),
                         ),
                       ),
@@ -129,11 +128,9 @@ class _MediaPageState extends State<MediaPage> {
                           ),
                           child: Text(
                             'Document',
-                            style: TextStyle(
-                              fontSize: 16,
+                            style: StyleText(fontSize: 16,
                               color: _selectedIndex == 1
-                                  ? Colors.white : Theme.of(context).colorScheme.primary,
-                            ),
+                                  ? Colors.white : Theme.of(context).colorScheme.primary,),
                           ),
                         ),
                       ),

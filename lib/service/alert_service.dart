@@ -1,3 +1,4 @@
+import 'package:chating/utils.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
@@ -28,7 +29,7 @@ class AlertService {
               leading: Icon(icon, size: 28, color: color,),
               title: Text(
                 text,
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                style: StyleText(fontWeight: FontWeight.w700, fontSize: 14,),
               ),
             );
           }).show(_navigationService.navigatorKey.currentContext!);

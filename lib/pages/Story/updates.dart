@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:chating/pages/Story/storyView_page.dart';
 import 'package:chating/pages/otherUserStory_page.dart';
+import 'package:chating/utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -666,12 +668,10 @@ class _UpdatesPageState extends State<UpdatesPage> {
         title: LayoutBuilder(
           builder: (context, constraints) {
             return Text(
-              'Updates',
-              style: TextStyle(
-                color: Colors.white,
+              'update'.tr(),
+              style: StyleText(color: Colors.white,
                 fontSize: constraints.maxWidth * 0.08,
-                fontWeight: FontWeight.bold,
-              ),
+                fontWeight: FontWeight.bold,),
             );
           },
         ),
@@ -696,10 +696,8 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     Flexible(
                       child: Text(
                         'Status',
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * 0.05,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: StyleText(fontSize: MediaQuery.of(context).size.width * 0.05,
+                          fontWeight: FontWeight.bold,),
                       ),
                     ),
                     IconButton(
@@ -832,7 +830,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                             SizedBox(height: screenHeight * 0.01),
                             Text(
                               'My Story',
-                              style: TextStyle(fontSize: screenWidth * 0.03),
+                              style: StyleText(fontSize: screenWidth * 0.03),
                             ),
                           ],
                         ),
@@ -901,10 +899,10 @@ class _UpdatesPageState extends State<UpdatesPage> {
                               SizedBox(height: screenWidth * 0.01),
                               Text(
                                 user.name ?? '-',
-                                style: TextStyle(
-                                  overflow: TextOverflow.ellipsis,
+                                style: StyleText(
                                   fontSize: screenWidth * 0.03,
                                 ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),

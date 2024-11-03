@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chating/models/user_profile.dart';
+import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -114,11 +115,9 @@ class _EditPageState extends State<EditPage> {
         title: Container(
           child: Text(
             'Edit Profile',
-            style: TextStyle(
-              color: Colors.white,
+            style: StyleText(color: Colors.white,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+              fontWeight: FontWeight.bold,),
           ),
         ),
       ),
@@ -248,8 +247,7 @@ class _EditPageState extends State<EditPage> {
               },
               child: Text(
                 'Save',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                style: StyleText(fontWeight: FontWeight.bold, color: Colors.white,),
               ),
             ),
           ),

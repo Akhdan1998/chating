@@ -1,3 +1,4 @@
+import 'package:chating/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +43,8 @@ class _BoardingState extends State<Boarding> {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ElevatedButton.styleFrom(
-      textStyle:
-          GoogleFonts.poppins().copyWith(fontSize: 14, color: Colors.white),
+      textStyle: StyleText(fontSize: 14,
+        color: Colors.white,),
       backgroundColor: Theme.of(context).colorScheme.primary,
     );
     double bottomInset = MediaQuery.of(context).viewInsets.bottom;
@@ -52,33 +53,50 @@ class _BoardingState extends State<Boarding> {
       body: SafeArea(
         child: Column(
           children: [
-            Image.asset('assets/boarding.png', scale: 3.5,),
+            Image.asset(
+              'assets/boarding.png',
+              scale: 3.5,
+            ),
             Container(
               padding: EdgeInsets.only(left: 20, right: 20, top: 10),
               child: Center(
                 child: Column(
                   children: [
-                    Text('welcome'.tr(), style: GoogleFonts.poppins(color: Colors.black, fontSize: 21, fontWeight: FontWeight.bold,),),
+                    Text(
+                      'welcome'.tr(),
+                      style: StyleText(color: Colors.black,
+                        fontSize: 21,
+                        fontWeight: FontWeight.bold,),
+                    ),
                     SizedBox(height: 15),
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: GoogleFonts.poppins(color: Colors.black, fontSize: 17,),
+                        style: StyleText(color: Colors.black,
+                          fontSize: 17,),
                         children: [
-                          TextSpan(text: 'read_our'.tr(), style: GoogleFonts.poppins(),),
+                          TextSpan(
+                            text: 'read_our'.tr(),
+                            style: StyleText(),
+                          ),
                           TextSpan(
                             text: 'privacy_policy'.tr(),
-                            style: GoogleFonts.poppins(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold,),
+                            style: StyleText(color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 // Aksi ketika "Kebijakan Privasi" ditekan
                                 print('Kebijakan Privasi ditekan'.tr());
                               },
                           ),
-                          TextSpan(text: 'tap_to_accept'.tr(), style: GoogleFonts.poppins(),),
+                          TextSpan(
+                            text: 'tap_to_accept'.tr(),
+                            style: StyleText(),
+                          ),
                           TextSpan(
                             text: 'terms_of_service'.tr(),
-                            style: GoogleFonts.poppins(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold,),
+                            style: StyleText(color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 // Aksi ketika "Ketentuan Layanan" ditekan
@@ -111,11 +129,9 @@ class _BoardingState extends State<Boarding> {
                       ),
                       title: Text(
                         selectedLanguage,
-                        style: GoogleFonts.poppins().copyWith(
-                          color: Theme.of(context).colorScheme.primary,
+                        style: StyleText(color: Theme.of(context).colorScheme.primary,
                           fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          fontWeight: FontWeight.bold,),
                       ),
                       trailing: Icon(
                         dropdownIcon ? Icons.expand_less : Icons.expand_more,
@@ -128,15 +144,24 @@ class _BoardingState extends State<Boarding> {
                       },
                       children: [
                         ListTile(
-                          title: Text('Bahasa Indonesia', style: GoogleFonts.poppins(),),
+                          title: Text(
+                            'Bahasa Indonesia',
+                            style: StyleText(),
+                          ),
                           onTap: () => _changeLanguage('Bahasa Indonesia'),
                         ),
                         ListTile(
-                          title: Text('English', style: GoogleFonts.poppins(),),
+                          title: Text(
+                            'English',
+                            style: StyleText(),
+                          ),
                           onTap: () => _changeLanguage('English'),
                         ),
                         ListTile(
-                          title: Text('Korea', style: GoogleFonts.poppins(),),
+                          title: Text(
+                            'Korea',
+                            style: StyleText(),
+                          ),
                           onTap: () => _changeLanguage('Korea'),
                         ),
                       ],
@@ -172,7 +197,8 @@ class _BoardingState extends State<Boarding> {
               },
               child: Text(
                 'agree_and_continue'.tr(),
-                style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white,),
+                style: StyleText(fontWeight: FontWeight.bold,
+                  color: Colors.white,),
               ),
             ),
           ),

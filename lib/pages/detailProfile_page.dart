@@ -1,5 +1,6 @@
 import 'package:chating/pages/media_page.dart';
 import 'package:chating/pages/connection/videoCall.dart';
+import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/fitur.dart';
@@ -63,11 +64,9 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
         title: Text(
           'Contact Info',
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Colors.white,
+          style: StyleText(color: Colors.white,
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+            fontWeight: FontWeight.bold,),
         ),
       ),
       body: Center(
@@ -114,18 +113,14 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
             SizedBox(height: 20),
             Text(
               widget.chatUser.name!,
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
+              style: StyleText(fontSize: 25,
+                fontWeight: FontWeight.bold,),
             ),
             SizedBox(height: 5),
             Text(
               widget.chatUser.phoneNumber ?? '-',
-              style: TextStyle(
-                fontSize: 15,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              style: StyleText(fontSize: 15,
+                color: Theme.of(context).colorScheme.primary,),
             ),
             SizedBox(height: 15),
             Wrap(
@@ -173,18 +168,14 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                         children: [
                           Text(
                             'Media dan Document',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                            style: StyleText(color: Theme.of(context).colorScheme.primary,),
                           ),
                           Row(
                             children: [
                               Text(
                                 '6',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
+                                style: StyleText(fontWeight: FontWeight.w700,
+                                  color: Theme.of(context).colorScheme.primary,),
                               ),
                               SizedBox(width: 10),
                               Icon(
@@ -218,9 +209,7 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                       width: MediaQuery.sizeOf(context).width,
                       child: Text(
                         'Clear Chat',
-                        style: TextStyle(
-                          color: Colors.red,
-                        ),
+                        style: StyleText(color: Colors.red),
                       ),
                     ),
                   ),
@@ -235,9 +224,7 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                       width: MediaQuery.sizeOf(context).width,
                       child: Text(
                         'Blocked ${widget.chatUser.name}',
-                        style: TextStyle(
-                          color: Colors.red,
-                        ),
+                        style: StyleText(color: Colors.red),
                       ),
                     ),
                   ),
@@ -331,9 +318,7 @@ class _ButtonFiturState extends State<ButtonFitur> {
             SizedBox(height: 5),
             Text(
               widget.fitur!.title!,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              style: StyleText(color: Theme.of(context).colorScheme.primary,),
             )
           ],
         ),

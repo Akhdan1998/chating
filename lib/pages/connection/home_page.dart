@@ -10,6 +10,7 @@ import 'package:chating/service/navigation_service.dart';
 import 'package:chating/widgets/chat_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_storage/firebase_storage.dart';
@@ -691,7 +692,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         } else if (!snapshot.hasData ||
                             snapshot.data!.isEmpty) {
                           return Center(
-                              child: Text('Tidak ada kontak yang ditemukan'));
+                              child: Text('Tidak ada kontak yang ditemukan'.tr(), style: GoogleFonts.poppins(),));
                         } else {
                           return ListView.builder(
                             itemCount: snapshot.data!.length,
@@ -877,7 +878,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
             Text(
-              'Chat',
+              'chat'.tr(),
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 30,
@@ -1038,7 +1039,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
           if (userSnapshot.docs == null || groupSnapshot.docs == null) {
             return Center(
-              child: Text('No data available'),
+              child: Text('No data available'.tr(), style: GoogleFonts.poppins(),),
             );
           }
 
@@ -1106,7 +1107,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           actionsPadding:
                               EdgeInsets.only(top: 1, bottom: 5, right: 10),
                           title: Text(
-                            'Delete chat with ${user.name}',
+                            'Delete chat with ${user.name}'.tr(),
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                           actions: [
@@ -1115,7 +1116,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 Navigator.pop(context);
                               },
                               child: Text(
-                                'Cancel',
+                                'Cancel'.tr(),
                                 style: GoogleFonts.poppins(
                                   color: Colors.redAccent,
                                 ),
@@ -1126,7 +1127,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 Navigator.pop(context);
                                 _alertService.showToast(
                                   text:
-                                      'All messages with ${user.name} were successfully deleted!',
+                                      'All messages with ${user.name} were successfully deleted!'.tr(),
                                   icon: Icons.info,
                                   color: Colors.red,
                                 );
@@ -1188,8 +1189,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w100,
+                      fontSize: 12
                     ),
                   ),
                   onTap: () {
@@ -1213,7 +1213,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Do you want to exit the group "${group.name}"?',
+                                'Do you want to exit the group "${group.name}"?'.tr(),
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.poppins(fontSize: 15),
                               ),
@@ -1225,7 +1225,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   color: Colors.blueGrey.shade100,
                                 ),
                                 child: Text(
-                                  'Only group admins will be notified that you leave the group.',
+                                  'Only group admins will be notified that you leave the group.'.tr(),
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.poppins(
                                     color:
@@ -1243,7 +1243,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 Navigator.pop(context);
                               },
                               child: Text(
-                                'Cancel',
+                                'Cancel'.tr(),
                                 style: GoogleFonts.poppins().copyWith(
                                   color: Colors.redAccent,
                                 ),
@@ -1262,7 +1262,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 );
                               },
                               child: Text(
-                                'Yes',
+                                'yes'.tr(),
                                 style: GoogleFonts.poppins(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
