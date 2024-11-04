@@ -65,7 +65,12 @@
   "condition_grup_new_3": "Masukkan nama untuk grup",
   "failed_upload_image": "Gagal mengunggah gambar!",
   "all": "Semua pesan dengan",
-  "successfully": "berhasil dihapus!",
+  "successfully": "Berhasil dihapus!",
   "new_group": "Grup Baru",
-  "new_chat": "Obrolan Baru"
+  "new_chat": "Obrolan Baru",
+  "please": "Silakan isi kedua kolom tersebut.",
+  "reset": "Email reset kata sandi telah dikirim!",
+  "verify_email": "Harap verifikasi email Anda sebelum login.",
+  "incorrect": "Email atau kata sandi salah!",
+  "login_failed": "Gagal masuk. Silahkan coba lagi."
 }

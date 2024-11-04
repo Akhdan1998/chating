@@ -469,7 +469,9 @@ class _LoginPageState extends State<LoginPage> {
     return isLoad
         ? const Center(
             child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey)))
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+            ),
+          )
         : SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -492,7 +494,7 @@ class _LoginPageState extends State<LoginPage> {
                   dialogConfirm();
                 } else {
                   _alertService.showToast(
-                    text: 'Please fill in both fields.',
+                    text: 'please'.tr(),
                     icon: Icons.error,
                     color: Colors.redAccent,
                   );
@@ -507,11 +509,10 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       barrierDismissible: true,
       barrierLabel: '',
-      transitionDuration: const Duration(milliseconds: 300),
+      transitionDuration: Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return AlertDialog(
-          actionsPadding:
-              const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+          actionsPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           title: Text('validasi'.tr(),
               style: StyleText(
                 fontSize: 15,
@@ -970,7 +971,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await _auth.sendPasswordResetEmail(email: emailController.text);
       _alertService.showToast(
-        text: 'Email reset kata sandi telah dikirim!',
+        text: 'reset'.tr(),
         icon: Icons.check,
         color: Colors.green,
       );
@@ -998,7 +999,7 @@ class _LoginPageState extends State<LoginPage> {
         User? user = FirebaseAuth.instance.currentUser;
         if (user != null && !user.emailVerified) {
           _alertService.showToast(
-            text: 'Please verify your email before logging in.',
+            text: 'verify_email'.tr(),
             icon: Icons.error,
             color: Colors.redAccent,
           );
@@ -1013,14 +1014,14 @@ class _LoginPageState extends State<LoginPage> {
         _navigationService.pushReplacementNamed("/navigasi");
       } else {
         _alertService.showToast(
-          text: 'Incorrect email or password!',
+          text: 'Email atau kata sandi salah!'.tr(),
           icon: Icons.error,
           color: Colors.redAccent,
         );
       }
     } catch (e) {
       _alertService.showToast(
-        text: 'Login failed. Please try again.',
+        text: 'login_failed'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
