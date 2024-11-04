@@ -112,5 +112,7 @@
   "story_delete_error": "Terjadi kesalahan saat menghapus cerita!",
   "failed_story": "Gagal memuat cerita",
   "my_story": "Status saya",
-  "delete_story": "Apakah Anda yakin ingin menghapus status ini?"
+  "delete_story": "Apakah Anda yakin ingin menghapus status ini?",
+  "status": "Status",
+  "group_info": "Grup info"
 }

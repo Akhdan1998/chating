@@ -355,7 +355,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
             ListTile(
               leading: Icon(Icons.camera_alt,
                 color: Colors.green,),
-              title: Text('Take Photo'),
+              title: Text('take_photo'.tr()),
               onTap: () async {
                 Navigator.pop(context);
                 context.loaderOverlay.show();
@@ -365,7 +365,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
             ListTile(
               leading: Icon(Icons.photo_library,
                 color: Colors.redAccent,),
-              title: Text('Choose Photo from Gallery'),
+              title: Text('choose_photo'.tr(), style: StyleText(),),
               onTap: () async {
                 Navigator.pop(context);
                 context.loaderOverlay.show();
@@ -695,7 +695,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                   children: [
                     Flexible(
                       child: Text(
-                        'Status',
+                        'status'.tr(),
                         style: StyleText(fontSize: MediaQuery.of(context).size.width * 0.05,
                           fontWeight: FontWeight.bold,),
                       ),

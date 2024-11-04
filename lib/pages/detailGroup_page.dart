@@ -1,5 +1,8 @@
+import 'package:chating/main.dart';
 import 'package:chating/models/group.dart';
+import 'package:chating/utils.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -268,7 +271,7 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                     Navigator.pop(context);
                     _showModalBottomSheet(context);
                   },
-                  leading: Text('Add Members'),
+                  leading: Text('add_members'.tr(), style: StyleText(),),
                   trailing: Icon(
                     Icons.add,
                     color: Theme.of(context).colorScheme.primary,
@@ -280,13 +283,11 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
           ),
         ],
         title: Text(
-          'Group Info',
+          'group_info'.tr(),
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Colors.white,
+          style: StyleText(color: Colors.white,
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+            fontWeight: FontWeight.bold,),
         ),
       ),
       body: LayoutBuilder(
