@@ -1,4 +1,5 @@
 import 'package:chating/utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
@@ -66,7 +67,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
           setState(() {
             _timestamp = dateTime != null
                 ? DateFormat('HH:mm, dd MMM yyyy').format(dateTime)
-                : 'Unknown time';
+                : '-';
           });
         }
       } else {
@@ -89,18 +90,18 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
           .doc(storyId)
           .delete();
       _alertService.showToast(
-        text: 'Successfully deleted story!',
+        text: 'story_delete'.tr(),
         icon: Icons.check,
         color: Colors.green,
       );
       setState(() {});
     } catch (e) {
       _alertService.showToast(
-        text: e.toString(),
+        text: 'story_delete_error'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
-      print('Error deleting story: $e');
+      print('story_delete_error'.tr());
     }
   }
 
@@ -197,11 +198,11 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                   ),
                 ),
               ),
-              title: Text(widget.userProfile.name!),
+              title: Text(widget.userProfile.name!, style: StyleText(),),
               subtitle: Text(
                 DateFormat('HH:mm').format(
                   story['timestamp'].toDate(),
-                ),
+                ), style: StyleText(),
               ),
               trailing: Icon(
                 Icons.remove_red_eye,
@@ -253,7 +254,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                 loadingWidget: Center(
                   child: CircularProgressIndicator(),
                 ),
-                errorWidget: Text('Failed to load story'),
+                errorWidget: Text('failed_story'.tr(), style: StyleText(),),
               );
             } else {
               return StoryItem.pageImage(
@@ -263,7 +264,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                 loadingWidget: Center(
                   child: CircularProgressIndicator(),
                 ),
-                errorWidget: Text('Failed to load story'),
+                errorWidget: Text('failed_story'.tr(), style: StyleText(),),
               );
             }
           }).toList();
@@ -308,7 +309,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'My Story',
+                                'my_story'.tr(),
                                 style: StyleText(color: Colors.white,
                                   fontSize: 15,),
                               ),
@@ -359,11 +360,9 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                                           Navigator.pop(context);
                                         },
                                         child: Text(
-                                          'No',
-                                          style: GoogleFonts.poppins().copyWith(
-                                            color: Colors.redAccent,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          'no'.tr(),
+                                          style: StyleText(color: Colors.redAccent,
+                                            fontWeight: FontWeight.bold,),
                                         ),
                                       ),
                                       TextButton(
@@ -375,18 +374,16 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                                           });
                                         },
                                         child: Text(
-                                          'Yes',
-                                          style: GoogleFonts.poppins().copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          'yes'.tr(),
+                                          style: StyleText(color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                            fontWeight: FontWeight.bold,),
                                         ),
                                       ),
                                     ],
                                     title: Text(
-                                      "Are you sure you want to delete this story?",
+                                      "delete_story".tr(),
                                       style: StyleText(fontSize: 15),
                                     ),
                                   );

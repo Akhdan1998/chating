@@ -43,8 +43,10 @@ class _BoardingState extends State<Boarding> {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ElevatedButton.styleFrom(
-      textStyle: StyleText(fontSize: 14,
-        color: Colors.white,),
+      textStyle: StyleText(
+        fontSize: 14,
+        color: Colors.white,
+      ),
       backgroundColor: Theme.of(context).colorScheme.primary,
     );
     double bottomInset = MediaQuery.of(context).viewInsets.bottom;
@@ -64,16 +66,20 @@ class _BoardingState extends State<Boarding> {
                   children: [
                     Text(
                       'welcome'.tr(),
-                      style: StyleText(color: Colors.black,
+                      style: StyleText(
+                        color: Colors.black,
                         fontSize: 21,
-                        fontWeight: FontWeight.bold,),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 15),
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: StyleText(color: Colors.black,
-                          fontSize: 17,),
+                        style: StyleText(
+                          color: Colors.black,
+                          fontSize: 17,
+                        ),
                         children: [
                           TextSpan(
                             text: 'read_our'.tr(),
@@ -81,12 +87,14 @@ class _BoardingState extends State<Boarding> {
                           ),
                           TextSpan(
                             text: 'privacy_policy'.tr(),
-                            style: StyleText(color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold,),
+                            style: StyleText(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 // Aksi ketika "Kebijakan Privasi" ditekan
-                                print('Kebijakan Privasi ditekan'.tr());
+                                print('Kebijakan Privasi ditekan');
                               },
                           ),
                           TextSpan(
@@ -95,12 +103,14 @@ class _BoardingState extends State<Boarding> {
                           ),
                           TextSpan(
                             text: 'terms_of_service'.tr(),
-                            style: StyleText(color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold,),
+                            style: StyleText(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 // Aksi ketika "Ketentuan Layanan" ditekan
-                                print('Ketentuan Layanan ditekan'.tr());
+                                print('Ketentuan Layanan ditekan');
                               },
                           ),
                         ],
@@ -129,9 +139,11 @@ class _BoardingState extends State<Boarding> {
                       ),
                       title: Text(
                         selectedLanguage,
-                        style: StyleText(color: Theme.of(context).colorScheme.primary,
+                        style: StyleText(
+                          color: Theme.of(context).colorScheme.primary,
                           fontSize: 14,
-                          fontWeight: FontWeight.bold,),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       trailing: Icon(
                         dropdownIcon ? Icons.expand_less : Icons.expand_more,
@@ -197,8 +209,10 @@ class _BoardingState extends State<Boarding> {
               },
               child: Text(
                 'agree_and_continue'.tr(),
-                style: StyleText(fontWeight: FontWeight.bold,
-                  color: Colors.white,),
+                style: StyleText(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),

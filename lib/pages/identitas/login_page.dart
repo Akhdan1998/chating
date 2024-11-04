@@ -467,7 +467,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildNextButton() {
     return isLoad
-        ? const Center(
+        ? Center(
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
             ),
@@ -918,7 +918,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     child: Text(
-                      forgotPass ? 'Reset' : 'Login',
+                      forgotPass ? 'reset_pass'.tr() : 'in'.tr(),
                       style: StyleText(
                         fontSize: 16,
                         color: Colors.white,
@@ -1014,7 +1014,7 @@ class _LoginPageState extends State<LoginPage> {
         _navigationService.pushReplacementNamed("/navigasi");
       } else {
         _alertService.showToast(
-          text: 'Email atau kata sandi salah!'.tr(),
+          text: 'incorrect'.tr(),
           icon: Icons.error,
           color: Colors.redAccent,
         );
@@ -1041,13 +1041,17 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 TextSpan(
                   text: 'member'.tr(),
-                  style: StyleText(color: Colors.white70),
+                  style: StyleText(
+                    color: Colors.white70,
+                    fontSize: 12,
+                  ),
                 ),
                 TextSpan(
                   text: 'register'.tr(),
                   style: StyleText(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: 12,
                   ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {

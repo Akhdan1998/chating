@@ -829,7 +829,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                             ),
                             SizedBox(height: screenHeight * 0.01),
                             Text(
-                              'My Story',
+                              'my_story'.tr(),
                               style: StyleText(fontSize: screenWidth * 0.03),
                             ),
                           ],

@@ -85,15 +85,19 @@ class _RegisterPageState extends State<RegisterPage> {
       children: [
         Text(
           "go".tr(),
-          style: StyleText(fontWeight: FontWeight.w500,
+          style: StyleText(
+            fontWeight: FontWeight.w500,
             fontSize: 24,
-            color: Colors.white,),
+            color: Colors.white,
+          ),
         ),
         SizedBox(height: 8),
         Text(
           'title_register'.tr(),
-          style: StyleText(fontSize: 16,
-            color: Colors.white,),
+          style: StyleText(
+            fontSize: 16,
+            color: Colors.white,
+          ),
         ),
       ],
     );
@@ -207,9 +211,11 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               child: Text(
                 'register'.tr(),
-                style: StyleText(fontSize: 16,
+                style: StyleText(
+                  fontSize: 16,
                   color: Colors.blueGrey,
-                  fontWeight: FontWeight.bold,),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           );
@@ -218,7 +224,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void _onRegisterPressed() async {
     if (nameController.text.isEmpty) {
       _alertService.showToast(
-        text: 'Name cannot be empty.',
+        text: 'cannot_name'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
@@ -227,7 +233,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (numberController.text.isEmpty) {
       _alertService.showToast(
-        text: 'Phone number cannot be empty.',
+        text: 'cannot_number'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
@@ -236,7 +242,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (emailController.text.isEmpty) {
       _alertService.showToast(
-        text: 'Email cannot be empty.',
+        text: 'cannot_email'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
@@ -245,7 +251,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (passwordController.text.isEmpty) {
       _alertService.showToast(
-        text: 'Password cannot be empty.',
+        text: 'cannot_pass'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
@@ -254,7 +260,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (!_registerFormKey.currentState!.validate()) {
       _alertService.showToast(
-        text: 'Please fill in all fields correctly.',
+        text: 'correctly'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
@@ -295,21 +301,21 @@ class _RegisterPageState extends State<RegisterPage> {
         );
 
         _alertService.showToast(
-          text: 'Registration successful. Please verify your email.',
+          text: 'regis_success'.tr(),
           icon: Icons.check,
           color: Colors.green,
         );
         _navigationService.goBack();
       } else {
         _alertService.showToast(
-          text: 'Registration failed.',
+          text: 'regis_failed'.tr(),
           icon: Icons.error,
           color: Colors.redAccent,
         );
       }
     } catch (e) {
       _alertService.showToast(
-        text: 'Phone Number or Email has already been used.',
+        text: 'already_been_used'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
@@ -332,8 +338,10 @@ class _RegisterPageState extends State<RegisterPage> {
           onTap: () => _navigationService.goBack(),
           child: Text(
             'in'.tr(),
-            style: StyleText(fontWeight: FontWeight.bold,
-              color: Colors.white,),
+            style: StyleText(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
       ],

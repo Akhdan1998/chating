@@ -1,5 +1,6 @@
 import 'package:chating/models/user_profile.dart';
 import 'package:chating/utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -91,15 +92,20 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Update Password')),
+      appBar: AppBar(
+        title: Text(
+          'update_password'.tr(),
+          style: StyleText(),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _passwordUpdateForm(),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               _updatePasswordButton(),
             ],
           ),
@@ -114,7 +120,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
         TextFieldCustom(
           readOnly: true,
           controller: emailController,
-          hintText: 'Email',
+          hintText: 'email'.tr(),
           obscureText: false,
           validationRegEx: EMAIL_VALIDATION_REGEX,
           onSaved: (value) {
@@ -125,7 +131,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
         const SizedBox(height: 20),
         TextFieldCustom(
           controller: currentPasswordController,
-          hintText: 'Current Password',
+          hintText: 'current_password'.tr(),
           obscureText: true,
           validationRegEx: NAME_VALIDATION_REGEX,
           onSaved: (value) {
@@ -136,7 +142,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
         const SizedBox(height: 20),
         TextFieldCustom(
           controller: newPasswordController,
-          hintText: 'New Password',
+          hintText: 'new_password'.tr(),
           obscureText: true,
           validationRegEx: NAME_VALIDATION_REGEX,
           onSaved: (value) {
@@ -147,7 +153,7 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
         const SizedBox(height: 20),
         TextFieldCustom(
           controller: confirmNewPasswordController,
-          hintText: 'Confirm New Password',
+          hintText: 'new_password_confirm'.tr(),
           obscureText: true,
           validationRegEx: NAME_VALIDATION_REGEX,
           onSaved: (value) {
@@ -160,7 +166,6 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
   }
 
   Widget _updatePasswordButton() {
-    // Define the button style within the method
     final ButtonStyle style = ElevatedButton.styleFrom(
       textStyle:
           GoogleFonts.poppins().copyWith(fontSize: 14, color: Colors.white),
@@ -176,7 +181,10 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
             child: ElevatedButton(
               style: style, // Use the defined style here
               onPressed: _updatePassword,
-              child: Text('Update Password', style: StyleText(color: Colors.white),),
+              child: Text(
+                'update_password'.tr(),
+                style: StyleText(color: Colors.white),
+              ),
             ),
           );
   }

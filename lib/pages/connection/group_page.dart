@@ -18,6 +18,7 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 // import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -111,7 +112,6 @@ class _GroupPageState extends State<GroupPage> {
         position = newPosition;
       });
     });
-
   }
 
   @override
@@ -427,7 +427,10 @@ class _GroupPageState extends State<GroupPage> {
           actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
           title: Text(
             'del'.tr(),
-            style: StyleText(fontSize: 16, fontWeight: FontWeight.bold,),
+            style: StyleText(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: Text(
             'desk_del'.tr(),
@@ -440,8 +443,10 @@ class _GroupPageState extends State<GroupPage> {
               },
               child: Text(
                 'no'.tr(),
-                style: StyleText(color: Colors.redAccent,
-                  fontWeight: FontWeight.bold,),
+                style: StyleText(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             TextButton(
@@ -475,15 +480,16 @@ class _GroupPageState extends State<GroupPage> {
               },
               child: Text(
                 'yes'.tr(),
-                style: StyleText(color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,),
+                style: StyleText(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
         );
       },
-      transitionBuilder:
-          (context, anim1, anim2, child) {
+      transitionBuilder: (context, anim1, anim2, child) {
         return Transform.scale(
           scale: anim1.value,
           child: child,
@@ -565,7 +571,8 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   Future<void> initializeNotifications(String message) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
       'new_message_channel',
       'New Messages',
       importance: Importance.high,
@@ -639,17 +646,19 @@ class _GroupPageState extends State<GroupPage> {
                     Text(
                       widget.group.name,
                       overflow: TextOverflow.ellipsis,
-                      style: StyleText(color: Colors.white,
+                      style: StyleText(
+                        color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
-                      _isVisible
-                          ? 'info_grup'.tr()
-                          : memberNames.join(", "),
+                      _isVisible ? 'info_grup'.tr() : memberNames.join(", "),
                       overflow: TextOverflow.ellipsis,
-                      style: StyleText(color: Colors.white,
-                        fontSize: 11,),
+                      style: StyleText(
+                        color: Colors.white,
+                        fontSize: 11,
+                      ),
                     ),
                   ],
                 ),
@@ -703,7 +712,10 @@ class _GroupPageState extends State<GroupPage> {
       return Center(
         child: Text(
           "out_grup".tr(),
-          style: StyleText(fontSize: 15, color: Colors.grey,),
+          style: StyleText(
+            fontSize: 15,
+            color: Colors.grey,
+          ),
         ),
       );
     }
@@ -726,7 +738,9 @@ class _GroupPageState extends State<GroupPage> {
         }
         var newMessage = messages.last.data();
 
-        if (newMessage != null && newMessage['userId'] != currentUser?.id && newMessage['text'] != null) {
+        if (newMessage != null &&
+            newMessage['userId'] != currentUser?.id &&
+            newMessage['text'] != null) {
           initializeNotifications(newMessage['text']);
         }
 
@@ -780,7 +794,10 @@ class _GroupPageState extends State<GroupPage> {
                   textSpans.add(
                     TextSpan(
                       text: message.text.substring(lastMatchEnd, match.start),
-                      style: StyleText(color: Colors.black87, fontSize: 15,),
+                      style: StyleText(
+                        color: Colors.black87,
+                        fontSize: 15,
+                      ),
                     ),
                   );
                 }
@@ -800,7 +817,10 @@ class _GroupPageState extends State<GroupPage> {
               if (lastMatchEnd < message.text.length) {
                 textSpans.add(TextSpan(
                   text: message.text.substring(lastMatchEnd),
-                  style: StyleText(color: Colors.black87, fontSize: 15,),
+                  style: StyleText(
+                    color: Colors.black87,
+                    fontSize: 15,
+                  ),
                 ));
               }
 
@@ -837,8 +857,10 @@ class _GroupPageState extends State<GroupPage> {
                     alignment: Alignment.centerRight,
                     child: Text(
                       DateFormat('HH:mm').format(message.createdAt),
-                      style: StyleText(color: Colors.black87,
-                        fontSize: 12,),
+                      style: StyleText(
+                        color: Colors.black87,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
@@ -1126,24 +1148,18 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
             if (compressedVideo != null) {
               setState(() {
                 _alertService.showToast(
-                  text: 'Video berhasil diunduh dan dikompresi di ${compressedVideo.file!.path}',
+                  text: 'download_video'.tr() + '${compressedVideo.file!.path}',
                   icon: Icons.check,
                   color: Colors.green,
                 );
               });
             } else {
-              setState(() {
-                _alertService.showToast(
-                  text: 'Gagal mengompresi video',
-                  icon: Icons.error,
-                  color: Colors.red,
-                );
-              });
+              print('Gagal mengompresi video');
             }
           } else {
             setState(() {
               _alertService.showToast(
-                text: 'Gagal menyimpan video',
+                text: 'failed_download_video'.tr(),
                 icon: Icons.error,
                 color: Colors.red,
               );
@@ -1153,7 +1169,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
         onDownloadError: (error) {
           setState(() {
             _alertService.showToast(
-              text: 'Gagal mengunduh video',
+              text: 'failed_download_video'.tr(),
               icon: Icons.error,
               color: Colors.red,
             );
@@ -1164,7 +1180,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
       print("Error: $e");
       setState(() {
         _alertService.showToast(
-          text: 'Gagal mengunduh video: $e',
+          text: 'failed_download_video'.tr(),
           icon: Icons.error,
           color: Colors.red,
         );
@@ -1264,14 +1280,18 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
           children: [
             Text(
               widget.chatUser.firstName!,
-              style: StyleText(color: Colors.white,
+              style: StyleText(
+                color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               day,
-              style: StyleText(color: Colors.white,
-                fontSize: 10,),
+              style: StyleText(
+                color: Colors.white,
+                fontSize: 10,
+              ),
             ),
           ],
         ),
@@ -1299,9 +1319,11 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(color: Colors.white,
+                          style: StyleText(
+                            color: Colors.white,
                             fontSize: 7,
-                            fontWeight: FontWeight.bold,),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )
@@ -1339,7 +1361,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                                       ? Colors.white.withOpacity(0.3)
                                       : Colors.white,
                                 ),
-                                padding: const EdgeInsets.all(16.0),
+                                padding: EdgeInsets.all(16.0),
                                 child: Icon(
                                   isPlaying ? Icons.pause : Icons.play_arrow,
                                   color: Colors.black,
@@ -1353,8 +1375,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16),
+                                padding: EdgeInsets.symmetric(horizontal: 16),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -1476,19 +1497,19 @@ class _FullScreenImageState extends State<FullScreenImage> {
               _isDownloading = false;
               _progress = 0.0;
               _alertService.showToast(
-                text: 'Image downloaded successfully',
+                text: 'download_image'.tr(),
                 icon: Icons.check,
                 color: Colors.green,
               );
             });
           }
         },
-        onDownloadError: (error) {
+        onDownloadError: (e) {
           setState(() {
             _isDownloading = false;
             _progress = 0.0;
             _alertService.showToast(
-              text: 'Failed to download image: $error',
+              text: 'failed_download_image'.tr(),
               icon: Icons.error,
               color: Colors.red,
             );
@@ -1501,7 +1522,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
         _isDownloading = false;
         _progress = 0.0;
         _alertService.showToast(
-          text: 'Failed to download image: $e',
+          text: 'failed_download_image'.tr(),
           icon: Icons.error,
           color: Colors.red,
         );
@@ -1592,14 +1613,18 @@ class _FullScreenImageState extends State<FullScreenImage> {
           children: [
             Text(
               widget.chatUser.firstName.toString(),
-              style: StyleText(color: Colors.white,
+              style: StyleText(
+                color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               day,
-              style: StyleText(color: Colors.white,
-                fontSize: 10,),
+              style: StyleText(
+                color: Colors.white,
+                fontSize: 10,
+              ),
             ),
           ],
         ),
@@ -1627,9 +1652,11 @@ class _FullScreenImageState extends State<FullScreenImage> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(color: Colors.white,
+                          style: StyleText(
+                            color: Colors.white,
                             fontSize: 7,
-                            fontWeight: FontWeight.bold,),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )
@@ -1705,7 +1732,7 @@ class _PDFViewPageState extends State<PDFViewPage> {
 
       setState(() {
         _alertService.showToast(
-          text: 'Image downloaded successfully',
+          text: 'download_file'.tr(),
           icon: Icons.check,
           color: Colors.green,
         );
@@ -1715,7 +1742,7 @@ class _PDFViewPageState extends State<PDFViewPage> {
       print('--------- $e');
       setState(() {
         _alertService.showToast(
-          text: 'Error downloading file',
+          text: 'failed_download_file'.tr(),
           icon: Icons.error,
           color: Colors.red,
         );
@@ -1759,14 +1786,18 @@ class _PDFViewPageState extends State<PDFViewPage> {
           children: [
             Text(
               widget.fileName.toString(),
-              style: StyleText(color: Colors.white,
+              style: StyleText(
+                color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               day,
-              style: StyleText(color: Colors.white,
-                fontSize: 10,),
+              style: StyleText(
+                color: Colors.white,
+                fontSize: 10,
+              ),
             ),
           ],
         ),
@@ -1796,9 +1827,11 @@ class _PDFViewPageState extends State<PDFViewPage> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(color: Colors.white,
+                          style: StyleText(
+                            color: Colors.white,
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )

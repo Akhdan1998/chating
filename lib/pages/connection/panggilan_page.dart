@@ -1,4 +1,5 @@
 import 'package:chating/main.dart';
+import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -183,7 +184,7 @@ class AllCallsPage extends StatelessWidget {
               return Center(child: CircularProgressIndicator());
             }
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(child: Text('No call history found.'));
+              return Center(child: Text('call_history'.tr(), style: StyleText(color: Colors.grey),));
             }
 
             final callHistory = snapshot.data!.docs;
@@ -381,7 +382,7 @@ class MissedCallsPage extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Sadelih'),
+                          Text('Sadelih', style: StyleText(),),
                           Row(
                             children: [
                               Icon(
@@ -391,7 +392,7 @@ class MissedCallsPage extends StatelessWidget {
                               SizedBox(width: 5),
                               Text(
                                 'Unanswered',
-                                style: TextStyle(fontSize: 11),
+                                style: StyleText(fontSize: 11),
                               ),
                             ],
                           ),
@@ -401,7 +402,7 @@ class MissedCallsPage extends StatelessWidget {
                         children: [
                           Text(
                             'Sunday',
-                            style: TextStyle(fontSize: 10),
+                            style: StyleText(fontSize: 10),
                           ),
                           IconButton(
                             onPressed: () {},

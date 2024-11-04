@@ -7,7 +7,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../consts.dart';
 import '../../service/alert_service.dart';
 import '../../service/media_service.dart';
@@ -16,8 +15,6 @@ import 'package:flutter/foundation.dart' as foundation;
 
 class Verifikasi extends StatefulWidget {
   final String phoneNumber;
-
-  // final String nama;
 
   Verifikasi({required this.phoneNumber});
 
@@ -65,44 +62,44 @@ class _VerifikasiState extends State<Verifikasi> {
     });
   }
 
-  Future<void> _sendOTP() async {
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: widget.phoneNumber,
-        timeout: Duration(seconds: 60),
-        verificationCompleted: (credential) async {
-          await _auth.signInWithCredential(credential);
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          _alertService.showToast(
-            text: 'Failed to send OTP: ${e.message}',
-            icon: Icons.error,
-            color: Colors.redAccent,
-          );
-          print('Error sending OTP: ${e.code} - ${e.message}');
-        },
-        codeSent: (verificationId, _) {
-          setState(() {
-            _verificationId = verificationId;
-            isOtpSent = true;
-          });
-          _startTimer();
-        },
-        codeAutoRetrievalTimeout: (verificationId) {
-          setState(() {
-            _verificationId = verificationId;
-          });
-        },
-      );
-    } catch (e) {
-      print('An unexpected error occurred: $e');
-      _alertService.showToast(
-        text: 'An unexpected error occurred. Please try again.',
-        icon: Icons.error,
-        color: Colors.redAccent,
-      );
-    }
-  }
+  // Future<void> _sendOTP() async {
+  //   try {
+  //     await _auth.verifyPhoneNumber(
+  //       phoneNumber: widget.phoneNumber,
+  //       timeout: Duration(seconds: 60),
+  //       verificationCompleted: (credential) async {
+  //         await _auth.signInWithCredential(credential);
+  //       },
+  //       verificationFailed: (FirebaseAuthException e) {
+  //         _alertService.showToast(
+  //           text: 'failed_send_otp'.tr(),
+  //           icon: Icons.error,
+  //           color: Colors.redAccent,
+  //         );
+  //         print('Error sending OTP: ${e.code} - ${e.message}');
+  //       },
+  //       codeSent: (verificationId, _) {
+  //         setState(() {
+  //           _verificationId = verificationId;
+  //           isOtpSent = true;
+  //         });
+  //         _startTimer();
+  //       },
+  //       codeAutoRetrievalTimeout: (verificationId) {
+  //         setState(() {
+  //           _verificationId = verificationId;
+  //         });
+  //       },
+  //     );
+  //   } catch (e) {
+  //     print('An unexpected error occurred: $e');
+  //     _alertService.showToast(
+  //       text: 'error_occurred'.tr(),
+  //       icon: Icons.error,
+  //       color: Colors.redAccent,
+  //     );
+  //   }
+  // }
 
   Future<void> _verifyOTP(String otpCode) async {
     setState(() {
@@ -116,15 +113,14 @@ class _VerifikasiState extends State<Verifikasi> {
       await _auth.signInWithCredential(credential);
 
       _alertService.showToast(
-        text: 'OTP Verified!',
+        text: 'verified_otp'.tr(),
         icon: Icons.check,
         color: Colors.green,
       );
-
     } catch (e) {
       print('OTP ERROR $e');
       _alertService.showToast(
-        text: 'Invalid OTP Code, please try again.',
+        text: 'invalid_otp'.tr(),
         icon: Icons.error,
         color: Colors.redAccent,
       );
@@ -209,19 +205,23 @@ class _VerifikasiState extends State<Verifikasi> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Info profil'.tr(),
-                      style: StyleText(fontSize: 16, fontWeight: FontWeight.w600,),
+                      'info_profil'.tr(),
+                      style: StyleText(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Mohon berikan nama dan foto profil (opsional) Anda'.tr(),
+                      'name_foto'.tr(),
                       textAlign: TextAlign.center,
                       style: StyleText(fontSize: 15),
                     ),
                     SizedBox(height: 30),
                     GestureDetector(
                       onTap: () async {
-                        File? file = await _mediaService.getImageFromGalleryImage();
+                        File? file =
+                            await _mediaService.getImageFromGalleryImage();
                         if (file != null) {
                           setState(() {
                             selectedImage = file;
@@ -272,12 +272,10 @@ class _VerifikasiState extends State<Verifikasi> {
                         ),
                         SizedBox(width: 10),
                         IconButton(
-                          icon: Icon(Icons
-                              .emoji_emotions_outlined),
+                          icon: Icon(Icons.emoji_emotions_outlined),
                           onPressed: () {
                             setState(() {
-                              showEmojiPicker =
-                                  !showEmojiPicker;
+                              showEmojiPicker = !showEmojiPicker;
                             });
                           },
                         ),
@@ -313,7 +311,8 @@ class _VerifikasiState extends State<Verifikasi> {
                   ],
                 ),
                 Padding(
-                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
                   child: _registerButton(),
                 ),
               ],
@@ -322,13 +321,23 @@ class _VerifikasiState extends State<Verifikasi> {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Verify OTP Code', style: _headerStyle),
+              Text(
+                'verify_otp'.tr(),
+                style: StyleText(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Colors.black87,
+                ),
+              ),
               SizedBox(height: 10),
               Text(
                 isOtpSent
-                    ? 'Enter the OTP code you received via SMS at ${widget.phoneNumber}'
-                    : 'Please select a method below to get the OTP code.',
-                style: _bodyStyle,
+                    ? 'enter_otp'.tr() + '${widget.phoneNumber}'
+                    : 'get_otp'.tr(),
+                style: StyleText(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
               ),
               SizedBox(height: isOtpSent ? 30 : 10),
               isOtpSent
@@ -357,9 +366,11 @@ class _VerifikasiState extends State<Verifikasi> {
               ),
               child: Text(
                 'next'.tr(),
-                style: StyleText(fontSize: 16,
+                style: StyleText(
+                  fontSize: 16,
                   color: Colors.blueGrey,
-                  fontWeight: FontWeight.bold,),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           );
@@ -398,7 +409,10 @@ class _VerifikasiState extends State<Verifikasi> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
           ],
         ),
         child: Row(
@@ -406,24 +420,38 @@ class _VerifikasiState extends State<Verifikasi> {
           children: [
             Row(
               children: [
-                Icon(Icons.chat,
-                    color: Theme.of(context).primaryColor, size: 28),
+                Icon(
+                  Icons.chat,
+                  color: Theme.of(context).primaryColor,
+                  size: 28,
+                ),
                 SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Send via SMS',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15)),
-                    Text(widget.phoneNumber,
-                        style:
-                            TextStyle(fontSize: 14, color: Colors.grey[600])),
+                    Text(
+                      'send_otp'.tr(),
+                      style: StyleText(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      widget.phoneNumber,
+                      style: StyleText(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
-            Icon(Icons.arrow_forward_ios_rounded,
-                color: Theme.of(context).primaryColor, size: 24),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Theme.of(context).primaryColor,
+              size: 24,
+            ),
           ],
         ),
       ),
@@ -434,7 +462,10 @@ class _VerifikasiState extends State<Verifikasi> {
     return Center(
       child: Text(
         _formatTimer(_remaining),
-        style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        style: StyleText(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
@@ -443,14 +474,12 @@ class _VerifikasiState extends State<Verifikasi> {
     return isOtpSent
         ? Container()
         : Text(
-            'If nothing is selected within $_remainingTime seconds, a code will be sent automatically via SMS.',
+            'durasi'.tr() + '$_remainingTime' + 'time'.tr(),
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            style: StyleText(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
           );
   }
-
-  TextStyle get _headerStyle => TextStyle(
-      fontWeight: FontWeight.bold, fontSize: 24, color: Colors.black87);
-
-  TextStyle get _bodyStyle => TextStyle(fontSize: 16, color: Colors.grey[600]);
 }

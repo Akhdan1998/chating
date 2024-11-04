@@ -126,8 +126,9 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
             });
           },
           onError: (ErrorCodeType err, String msg) {
+            print('Error: $err - $msg');
             _alertService.showToast(
-                text: 'Error: $err - $msg',
+                text: '$err - $msg',
                 icon: Icons.error,
                 color: Colors.red);
           },
@@ -174,7 +175,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
     final status = await [Permission.microphone].request();
     if (status[Permission.microphone] != PermissionStatus.granted) {
       _alertService.showToast(
-          text: 'Microphone permission is required.',
+          text: 'permission_microphone'.tr(),
           icon: Icons.warning,
           color: Colors.yellowAccent);
     }
@@ -475,7 +476,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
                     color: Colors.black.withOpacity(0.2),
                   ),
                   child: Icon(_isMuted ? Icons.mic_off : Icons.mic,
-                      color: Colors.white),
+                      color: Colors.white,),
                 ),
               ),
               GestureDetector(
@@ -486,7 +487,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
                     borderRadius: BorderRadius.circular(15),
                     color: Colors.black.withOpacity(0.2),
                   ),
-                  child: Icon(Icons.call_end, color: Colors.redAccent),
+                  child: Icon(Icons.call_end, color: Colors.redAccent,),
                 ),
               ),
             ],

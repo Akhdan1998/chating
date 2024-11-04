@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chating/models/user_profile.dart';
 import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -114,10 +115,12 @@ class _EditPageState extends State<EditPage> {
         ),
         title: Container(
           child: Text(
-            'Edit Profile',
-            style: StyleText(color: Colors.white,
+            'edit'.tr(),
+            style: StyleText(
+              color: Colors.white,
               fontSize: 18,
-              fontWeight: FontWeight.bold,),
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -194,7 +197,10 @@ class _EditPageState extends State<EditPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Name'),
+                    Text(
+                      'name'.tr(),
+                      style: StyleText(),
+                    ),
                     SizedBox(height: 10),
                     TextFieldCustom(
                       controller: nameController,
@@ -203,11 +209,14 @@ class _EditPageState extends State<EditPage> {
                       },
                       validationRegEx: NAME_VALIDATION_REGEX,
                       height: MediaQuery.of(context).size.height * 0.1,
-                      hintText: 'Name',
+                      hintText: 'name'.tr(),
                       obscureText: false,
                     ),
                     SizedBox(height: 20),
-                    Text('Phone Number'),
+                    Text(
+                      'phone_number'.tr(),
+                      style: StyleText(),
+                    ),
                     SizedBox(height: 10),
                     TextFieldCustom(
                       controller: numberController,
@@ -216,7 +225,7 @@ class _EditPageState extends State<EditPage> {
                       },
                       validationRegEx: PHONE_VALIDATION_REGEX,
                       height: MediaQuery.of(context).size.height * 0.1,
-                      hintText: 'Phone Number',
+                      hintText: 'phone_number'.tr(),
                       obscureText: false,
                     ),
                   ],
@@ -246,8 +255,11 @@ class _EditPageState extends State<EditPage> {
                 });
               },
               child: Text(
-                'Save',
-                style: StyleText(fontWeight: FontWeight.bold, color: Colors.white,),
+                'save'.tr(),
+                style: StyleText(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
