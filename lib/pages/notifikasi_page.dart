@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:chating/utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../models/group.dart';
@@ -32,7 +31,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Sound Notification',
+                    'sound_notification'.tr(),
                     style: StyleText(
                       fontSize: 15,
                       color: Theme.of(context).colorScheme.primary,
@@ -59,8 +58,8 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                 ),
                 child: Text(
                   (isNotif == true)
-                      ? 'Other members will not see that you muted this chat. You will still be notified if you are mentioned.'
-                      : 'You will be notified of all messages in this chat.',
+                      ? 'other_member'.tr()
+                      : 'will_be_notified'.tr(),
                   textAlign:
                       (isNotif == true) ? TextAlign.left : TextAlign.center,
                   style: StyleText(
@@ -86,7 +85,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    (isNotif == true) ? 'Muted' : 'Sound it out',
+                    (isNotif == true) ? 'muted'.tr() : 'sound_it_out'.tr(),
                     style: StyleText(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
@@ -120,7 +119,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
         title: Column(
           children: [
             Text(
-              'Notification',
+              'notification'.tr(),
               overflow: TextOverflow.ellipsis,
               style: StyleText(
                 color: Colors.white,
@@ -156,7 +155,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    (isNotif == true) ? 'Mute Notifications' : 'Sound it out',
+                    (isNotif == true) ? 'muted'.tr() : 'sound_it_out'.tr(),
                     style: StyleText(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,

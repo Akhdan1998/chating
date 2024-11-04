@@ -2,6 +2,7 @@ import 'package:chating/pages/media_page.dart';
 import 'package:chating/pages/connection/videoCall.dart';
 import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../models/fitur.dart';
 import '../models/user_profile.dart';
@@ -40,12 +41,6 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
   ];
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -62,11 +57,13 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
           },
         ),
         title: Text(
-          'Contact Info',
+          'contact_info'.tr(),
           overflow: TextOverflow.ellipsis,
-          style: StyleText(color: Colors.white,
+          style: StyleText(
+            color: Colors.white,
             fontSize: 18,
-            fontWeight: FontWeight.bold,),
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: Center(
@@ -80,18 +77,15 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                   barrierDismissible: true,
                   barrierLabel: '',
                   barrierColor: Colors.black54,
-                  transitionDuration:
-                  Duration(milliseconds: 300),
+                  transitionDuration: Duration(milliseconds: 300),
                   pageBuilder: (context, anim1, anim2) {
                     return AlertDialog(
                       elevation: 0,
                       backgroundColor: Colors.transparent,
-                      content:
-                      Image.network(widget.chatUser.pfpURL!),
+                      content: Image.network(widget.chatUser.pfpURL!),
                     );
                   },
-                  transitionBuilder:
-                      (context, anim1, anim2, child) {
+                  transitionBuilder: (context, anim1, anim2, child) {
                     return Transform.scale(
                       scale: anim1.value,
                       child: child,
@@ -113,14 +107,18 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
             SizedBox(height: 20),
             Text(
               widget.chatUser.name!,
-              style: StyleText(fontSize: 25,
-                fontWeight: FontWeight.bold,),
+              style: StyleText(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(height: 5),
             Text(
               widget.chatUser.phoneNumber ?? '-',
-              style: StyleText(fontSize: 15,
-                color: Theme.of(context).colorScheme.primary,),
+              style: StyleText(
+                fontSize: 15,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
             SizedBox(height: 15),
             Wrap(
@@ -167,15 +165,19 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Media dan Document',
-                            style: StyleText(color: Theme.of(context).colorScheme.primary,),
+                            'media_document'.tr(),
+                            style: StyleText(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
                           Row(
                             children: [
                               Text(
                                 '6',
-                                style: StyleText(fontWeight: FontWeight.w700,
-                                  color: Theme.of(context).colorScheme.primary,),
+                                style: StyleText(
+                                  fontWeight: FontWeight.w700,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                               SizedBox(width: 10),
                               Icon(
@@ -208,7 +210,7 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                       color: Colors.transparent,
                       width: MediaQuery.sizeOf(context).width,
                       child: Text(
-                        'Clear Chat',
+                        'clear_chat'.tr(),
                         style: StyleText(color: Colors.red),
                       ),
                     ),
@@ -223,7 +225,7 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                       color: Colors.transparent,
                       width: MediaQuery.sizeOf(context).width,
                       child: Text(
-                        'Blocked ${widget.chatUser.name}',
+                        'blokir' + '${widget.chatUser.name}',
                         style: StyleText(color: Colors.red),
                       ),
                     ),
@@ -275,7 +277,7 @@ class _ButtonFiturState extends State<ButtonFitur> {
   Future<String> _getPhoneNumber(String userId) async {
     var firestore = FirebaseFirestore.instance;
     var userDoc = await firestore.collection('users').doc(userId).get();
-    return userDoc.data()?['phoneNumber'] ?? '';
+    return userDoc.data()!['phoneNumber'] ?? '';
   }
 
   @override
@@ -286,13 +288,13 @@ class _ButtonFiturState extends State<ButtonFitur> {
     return GestureDetector(
       onTap: () {
         switch (widget.fitur!.id) {
-          case '1': // Audio call
+          case '1':
             _handleCall('audio');
             break;
-          case '2': // Video call
+          case '2':
             _handleCall('video');
             break;
-          case '3': // Search functionality
+          case '3':
             print('SEARCH ACTION');
             break;
           default:
@@ -318,7 +320,9 @@ class _ButtonFiturState extends State<ButtonFitur> {
             SizedBox(height: 5),
             Text(
               widget.fitur!.title!,
-              style: StyleText(color: Theme.of(context).colorScheme.primary,),
+              style: StyleText(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             )
           ],
         ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -89,7 +90,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
     } catch (e) {
       print('Failed to delete stories: $e');
       _alertService.showToast(
-        text: 'Failed to delete stories',
+        text: 'delete_status'.tr(),
         icon: Icons.error,
         color: Colors.red,
       );
@@ -99,7 +100,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
   Future<void> checkAndDeleteExpiredStories() async {
     try {
       QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('stories').get();
+          await FirebaseFirestore.instance.collection('stories').get();
 
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
         Timestamp timestamp = doc['timestamp'];
@@ -120,7 +121,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
     } catch (e) {
       print('Failed to delete expired stories: $e');
       _alertService.showToast(
-        text: 'Failed to delete expired stories',
+        text: 'expired_status'.tr(),
         icon: Icons.error,
         color: Colors.red,
       );
@@ -140,7 +141,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
         });
 
         _alertService.showToast(
-          text: 'Send Reply ...',
+          text: 'reply_send'.tr(),
           icon: Icons.check,
           color: Colors.green,
         );
@@ -148,15 +149,15 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
         replyController.clear();
       } catch (e) {
         print('Errorrrrrr $e');
-        // _alertService.showToast(
-        //   text: 'Failed to send reply',
-        //   icon: Icons.error,
-        //   color: Colors.red,
-        // );
+        _alertService.showToast(
+          text: 'reply_error'.tr(),
+          icon: Icons.error,
+          color: Colors.red,
+        );
       }
     } else {
       _alertService.showToast(
-        text: 'Please enter a reply',
+        text: 'reply'.tr(),
         icon: Icons.error,
         color: Colors.red,
       );
@@ -165,7 +166,10 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
 
   Future<void> markStoryAsSeen(String storyId) async {
     try {
-      await FirebaseFirestore.instance.collection('stories').doc(storyId).update({
+      await FirebaseFirestore.instance
+          .collection('stories')
+          .doc(storyId)
+          .update({
         'seenBy': FieldValue.arrayUnion([widget.userProfile.uid]),
       });
 
@@ -173,7 +177,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
     } catch (e) {
       print('Failed to mark story as seen: $e');
       _alertService.showToast(
-        text: 'Failed to mark story as seen',
+        text: 'as_seen'.tr(),
         icon: Icons.error,
         color: Colors.red,
       );
@@ -237,8 +241,10 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
                     children: [
                       Text(
                         widget.userProfile.name ?? '-',
-                        style: StyleText(color: Colors.white,
-                          fontSize: 15,),
+                        style: StyleText(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
                       ),
                     ],
                   ),
@@ -273,7 +279,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
                           border: OutlineInputBorder(),
                           filled: true,
                           fillColor: Colors.grey.withOpacity(0.3),
-                          hintText: 'Reply...',
+                          hintText: 'hint_reply'.tr(),
                           hintStyle: StyleText(color: Colors.white)),
                     ),
                   ),

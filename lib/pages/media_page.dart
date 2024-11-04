@@ -1,5 +1,6 @@
 import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class MediaPage extends StatefulWidget {
@@ -101,7 +102,7 @@ class _MediaPageState extends State<MediaPage> {
                                 : Colors.grey.shade200,
                           ),
                           child: Text(
-                            'Media',
+                            'media'.tr(),
                             style: StyleText(fontSize: 16,
                               color: _selectedIndex == 0
                                   ? Colors.white : Theme.of(context).colorScheme.primary,),
@@ -127,7 +128,7 @@ class _MediaPageState extends State<MediaPage> {
                                 : Colors.grey.shade200,
                           ),
                           child: Text(
-                            'Document',
+                            'dokumen'.tr(),
                             style: StyleText(fontSize: 16,
                               color: _selectedIndex == 1
                                   ? Colors.white : Theme.of(context).colorScheme.primary,),
@@ -212,7 +213,7 @@ class _MediaPageState extends State<MediaPage> {
             );
           },
           errorBuilder: (context, error, stackTrace) {
-            return Text('Failed to load image');
+            return Text('error_image'.tr(), style: StyleText(color: Colors.grey),);
           },
         );
       },
@@ -225,20 +226,20 @@ class _MediaPageState extends State<MediaPage> {
       itemCount: documentUrls.length,
       itemBuilder: (context, index) {
         final url = documentUrls[index];
-        return Image.network(url); // Misalnya hanya menampilkan gambar
+        return Image.network(url);
       },
     );
   }
 
   Widget Media() {
     return Center(
-      child: Text('Media'),
+      child: Text('media'.tr(), style: StyleText(),),
     );
   }
 
   Widget Document() {
     return Center(
-      child: Text('Document'),
+      child: Text('dokumen'.tr(), style: StyleText(),),
     );
   }
 }

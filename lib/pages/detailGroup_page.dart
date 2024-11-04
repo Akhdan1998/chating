@@ -271,7 +271,7 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                     Navigator.pop(context);
                     _showModalBottomSheet(context);
                   },
-                  leading: Text('add_members'.tr(), style: StyleText(),),
+                  leading: Text('add_member'.tr(), style: StyleText(),),
                   trailing: Icon(
                     Icons.add,
                     color: Theme.of(context).colorScheme.primary,
