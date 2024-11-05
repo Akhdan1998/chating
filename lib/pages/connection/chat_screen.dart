@@ -2,7 +2,6 @@ import 'package:chating/utils.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ChatScreen extends StatefulWidget {
   final Contact contact; // The entire contact object

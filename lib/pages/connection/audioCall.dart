@@ -173,7 +173,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
         onError: (ErrorCodeType err, String msg) {
           print('Errorrrrrrrrrrrrr: $err - $msg');
           _alertService.showToast(
-            text: 'Error: $err - $msg',
+            text: 'error'.tr(),
             icon: Icons.error,
             color: Colors.red,
           );
@@ -230,7 +230,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
     final status = await [Permission.microphone].request();
     if (status[Permission.microphone] != PermissionStatus.granted) {
       _alertService.showToast(
-          text: 'Microphone permission is required.',
+          text: 'permission_microphone'.tr(),
           icon: Icons.warning,
           color: Colors.yellowAccent);
     }
@@ -301,14 +301,14 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             children: [
               Text(
                 widget.userProfile.name!,
-                style: StyleText(color: Colors.white,
+                style: StyleText(
+                  color: Colors.white,
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
-                _remoteUid != null
-                    ? _formatDuration(_secondsElapsed)
-                    : ''.tr(),
+                _remoteUid != null ? _formatDuration(_secondsElapsed) : ''.tr(),
                 style: StyleText(color: Colors.white),
               ),
             ],

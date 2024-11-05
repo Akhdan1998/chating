@@ -133,5 +133,7 @@
   "reply_error": "Failed to send reply",
   "reply_send": "Send Reply...",
   "as_seen": "Failed to mark status as seen",
-  "hint_reply": "Reply..."
+  "hint_reply": "Reply...",
+
+  "error": "Error"
 }

@@ -21,7 +21,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
@@ -324,8 +323,10 @@ class _ChatPageState extends State<ChatPage> {
           actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
           title: Text(
             'del'.tr(),
-            style: StyleText(fontSize: 16,
-              fontWeight: FontWeight.bold,),
+            style: StyleText(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: Text(
             'desk_del'.tr(),
@@ -338,8 +339,10 @@ class _ChatPageState extends State<ChatPage> {
               },
               child: Text(
                 'no'.tr(),
-                style: StyleText(color: Colors.redAccent,
-                  fontWeight: FontWeight.bold,),
+                style: StyleText(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             TextButton(
@@ -349,8 +352,10 @@ class _ChatPageState extends State<ChatPage> {
               },
               child: Text(
                 'yes'.tr(),
-                style: StyleText(color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,),
+                style: StyleText(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -380,7 +385,10 @@ class _ChatPageState extends State<ChatPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text('copy'.tr(), style: StyleText(),),
+                title: Text(
+                  'copy'.tr(),
+                  style: StyleText(),
+                ),
                 trailing: Icon(
                   Icons.copy,
                   size: 19,
@@ -559,15 +567,19 @@ class _ChatPageState extends State<ChatPage> {
                       Text(
                         widget.chatUser.name.toString(),
                         overflow: TextOverflow.ellipsis,
-                        style: StyleText(color: Colors.white,
+                        style: StyleText(
+                          color: Colors.white,
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       _isVisible
                           ? Text(
                               'info'.tr(),
-                              style: StyleText(color: Colors.white,
-                                fontSize: 11,),
+                              style: StyleText(
+                                color: Colors.white,
+                                fontSize: 11,
+                              ),
                             )
                           : _showLastSeen
                               ? lastSeen()
@@ -676,8 +688,10 @@ class _ChatPageState extends State<ChatPage> {
                     spans.add(
                       TextSpan(
                         text: text.substring(lastMatchEnd, match.start),
-                        style: StyleText(color: Colors.black87,
-                          fontSize: 15,),
+                        style: StyleText(
+                          color: Colors.black87,
+                          fontSize: 15,
+                        ),
                       ),
                     );
                   }
@@ -696,8 +710,10 @@ class _ChatPageState extends State<ChatPage> {
                 if (lastMatchEnd < text.length) {
                   spans.add(TextSpan(
                     text: text.substring(lastMatchEnd),
-                    style: StyleText(color: Colors.black87,
-                      fontSize: 15,),
+                    style: StyleText(
+                      color: Colors.black87,
+                      fontSize: 15,
+                    ),
                   ));
                 }
 
@@ -779,8 +795,10 @@ class _ChatPageState extends State<ChatPage> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         DateFormat('HH:mm').format(message.createdAt),
-                        style: StyleText(color: Colors.black87,
-                          fontSize: 12,),
+                        style: StyleText(
+                          color: Colors.black87,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],
@@ -817,8 +835,10 @@ class _ChatPageState extends State<ChatPage> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         DateFormat('HH:mm').format(message.createdAt),
-                        style: StyleText(color: Colors.black87,
-                          fontSize: 12,),
+                        style: StyleText(
+                          color: Colors.black87,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],
@@ -836,8 +856,10 @@ class _ChatPageState extends State<ChatPage> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         DateFormat('HH:mm').format(message.createdAt),
-                        style: StyleText(color: Colors.black87,
-                          fontSize: 12,),
+                        style: StyleText(
+                          color: Colors.black87,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],
@@ -981,8 +1003,10 @@ class _ChatPageState extends State<ChatPage> {
 
           return Text(
             lastSeenMessage,
-            style: StyleText(color: Colors.white,
-              fontSize: 11,),
+            style: StyleText(
+              color: Colors.white,
+              fontSize: 11,
+            ),
           );
         }
 
@@ -1500,14 +1524,18 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
           children: [
             Text(
               widget.chatUser.name.toString(),
-              style: StyleText(color: Colors.white,
+              style: StyleText(
+                color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               day,
-              style: StyleText(color: Colors.white,
-                fontSize: 10,),
+              style: StyleText(
+                color: Colors.white,
+                fontSize: 10,
+              ),
             ),
           ],
         ),
@@ -1535,9 +1563,11 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(color: Colors.white,
+                          style: StyleText(
+                            color: Colors.white,
                             fontSize: 7,
-                            fontWeight: FontWeight.bold,),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )
@@ -1667,14 +1697,18 @@ class _PDFViewPageState extends State<PDFViewPage> {
           children: [
             Text(
               widget.fileName.toString(),
-              style: StyleText(color: Colors.white,
+              style: StyleText(
+                color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               day,
-              style: StyleText(color: Colors.white,
-                fontSize: 10,),
+              style: StyleText(
+                color: Colors.white,
+                fontSize: 10,
+              ),
             ),
           ],
         ),
@@ -1704,9 +1738,11 @@ class _PDFViewPageState extends State<PDFViewPage> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(color: Colors.white,
+                          style: StyleText(
+                            color: Colors.white,
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )
@@ -1926,14 +1962,18 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
           children: [
             Text(
               widget.chatUser.name.toString(),
-              style: StyleText(color: Colors.white,
+              style: StyleText(
+                color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.bold,),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               day,
-              style: StyleText(color: Colors.white,
-                fontSize: 10,),
+              style: StyleText(
+                color: Colors.white,
+                fontSize: 10,
+              ),
             ),
           ],
         ),
@@ -1961,9 +2001,11 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                         ),
                         Text(
                           '${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(color: Colors.white,
+                          style: StyleText(
+                            color: Colors.white,
                             fontSize: 7,
-                            fontWeight: FontWeight.bold,),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )

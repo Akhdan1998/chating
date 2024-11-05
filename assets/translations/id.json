@@ -46,7 +46,7 @@
   "info_grup": "Klik di sini untuk info grup",
   "out_grup": "Anda telah meninggalkan grup",
   "wait": "Menunggu peserta lainnya...",
-  "you": "Kamu",
+  "you": "Anda",
   "create_grup": "Buat Grup",
   "relog": "Pengguna tidak diautentikasi atau koleksi pengguna tidak diinisialisasi. Harap keluar dan masuk kembali.",
   "del_with": "Hapus obrolan dengan",
@@ -133,5 +133,7 @@
   "reply_error": "Gagal mengirim balasan",
   "reply_send": "Kirim Balasan...",
   "as_seen": "Gagal menandai status sebagai telah dilihat",
-  "hint_reply": "Balas..."
+  "hint_reply": "Balas...",
+
+  "error": "Error"
 }
