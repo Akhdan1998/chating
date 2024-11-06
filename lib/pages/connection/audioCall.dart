@@ -58,6 +58,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       'callerName': widget.userProfile.name,
       'callerImage': widget.userProfile.pfpURL,
       'callerPhoneNumber': widget.userProfile.phoneNumber,
+      'callerUID': widget.userProfile.uid,
+      'callerEmail': widget.userProfile.email,
       'callDate': Timestamp.now(),
       'callDuration': _formatDuration(_secondsElapsed),
       'type': 'voice',
@@ -308,7 +310,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
                 ),
               ),
               Text(
-                _remoteUid != null ? _formatDuration(_secondsElapsed) : ''.tr(),
+                _remoteUid != null ? _formatDuration(_secondsElapsed) : 'ringing'.tr(),
                 style: StyleText(color: Colors.white),
               ),
             ],

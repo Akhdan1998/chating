@@ -171,8 +171,8 @@ class AllCallsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+    return Container(
+      padding:  EdgeInsets.symmetric(horizontal: 15),
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('call_history')
@@ -205,8 +205,7 @@ class AllCallsPage extends StatelessWidget {
                   DateFormat.yMMMd(context.locale.toString()).format(callDate);
               final String formattedTime = DateFormat.Hm().format(callDate);
               final String callType = call['type'] ?? 'voice'; // Use raw value
-              final String localizedCallType =
-                  callType == 'video' ? tr('video') : tr('voice');
+              // final String localizedCallType = callType == 'video' ? tr('video') : tr('voice');
 
               return CallItem(
                 name: call['callerName'] ?? '',

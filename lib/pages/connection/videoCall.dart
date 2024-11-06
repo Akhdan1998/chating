@@ -41,6 +41,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       'callerName': widget.userProfile.name,
       'callerImage': widget.userProfile.pfpURL,
       'callerPhoneNumber': widget.userProfile.phoneNumber,
+      'callerUID': widget.userProfile.uid,
+      'callerEmail': widget.userProfile.email,
       'callDate': Timestamp.now(),
       'callDuration': _formatDuration(_secondsElapsed),
       'type': 'video',
