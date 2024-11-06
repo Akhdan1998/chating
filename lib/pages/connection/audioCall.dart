@@ -65,6 +65,10 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       'type': 'voice',
     };
 
+    callData.forEach((key, value) {
+      print('$key: $value');
+    });
+
     await FirebaseFirestore.instance.collection('call_history').add(callData);
   }
 

@@ -79,7 +79,7 @@ class _ChatPageState extends State<ChatPage> {
   Future<String> _getPhoneNumber(String userId) async {
     var firestore = FirebaseFirestore.instance;
     var userDoc = await firestore.collection('users').doc(userId).get();
-    return userDoc.data()?['phoneNumber'] ?? '';
+    return userDoc.data()!['phoneNumber'] ?? '';
   }
 
   void _startVideoCall() async {

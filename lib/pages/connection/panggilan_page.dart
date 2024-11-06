@@ -1,9 +1,8 @@
-import 'package:chating/main.dart';
 import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../consts.dart';
 
@@ -167,7 +166,7 @@ class _PanggilanPageState extends State<PanggilanPage> {
 }
 
 class AllCallsPage extends StatelessWidget {
-  const AllCallsPage({super.key});
+  AllCallsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +184,7 @@ class AllCallsPage extends StatelessWidget {
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
               child: Text(
-                tr('call_history'),
+                'call_history'.tr(),
                 style: StyleText(color: Colors.grey),
               ),
             );
@@ -195,7 +194,7 @@ class AllCallsPage extends StatelessWidget {
 
           return ListView.separated(
             itemCount: callHistory.length,
-            separatorBuilder: (context, index) => const Divider(height: 1),
+            separatorBuilder: (context, index) => Divider(height: 1),
             itemBuilder: (context, index) {
               final call = callHistory[index].data() as Map<String, dynamic>;
               final DateTime callDate =
@@ -345,192 +344,6 @@ class _CallItemState extends State<CallItem> {
     );
   }
 }
-
-// class AllCallsPage extends StatelessWidget {
-//   const AllCallsPage({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: EdgeInsets.only(left: 15, right: 15),
-//       child: Expanded(
-//         child: StreamBuilder<QuerySnapshot>(
-//           stream: FirebaseFirestore.instance
-//               .collection('call_history')
-//               .orderBy('callDate', descending: true)
-//               .snapshots(),
-//           builder: (context, snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return Center(child: CircularProgressIndicator());
-//             }
-//             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-//               return Center(child: Text('call_history'.tr(), style: StyleText(color: Colors.grey),));
-//             }
-//
-//             final callHistory = snapshot.data!.docs;
-//
-//             return ListView.builder(
-//               itemCount: callHistory.length * 2 - 1,
-//               itemBuilder: (context, index) {
-//                 if (index.isEven) {
-//                   final call =
-//                       callHistory[index ~/ 2].data() as Map<String, dynamic>;
-//                   final DateTime callDate =
-//                       (call['callDate'] as Timestamp?)?.toDate() ??
-//                           DateTime.now();
-//                   final String dayDate = DateFormat('EEEE, d').format(callDate);
-//                   final String dayTime = DateFormat.Hm().format(callDate);
-//
-//                   return CallItem(
-//                     name: call['callerName'] ?? '',
-//                     date: dayDate,
-//                     time: dayTime,
-//                     callType: call['type'] ?? '',
-//                     avatarUrl: call['callerImage'] ?? '',
-//                     callerPhoneNumber: call['callerPhoneNumber'] ?? '',
-//                     duration: call['duration'] ?? 0,
-//                   );
-//                 } else {
-//                   // If the index is odd, return a Divider
-//                   return Divider(height: 1);
-//                 }
-//               },
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-// class CallItem extends StatefulWidget {
-//   final String name;
-//   final String date;
-//   final String time;
-//   final String callType;
-//   final String avatarUrl;
-//   final String callerPhoneNumber;
-//   final int duration;
-//
-//   CallItem({
-//     required this.name,
-//     required this.date,
-//     required this.time,
-//     required this.callType,
-//     required this.avatarUrl,
-//     required this.callerPhoneNumber,
-//     required this.duration,
-//     super.key,
-//   });
-//
-//   @override
-//   State<CallItem> createState() => _CallItemState();
-// }
-
-// class _CallItemState extends State<CallItem> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () {},
-//       child: Container(
-//         padding: EdgeInsets.all(10),
-//         child: Row(
-//           children: [
-//             CircleAvatar(
-//               child: widget.avatarUrl.isEmpty
-//                   ? Icon(Icons.person, color: Colors.white)
-//                   : null,
-//               backgroundImage: widget.avatarUrl.isNotEmpty
-//                   ? NetworkImage(widget.avatarUrl)
-//                   : null,
-//             ),
-//             SizedBox(width: 10),
-//             Expanded(
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 children: [
-//                   Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Text(
-//                         widget.name.isNotEmpty ? widget.name : '',
-//                         style: StyleText(fontSize: 16),
-//                       ),
-//                       SizedBox(height: 5),
-//                       Row(
-//                         children: [
-//                           Icon(
-//                             widget.callType == 'voice'
-//                                 ? Icons.call
-//                                 : Icons.videocam,
-//                             size: 15,
-//                           ),
-//                           SizedBox(width: 5),
-//                           Text(
-//                             widget.callType,
-//                             style: StyleText(fontSize: 13),
-//                           ),
-//                         ],
-//                       ),
-//                     ],
-//                   ),
-//                   Row(
-//                     children: [
-//                       Column(
-//                         children: [
-//                           Text(
-//                             widget.date.isNotEmpty ? widget.date : '',
-//                             style: StyleText(fontSize: 10),
-//                           ),
-//                           Text(
-//                             widget.time.isNotEmpty ? widget.time : '',
-//                             style: StyleText(fontSize: 9),
-//                           ),
-//                         ],
-//                       ),
-//                       IconButton(
-//                         onPressed: () {
-//                           showGeneralDialog(
-//                             context: context,
-//                             barrierDismissible: true,
-//                             barrierLabel: '',
-//                             barrierColor: Colors.black54,
-//                             transitionDuration: Duration(milliseconds: 300),
-//                             pageBuilder: (context, anim1, anim2) {
-//                               return AlertDialog(
-//                                 content: Column(
-//                                   mainAxisSize: MainAxisSize.min,
-//                                   children: [
-//                                     Text(
-//                                       widget.duration.toString(),
-//                                       style: StyleText(fontSize: 13),
-//                                     ),
-//                                   ],
-//                                 ),
-//                               );
-//                             },
-//                             transitionBuilder: (context, anim1, anim2, child) {
-//                               return Transform.scale(
-//                                 scale: anim1.value,
-//                                 child: child,
-//                               );
-//                             },
-//                           );
-//                         },
-//                         icon: Icon(Icons.info_outline, size: 20),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class MissedCallsPage extends StatelessWidget {
   const MissedCallsPage({super.key});
