@@ -85,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.pop(context);
               },
               child: Text(
-                'No',
+                'no'.tr(),
                 style: StyleText(
                   color: Colors.redAccent,
                   fontWeight: FontWeight.bold,
@@ -100,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       await SharedPreferences.getInstance();
                   await prefs.clear();
                   _alertService.showToast(
-                    text: 'Successfully logged out!',
+                    text: 'success_logout'.tr(),
                     icon: Icons.check,
                     color: Colors.green,
                   );
@@ -108,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
               },
               child: Text(
-                'Yes',
+                'yes'.tr(),
                 style: StyleText(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
           title: Text(
-              'You need to log in again if you want to continue previous activities.',
+              'alert_logout'.tr(),
               style: StyleText(fontSize: 15)),
         );
       },
@@ -175,8 +175,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           Divider(thickness: 5),
                           _buildListTile(
                             icon: Icons.key,
-                            title: 'Change password',
-                            subtitle: 'Change your password.',
+                            title: 'change_password'.tr(),
+                            subtitle: 'change_password'.tr(),
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -198,8 +198,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           Divider(endIndent: 20, indent: 20),
                           _buildListTile(
                             icon: Icons.logout,
-                            title: 'Logout',
-                            subtitle: 'Exit this account.',
+                            title: 'logout'.tr(),
+                            subtitle: 'deskrip_logout'.tr(),
                             onTap: _showLogoutDialog,
                             iconColor: Colors.red,
                           ),

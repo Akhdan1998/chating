@@ -71,7 +71,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
   void _loadUsers() async {
     var userProfiles = await _databaseService.getUserProfiles().first;
     setState(() {
-      _users = userProfiles.docs.map((doc) => doc.data() as UserProfile).toList();
+      _users =
+          userProfiles.docs.map((doc) => doc.data() as UserProfile).toList();
     });
   }
 
@@ -81,9 +82,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
     });
     var userProfiles = await _databaseService.getUserProfiles().first;
     setState(() {
-      _users = userProfiles.docs
-          .map((doc) => doc.data() as UserProfile)
-          .toList();
+      _users =
+          userProfiles.docs.map((doc) => doc.data() as UserProfile).toList();
     });
     showModalBottomSheet<void>(
       context: context,
@@ -108,8 +108,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Add members',
-                        style: TextStyle(
+                        'add_member'.tr(),
+                        style: StyleText(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -120,8 +120,10 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                           itemCount: _users.length,
                           itemBuilder: (context, index) {
                             UserProfile user = _users[index];
-                            bool isSelected = selectedUserIndexes.contains(index);
-                            bool isMember = widget.grup.members.contains(user.uid);
+                            bool isSelected =
+                                selectedUserIndexes.contains(index);
+                            bool isMember =
+                                widget.grup.members.contains(user.uid);
                             if (isMember) {
                               return SizedBox.shrink(); // Skip rendering
                             }
@@ -147,8 +149,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                       decoration: BoxDecoration(
                                         color: isSelected
                                             ? Theme.of(context)
-                                            .colorScheme
-                                            .primary
+                                                .colorScheme
+                                                .primary
                                             : Colors.white,
                                         border: Border.all(
                                           width: 1,
@@ -159,9 +161,11 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                     ),
                                     SizedBox(width: 10),
                                     Container(
-                                      width: MediaQuery.of(context).size.width - 70,
+                                      width: MediaQuery.of(context).size.width -
+                                          70,
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(user.name ?? '-'),
                                           Container(
@@ -170,7 +174,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
                                               image: DecorationImage(
-                                                image: NetworkImage(user.pfpURL!),
+                                                image:
+                                                    NetworkImage(user.pfpURL!),
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -237,7 +242,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
   }
 
   Future<void> _addMembersToGroup() async {
-    List<String> selectedUserIds = selectedUserIndexes.map((index) => _users[index].uid!).toList();
+    List<String> selectedUserIds =
+        selectedUserIndexes.map((index) => _users[index].uid!).toList();
     await _databaseService.addMembersToGroup(widget.grup.id, selectedUserIds);
 
     final updatedGroup = await _databaseService.getGroupById(widget.grup.id);
@@ -248,7 +254,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime date = DateFormat('yyyy-MM-dd hh:mm:ss').parse(widget.grup.createdAt.toString());
+    DateTime date = DateFormat('yyyy-MM-dd hh:mm:ss')
+        .parse(widget.grup.createdAt.toString());
     String date_n = DateFormat('yMMMMd').format(date);
     return Scaffold(
       appBar: AppBar(
@@ -271,7 +278,10 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                     Navigator.pop(context);
                     _showModalBottomSheet(context);
                   },
-                  leading: Text('add_member'.tr(), style: StyleText(),),
+                  leading: Text(
+                    'add_member'.tr(),
+                    style: StyleText(),
+                  ),
                   trailing: Icon(
                     Icons.add,
                     color: Theme.of(context).colorScheme.primary,
@@ -285,9 +295,11 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
         title: Text(
           'group_info'.tr(),
           overflow: TextOverflow.ellipsis,
-          style: StyleText(color: Colors.white,
+          style: StyleText(
+            color: Colors.white,
             fontSize: 18,
-            fontWeight: FontWeight.bold,),
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: LayoutBuilder(
@@ -311,8 +323,7 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                           content: Image.network(widget.grup.imageUrl),
                         );
                       },
-                      transitionBuilder:
-                          (context, anim1, anim2, child) {
+                      transitionBuilder: (context, anim1, anim2, child) {
                         return Transform.scale(
                           scale: anim1.value,
                           child: child,
@@ -349,8 +360,11 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  'Group • ${widget.grup.members.length} Members',
-                  style: TextStyle(
+                  'grup'.tr() +
+                      '•' +
+                      ' ${widget.grup.members.length} ' +
+                      'members'.tr(),
+                  style: StyleText(
                     fontSize: 15,
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -386,8 +400,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Media dan Document',
-                                style: TextStyle(
+                                'media_document'.tr(),
+                                style: StyleText(
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
@@ -395,15 +409,17 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                 children: [
                                   Text(
                                     '6',
-                                    style: TextStyle(
-                                      color: Theme.of(context).colorScheme.primary,
+                                    style: StyleText(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                   SizedBox(width: 10),
                                   Icon(
                                     Icons.arrow_forward_ios_rounded,
                                     size: 20,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                 ],
                               ),
@@ -445,8 +461,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Notification',
-                                style: TextStyle(
+                                'notification'.tr(),
+                                style: StyleText(
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
@@ -467,8 +483,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                   alignment: Alignment.centerLeft,
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    '${widget.grup.members.length} Members',
-                    style: TextStyle(
+                    '${widget.grup.members.length} ' + 'members'.tr(),
+                    style: StyleText(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
@@ -488,10 +504,10 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: widget.grup.members.map((memberId) {
                       final userProfile = widget.users.firstWhere(
-                            (user) => user.uid == memberId,
+                        (user) => user.uid == memberId,
                         orElse: () => UserProfile(
                           uid: memberId,
-                          name: 'You',
+                          name: 'you'.tr(),
                           pfpURL: '',
                         ),
                       );
@@ -501,7 +517,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                           Row(
                             children: [
                               CircleAvatar(
-                                backgroundImage: NetworkImage(userProfile.pfpURL ?? ''),
+                                backgroundImage:
+                                    NetworkImage(userProfile.pfpURL ?? ''),
                               ),
                               SizedBox(width: 10),
                               Column(
@@ -509,15 +526,11 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                 children: [
                                   Text(
                                     userProfile.name.toString(),
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                    ),
+                                    style: StyleText(fontSize: 15),
                                   ),
                                   Text(
                                     userProfile.phoneNumber ?? '-',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                    ),
+                                    style: StyleText(fontSize: 12),
                                   ),
                                 ],
                               ),
@@ -547,27 +560,31 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
+                                actionsPadding: EdgeInsets.only(
+                                    top: 1, bottom: 5, right: 10),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
                                     child: Text(
-                                      'Cancel',
-                                      style: GoogleFonts.poppins().copyWith(
+                                      'cancel'.tr(),
+                                      style: StyleText(
                                         color: Colors.redAccent,
                                       ),
                                     ),
                                   ),
                                   TextButton(
                                     onPressed: () async {
-                                      await widget.onDeleteAllMessages(widget.grup.id);
+                                      await widget
+                                          .onDeleteAllMessages(widget.grup.id);
                                     },
                                     child: Text(
-                                      'Yes',
-                                      style: GoogleFonts.poppins().copyWith(
-                                        color: Theme.of(context).colorScheme.primary,
+                                      'yes'.tr(),
+                                      style: StyleText(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -576,9 +593,10 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                 title: Column(
                                   children: [
                                     Text(
-                                      'Clear All Messages from "${widget.grup.name}"?',
+                                      'clear_all_messages'.tr() +
+                                          '"${widget.grup.name}"?',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 15),
+                                      style: StyleText(fontSize: 15),
                                     ),
                                     SizedBox(height: 5),
                                     Container(
@@ -588,10 +606,12 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                         color: Colors.deepPurple.shade100,
                                       ),
                                       child: Text(
-                                        'This chat will be empty, but will remain in your chat list.',
+                                        'chat_will_be_empty'.tr(),
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: Theme.of(context).colorScheme.primary,
+                                        style: StyleText(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -607,10 +627,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                           width: constraints.maxWidth,
                           color: Colors.transparent,
                           child: Text(
-                            'Clear Chat',
-                            style: TextStyle(
-                              color: Colors.red,
-                            ),
+                            'clear_chat'.tr(),
+                            style: StyleText(color: Colors.red),
                           ),
                         ),
                       ),
@@ -621,17 +639,16 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
+                                actionsPadding: EdgeInsets.only(
+                                    top: 1, bottom: 5, right: 10),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
                                     child: Text(
-                                      'Cancel',
-                                      style: GoogleFonts.poppins().copyWith(
-                                        color: Colors.redAccent,
-                                      ),
+                                      'cancel'.tr(),
+                                      style: StyleText(color: Colors.redAccent),
                                     ),
                                   ),
                                   TextButton(
@@ -640,9 +657,11 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                       Navigator.pop(context);
                                     },
                                     child: Text(
-                                      'Yes',
-                                      style: GoogleFonts.poppins().copyWith(
-                                        color: Theme.of(context).colorScheme.primary,
+                                      'yes'.tr(),
+                                      style: StyleText(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -651,9 +670,10 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                 title: Column(
                                   children: [
                                     Text(
-                                      'Do you want to exit the group "${widget.grup.name}"?',
+                                      'exit_grup'.tr() +
+                                          '"${widget.grup.name}"?',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 15),
+                                      style: StyleText(fontSize: 15),
                                     ),
                                     SizedBox(height: 5),
                                     Container(
@@ -663,10 +683,12 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                         color: Colors.deepPurple.shade100,
                                       ),
                                       child: Text(
-                                        'Only group admins will be notified that you leave the group.',
+                                        'admins_will_be_notified'.tr(),
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: Theme.of(context).colorScheme.primary,
+                                        style: StyleText(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -682,10 +704,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                           width: constraints.maxWidth,
                           color: Colors.transparent,
                           child: Text(
-                            'Exit Group',
-                            style: TextStyle(
-                              color: Colors.red,
-                            ),
+                            'out'.tr(),
+                            style: StyleText(color: Colors.red),
                           ),
                         ),
                       ),
@@ -700,8 +720,8 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Created on $date_n.',
-                        style: TextStyle(
+                        'created_on'.tr() + '$date_n.',
+                        style: StyleText(
                           fontSize: 10,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -743,13 +763,13 @@ class ButtonFitur extends StatelessWidget {
           children: [
             Icon(
               fitur.icon,
-              size:  buttonSize * 0.3,
+              size: buttonSize * 0.3,
               color: Theme.of(context).colorScheme.primary,
             ),
             SizedBox(height: 5),
             Text(
               fitur.title ?? '-',
-              style: TextStyle(
+              style: StyleText(
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),

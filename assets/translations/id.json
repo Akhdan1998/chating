@@ -134,6 +134,18 @@
   "reply_send": "Kirim Balasan...",
   "as_seen": "Gagal menandai status sebagai telah dilihat",
   "hint_reply": "Balas...",
-
-  "error": "Error"
+  "error": "Kesalahan",
+  "grup": "Grup",
+  "members": "anggota",
+  "clear_all_messages": "Hapus Semua Pesan dari ",
+  "chat_will_be_empty": "Obrolan ini akan kosong, tetapi akan tetap ada di daftar obrolan Anda.",
+  "exit_grup": "Apakah Anda ingin keluar dari grup ",
+  "admins_will_be_notified": "Hanya admin grup yang akan diberitahu jika Anda meninggalkan grup.",
+  "out": "Keluar dari Grup",
+  "created_on": "Dibuat pada",
+  "change_password": "Ubah kata sandi",
+  "logout": "Keluar",
+  "deskrip_logout": "Keluar dari akun ini.",
+  "success_logout": "Berhasil keluar!",
+  "alert_logout": "Anda perlu masuk lagi jika ingin melanjutkan aktivitas sebelumnya."
 }

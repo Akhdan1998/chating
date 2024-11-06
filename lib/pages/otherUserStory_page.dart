@@ -192,7 +192,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
         loadingWidget: Center(
           child: CircularProgressIndicator(),
         ),
-        errorWidget: Text('Failed to load story'),
+        errorWidget: Text('failed_story'.tr(), style: StyleText(),),
         url: url,
         controller: _storyController,
       );
