@@ -128,7 +128,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
           onError: (ErrorCodeType err, String msg) {
             print('Error: $err - $msg');
             _alertService.showToast(
-                text: '$err - $msg',
+                text: 'error'.tr(),
                 icon: Icons.error,
                 color: Colors.red);
           },
@@ -177,7 +177,7 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
       _alertService.showToast(
           text: 'permission_microphone'.tr(),
           icon: Icons.warning,
-          color: Colors.yellowAccent);
+          color: Colors.yellowAccent,);
     }
   }
 

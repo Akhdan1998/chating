@@ -170,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                               color: Colors.transparent,
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                'pass'.tr(),
+                                forgotPass ? 'in'.tr() : 'pass'.tr(),
                                 style: StyleText(
                                   color: Colors.white,
                                   fontSize: 12,

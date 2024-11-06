@@ -77,8 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
       transitionDuration: Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return AlertDialog(
-          actionsPadding: EdgeInsets.only(
-              top: 5, bottom: 5, right: 10),
+          actionsPadding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
           actions: [
             TextButton(
               onPressed: () {
@@ -116,13 +115,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ],
-          title: Text(
-              'alert_logout'.tr(),
-              style: StyleText(fontSize: 15)),
+          title: Text('alert_logout'.tr(), style: StyleText(fontSize: 15)),
         );
       },
-      transitionBuilder:
-          (context, anim1, anim2, child) {
+      transitionBuilder: (context, anim1, anim2, child) {
         return Transform.scale(
           scale: anim1.value,
           child: child,
@@ -138,9 +134,11 @@ class _ProfilePageState extends State<ProfilePage> {
         automaticallyImplyLeading: false,
         title: Text(
           'setting'.tr(),
-          style: StyleText(fontSize: 30,
+          style: StyleText(
+            fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: Colors.white,),
+            color: Colors.white,
+          ),
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -168,6 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Stack(
                   children: [
                     Container(
+                      height: MediaQuery.sizeOf(context).height,
                       padding: EdgeInsets.only(top: 100),
                       color: Colors.white,
                       child: Column(
@@ -191,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           _buildListTile(
                             icon: Icons.settings,
                             title: 'setting'.tr(),
-                            subtitle: 'Notifications, Language, etc.',
+                            subtitle: 'other'.tr(),
                             onTap: () {},
                             iconColor: Colors.blue,
                           ),
@@ -236,11 +235,25 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Row(
                           children: [
                             GestureDetector(
-                              onTap: () => showDialog(
+                              onTap: () => showGeneralDialog(
+                                barrierColor: Colors.transparent,
                                 context: context,
-                                builder: (context) => AlertDialog(
-                                  content: Image.network(userProfile.pfpURL!),
-                                ),
+                                barrierDismissible: true,
+                                barrierLabel: '',
+                                transitionDuration: Duration(milliseconds: 300),
+                                pageBuilder: (context, anim1, anim2) {
+                                  return AlertDialog(
+                                    backgroundColor: Colors.transparent,
+                                    content: Image.network(userProfile.pfpURL!),
+                                  );
+                                },
+                                transitionBuilder:
+                                    (context, anim1, anim2, child) {
+                                  return Transform.scale(
+                                    scale: anim1.value,
+                                    child: child,
+                                  );
+                                },
                               ),
                               child: CircleAvatar(
                                 radius: 30,
@@ -255,7 +268,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   Text(
                                     userProfile.name ?? '-',
-                                    style: StyleText(fontSize: 16, fontWeight: FontWeight.bold),
+                                    style: StyleText(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     userProfile.email ?? '-',

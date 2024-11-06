@@ -225,7 +225,7 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                       color: Colors.transparent,
                       width: MediaQuery.sizeOf(context).width,
                       child: Text(
-                        'blokir' + '${widget.chatUser.name}',
+                        'blokir'.tr() + '${widget.chatUser.name}',
                         style: StyleText(color: Colors.red),
                       ),
                     ),

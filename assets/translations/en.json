@@ -142,10 +142,19 @@
   "exit_grup": "Do you want to leave the group? ",
   "admins_will_be_notified": "Only group admins will be notified if you leave the group.",
   "out": "Exit Group",
-  "created_on": "Created On",
+  "created_on": "Created On ",
   "change_password": "Change password",
   "logout": "Log out",
   "deskrip_logout": "Log out of this account.",
   "success_logout": "Successfully exited!",
-  "alert_logout": "You need to log in again if you want to continue your previous activity."
+  "alert_logout": "You need to log in again if you want to continue your previous activity.",
+  "search": "Search",
+  "video": "Videos",
+  "audio": "Audio",
+  "all_call": "All",
+  "missed": "Missed",
+  "voice": "Voice",
+  "other": "Notifications, Language, etc.",
+  "failed_leave_group": "Failed to leave group:",
+  "failed_create_group": "Failed to create group!"
 }

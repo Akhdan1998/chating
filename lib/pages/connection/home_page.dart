@@ -18,7 +18,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -77,7 +76,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     File file = File(pickedFile.path);
 
-    // Jika media adalah video, langsung upload tanpa kompresi
     if (isVideo) {
       print('Uploading video: ${file.path}');
 
@@ -89,7 +87,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         UploadTask uploadTask = FirebaseStorage.instance
             .ref()
             .child(fileName)
-            .putFile(file); // Unggah file video langsung tanpa kompresi
+            .putFile(file);
 
         TaskSnapshot taskSnapshot = await uploadTask;
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
@@ -100,7 +98,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             FirebaseFirestore.instance.collection('stories').doc(),
             {
               'url': downloadUrl,
-              'type': 'video', // Tambahkan informasi jenis file (video)
+              'type': 'video',
               'serverTimestamp': FieldValue.serverTimestamp(),
               'localTimestamp': localTimestamp,
               'uid': currentUser.currentUser!.uid,
@@ -131,7 +129,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         print('Failed to upload video: $e');
       }
     } else {
-      // Proses kompresi untuk gambar
       print('File size before compression: ${file.lengthSync()} bytes');
 
       final img.Image? image = img.decodeImage(await file.readAsBytes());
@@ -146,7 +143,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       await File(compressedFilePath).writeAsBytes(compressedImage);
       print('File size after compression: ${compressedImage.length} bytes');
 
-      // Nama file untuk gambar
       String fileName =
           'stories/images/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
 
@@ -166,7 +162,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             FirebaseFirestore.instance.collection('stories').doc(),
             {
               'url': downloadUrl,
-              'type': 'image', // Tambahkan informasi jenis file (gambar)
+              'type': 'image',
               'serverTimestamp': FieldValue.serverTimestamp(),
               'localTimestamp': localTimestamp,
               'uid': currentUser.currentUser!.uid,
@@ -199,168 +195,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  //kompress video
-  // Future<void> _pickAndUploadMedia(ImageSource source, bool isVideo) async {
-  //   final ImagePicker _picker = ImagePicker();
-  //   context.loaderOverlay.show();
-  //
-  //   XFile? pickedFile;
-  //
-  //   if (isVideo) {
-  //     pickedFile = await _picker.pickVideo(source: source);
-  //   } else {
-  //     pickedFile = await _picker.pickImage(source: source);
-  //   }
-  //
-  //   if (pickedFile == null) {
-  //     context.loaderOverlay.hide();
-  //     print('No media selected');
-  //     return;
-  //   }
-  //
-  //   File file = File(pickedFile.path);
-  //
-  //   // Jika media adalah video, kompresi sebelum upload
-  //   if (isVideo) {
-  //     print('Original video size: ${file.lengthSync()} bytes');
-  //
-  //     try {
-  //       // Kompresi video
-  //       MediaInfo? compressedVideo = await VideoCompress.compressVideo(
-  //         file.path,
-  //         quality: VideoQuality.MediumQuality, // Pilih kualitas kompresi
-  //         deleteOrigin: false, // Jangan hapus video asli
-  //       );
-  //
-  //       if (compressedVideo == null || compressedVideo.file == null) {
-  //         context.loaderOverlay.hide();
-  //         print('Failed to compress video');
-  //         return;
-  //       }
-  //
-  //       File compressedFile = compressedVideo.file!;
-  //       print('Compressed video size: ${compressedFile.lengthSync()} bytes');
-  //
-  //       // Nama file untuk video yang dikompresi
-  //       String fileName = 'stories/videos/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
-  //
-  //       // Unggah video yang sudah dikompresi
-  //       UploadTask uploadTask = FirebaseStorage.instance
-  //           .ref()
-  //           .child(fileName)
-  //           .putFile(compressedFile);
-  //
-  //       TaskSnapshot taskSnapshot = await uploadTask;
-  //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-  //
-  //       DateTime localTimestamp = DateTime.now();
-  //       await FirebaseFirestore.instance.runTransaction((transaction) async {
-  //         transaction.set(
-  //           FirebaseFirestore.instance.collection('stories').doc(),
-  //           {
-  //             'url': downloadUrl,
-  //             'type': 'video', // Tambahkan informasi jenis file (video)
-  //             'serverTimestamp': FieldValue.serverTimestamp(),
-  //             'localTimestamp': localTimestamp,
-  //             'uid': currentUser.currentUser!.uid,
-  //             'timestamp': localTimestamp,
-  //           },
-  //         );
-  //
-  //         transaction.update(
-  //           FirebaseFirestore.instance
-  //               .collection('users')
-  //               .doc(currentUser.currentUser!.uid),
-  //           {
-  //             'hasUploadedStory': true,
-  //             'latestStoryUrl': downloadUrl,
-  //           },
-  //         );
-  //       });
-  //
-  //       context.loaderOverlay.hide();
-  //       print('Video upload successful: $downloadUrl');
-  //     } catch (e) {
-  //       context.loaderOverlay.hide();
-  //       _alertService.showToast(
-  //         text: e.toString(),
-  //         icon: Icons.error,
-  //         color: Colors.red,
-  //       );
-  //       print('Failed to upload video: $e');
-  //     }
-  //
-  //   } else {
-  //     // Proses kompresi untuk gambar
-  //     print('File size before compression: ${file.lengthSync()} bytes');
-  //
-  //     final img.Image? image = img.decodeImage(await file.readAsBytes());
-  //     if (image == null) {
-  //       context.loaderOverlay.hide();
-  //       print('Failed to decode image');
-  //       return;
-  //     }
-  //
-  //     final compressedImage = img.encodeJpg(image, quality: 50);
-  //     final String compressedFilePath = '${file.path}.jpg';
-  //     await File(compressedFilePath).writeAsBytes(compressedImage);
-  //     print('File size after compression: ${compressedImage.length} bytes');
-  //
-  //     // Nama file untuk gambar
-  //     String fileName = 'stories/images/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
-  //
-  //     try {
-  //       UploadTask uploadTask = FirebaseStorage.instance
-  //           .ref()
-  //           .child(fileName)
-  //           .putFile(File(compressedFilePath));  // Unggah file gambar yang telah dikompresi
-  //
-  //       TaskSnapshot taskSnapshot = await uploadTask;
-  //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-  //
-  //       DateTime localTimestamp = DateTime.now();
-  //       await FirebaseFirestore.instance.runTransaction((transaction) async {
-  //         transaction.set(
-  //           FirebaseFirestore.instance.collection('stories').doc(),
-  //           {
-  //             'url': downloadUrl,
-  //             'type': 'image', // Tambahkan informasi jenis file (gambar)
-  //             'serverTimestamp': FieldValue.serverTimestamp(),
-  //             'localTimestamp': localTimestamp,
-  //             'uid': currentUser.currentUser!.uid,
-  //             'timestamp': localTimestamp,
-  //           },
-  //         );
-  //
-  //         transaction.update(
-  //           FirebaseFirestore.instance
-  //               .collection('users')
-  //               .doc(currentUser.currentUser!.uid),
-  //           {
-  //             'hasUploadedStory': true,
-  //             'latestStoryUrl': downloadUrl,
-  //           },
-  //         );
-  //       });
-  //
-  //       context.loaderOverlay.hide();
-  //       print('Image upload successful: $downloadUrl');
-  //     } catch (e) {
-  //       context.loaderOverlay.hide();
-  //       _alertService.showToast(
-  //         text: e.toString(),
-  //         icon: Icons.error,
-  //         color: Colors.red,
-  //       );
-  //       print('Failed to upload image: $e');
-  //     }
-  //   }
-  // }
-
   Future<void> _requestPermission() async {
     if (await Permission.camera.request().isGranted &&
         await Permission.storage.request().isGranted) {
-      // Permission granted, do nothing
     } else {
       // Handle permission denied
     }
@@ -446,7 +283,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       // );
     } catch (e) {
       _alertService.showToast(
-        text: 'Failed to create group!',
+        text: 'failed_create_group'.tr(),
         icon: Icons.error,
         color: Colors.red,
       );
@@ -714,7 +551,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     MaterialPageRoute(
                                       builder: (context) => ChatScreen(
                                         contact:
-                                            contact, // Pass the entire contact object
+                                            contact,
                                       ),
                                     ),
                                   );
@@ -780,22 +617,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 await _pickAndUploadMedia(ImageSource.gallery, false);
               },
             ),
-            // ListTile(
-            //   leading: Icon(Icons.videocam),
-            //   title: Text('Record Video'),
-            //   onTap: () async {
-            //     Navigator.pop(context); // Tutup modal
-            //     await _pickAndUploadMedia(ImageSource.camera, true); // Ambil video
-            //   },
-            // ),
-            // ListTile(
-            //   leading: Icon(Icons.video_library),
-            //   title: Text('Choose Video from Gallery'),
-            //   onTap: () async {
-            //     Navigator.pop(context); // Tutup modal
-            //     await _pickAndUploadMedia(ImageSource.gallery, true); // Pilih video dari galeri
-            //   },
-            // ),
           ],
         );
       },
@@ -1176,10 +997,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     (user) => user.uid == memberId,
                     orElse: () => UserProfile(
                       uid: memberId,
-                      name: 'You',
+                      name: 'you'.tr(),
                     ),
                   );
-                  return user.name ?? 'You';
+                  return user.name ?? 'you'.tr();
                 }).toList();
 
                 String memberNamesStr = memberNames.join(', ');

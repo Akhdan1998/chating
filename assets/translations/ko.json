@@ -142,10 +142,19 @@
   "exit_grup": "그룹에서 탈퇴하시겠습니까? ",
   "admins_will_be_notified": "그룹을 탈퇴하면 그룹 관리자에게만 알림이 전송됩니다.",
   "out": "그룹 탈퇴",
-  "created_on": "메이드 인",
+  "created_on": "메이드 인 ",
   "change_password": "비밀번호 변경",
   "logout": "나가다",
   "deskrip_logout": "이 계정에서 로그아웃하세요.",
   "success_logout": "해냈다!",
-  "alert_logout": "이전 활동을 계속하려면 다시 로그인해야 합니다."
+  "alert_logout": "이전 활동을 계속하려면 다시 로그인해야 합니다.",
+  "search": "찾다",
+  "video": "비디오",
+  "audio": "오디오",
+  "all_call": "모두",
+  "missed": "보답 없는",
+  "voice": "목소리",
+  "other": "알림, 언어 등",
+  "failed_leave_group": "그룹에서 탈퇴하지 못했습니다:",
+  "failed_create_group": "그룹을 생성하지 못했습니다!"
 }

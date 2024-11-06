@@ -335,7 +335,7 @@ class _GroupPageState extends State<GroupPage> {
     });
 
     _alertService.showToast(
-      text: 'Chat cleared successfully',
+      text: 'successfully'.tr(),
       icon: Icons.check,
       color: Colors.green,
     );
@@ -360,7 +360,7 @@ class _GroupPageState extends State<GroupPage> {
       });
 
       _alertService.showToast(
-        text: 'You have left the group',
+        text: 'left_group'.tr(),
         icon: Icons.check,
         color: Colors.green,
       );
@@ -368,7 +368,7 @@ class _GroupPageState extends State<GroupPage> {
     } catch (e) {
       print("Failed to leave group: $e");
       _alertService.showToast(
-        text: e.toString(),
+        text: 'failed_leave_group'.tr(),
         icon: Icons.error,
         color: Colors.red,
       );
@@ -467,7 +467,7 @@ class _GroupPageState extends State<GroupPage> {
                 } catch (e) {
                   print('Error deleting message: $e');
                   _alertService.showToast(
-                    text: e.toString(),
+                    text: 'successfully'.tr(),
                     icon: Icons.error,
                     color: Colors.red,
                   );
@@ -596,10 +596,10 @@ class _GroupPageState extends State<GroupPage> {
         (user) => user.uid == memberId,
         orElse: () => UserProfile(
           uid: memberId,
-          name: 'You',
+          name: 'you'.tr(),
         ),
       );
-      return user.name ?? 'You';
+      return user.name ?? 'you'.tr();
     }).toList();
     return Scaffold(
       appBar: AppBar(

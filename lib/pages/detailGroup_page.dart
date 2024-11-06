@@ -54,17 +54,17 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
     Fitur(
       id: '1',
       icon: Icons.call,
-      title: 'Audio',
+      title: 'audio'.tr(),
     ),
     Fitur(
       id: '2',
       icon: Icons.videocam_outlined,
-      title: 'Video',
+      title: 'video'.tr(),
     ),
     Fitur(
       id: '3',
       icon: Icons.search,
-      title: 'Search',
+      title: 'search'.tr(),
     ),
   ];
 
