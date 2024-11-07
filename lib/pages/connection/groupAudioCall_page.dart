@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/group.dart';
 import '../../models/user_profile.dart';
 import '../../service/alert_service.dart';
@@ -182,15 +183,19 @@ class _GroupAudioCallScreenState extends State<GroupAudioCallScreen> {
   }
 
   Future<void> _saveCallHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
+
     final callData = {
       'callerName': widget.grup.name,
       'callerImage': widget.grup.imageUrl,
       'callDate': Timestamp.now(),
       'callDuration': _formatDuration(_secondsElapsed),
       'type': 'voice',
+      'currentUserUID': uid,
     };
 
-    await FirebaseFirestore.instance.collection('call_history').add(callData);
+    await FirebaseFirestore.instance.collection('calls').add(callData);
   }
 
   String _formatDuration(int seconds) {

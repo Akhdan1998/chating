@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/user_profile.dart';
 import '../../service/alert_service.dart';
 import '../../utils.dart';
@@ -54,6 +55,9 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
   }
 
   Future<void> _saveCallHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
+
     final callData = {
       'callerName': widget.userProfile.name,
       'callerImage': widget.userProfile.pfpURL,
@@ -63,49 +67,15 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       'callDate': Timestamp.now(),
       'callDuration': _formatDuration(_secondsElapsed),
       'type': 'voice',
+      'currentUserUID': uid,
     };
 
     callData.forEach((key, value) {
       print('$key: $value');
     });
 
-    await FirebaseFirestore.instance.collection('call_history').add(callData);
+    await FirebaseFirestore.instance.collection('calls').add(callData);
   }
-
-  // Future<void> _saveCallToFirestore(
-  //     String callType,
-  //     String callerId,
-  //     String receiverId,
-  //     String channelId,
-  //     int callDuration,
-  //     String callerPhoneNumber,
-  //     ) async {
-  //   try {
-  //     await FirebaseFirestore.instance.collection('audioCall_history').add({
-  //       'callType': callType,
-  //       'callerId': callerId,
-  //       'receiverId': receiverId,
-  //       'channelId': channelId,
-  //       'callStartTime': FieldValue.serverTimestamp(),
-  //       'callDuration': _formatDuration(_secondsElapsed),
-  //       'callerPhoneNumber': callerPhoneNumber,
-  //     });
-  //   } catch (e) {
-  //     debugPrint('Error saving call to Firestore: $e');
-  //   }
-  // }
-
-  // int _calculateCallDuration() {
-  //   if (_callStartTime == null) {
-  //     return 0;
-  //   }
-  //
-  //   DateTime callEndTime = DateTime.now();
-  //
-  //   Duration duration = callEndTime.difference(_callStartTime!);
-  //
-  //   return duration.inSeconds;
-  // }
 
   Future<void> _toggleSpeaker() async {
     _isSpeakerOn = !_isSpeakerOn;
@@ -314,7 +284,9 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
                 ),
               ),
               Text(
-                _remoteUid != null ? _formatDuration(_secondsElapsed) : 'ringing'.tr(),
+                _remoteUid != null
+                    ? _formatDuration(_secondsElapsed)
+                    : 'ringing'.tr(),
                 style: StyleText(color: Colors.white),
               ),
             ],

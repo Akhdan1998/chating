@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/group.dart';
 import '../../models/user_profile.dart';
 import '../../utils.dart';
@@ -50,15 +51,19 @@ class _GroupVideoCallScreenState extends State<GroupVideoCallScreen> {
   }
 
   Future<void> _saveCallHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
+
     final callData = {
       'callerName': widget.grup.name,
       'callerImage': widget.grup.imageUrl,
       'callDate': Timestamp.now(),
       'callDuration': _formatDuration(_duration),
       'type': 'video',
+      'currentUserUID': uid,
     };
 
-    await FirebaseFirestore.instance.collection('call_history').add(callData);
+    await FirebaseFirestore.instance.collection('calls').add(callData);
   }
 
   void _startTimer() {

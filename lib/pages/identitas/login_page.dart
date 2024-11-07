@@ -1011,6 +1011,12 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('email', email);
 
+        //simpan uid
+        if (user != null) {
+          await prefs.setString('uid', user.uid);
+          print("UID saved: ${user.uid}");
+        }
+
         _navigationService.pushReplacementNamed("/navigasi");
       } else {
         _alertService.showToast(

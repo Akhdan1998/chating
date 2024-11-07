@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../service/alert_service.dart';
 import '../../utils.dart';
 
@@ -37,6 +38,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   AudioPlayer _audioPlayer = AudioPlayer();
 
   Future<void> _saveCallHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
+
     final callData = {
       'callerName': widget.userProfile.name,
       'callerImage': widget.userProfile.pfpURL,
@@ -46,9 +50,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       'callDate': Timestamp.now(),
       'callDuration': _formatDuration(_secondsElapsed),
       'type': 'video',
+      'currentUserUID': uid,
     };
 
-    await FirebaseFirestore.instance.collection('call_history').add(callData);
+    await FirebaseFirestore.instance.collection('calls').add(callData);
   }
 
   @override

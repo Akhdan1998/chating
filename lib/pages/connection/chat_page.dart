@@ -10,7 +10,6 @@ import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/gestures.dart';
@@ -22,11 +21,11 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart' as vp;
@@ -70,7 +69,6 @@ class _ChatPageState extends State<ChatPage> {
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   String? currentAudioUrl;
-  final currentuser = FirebaseAuth.instance.currentUser;
   bool _showLastSeen = true;
   List<ChatMessage> messages = [];
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -257,15 +255,6 @@ class _ChatPageState extends State<ChatPage> {
       );
     } catch (e) {
       print('Error saat mengupload file: $e');
-    }
-  }
-
-  Future<void> launchPhoneCall(String phoneNumber) async {
-    String url = 'tel:$phoneNumber';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
     }
   }
 
@@ -624,11 +613,6 @@ class _ChatPageState extends State<ChatPage> {
         List<ChatMessage> messages = chat?.messages != null
             ? _generateChatMessageList(chat!.messages!)
             : [];
-
-        // List<ChatMessage> messages = [];
-        // if (chat != null && chat.messages != null) {
-        //   messages = _generateChatMessageList(chat.messages!);
-        // }
 
         if (messages.isNotEmpty) {
           ChatMessage latestMessage = messages.first;

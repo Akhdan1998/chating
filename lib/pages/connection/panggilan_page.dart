@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../consts.dart';
 
@@ -168,19 +169,27 @@ class _PanggilanPageState extends State<PanggilanPage> {
 class AllCallsPage extends StatelessWidget {
   AllCallsPage({super.key});
 
+  String? userUid;
+
   @override
   Widget build(BuildContext context) {
+    if (userUid == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return Container(
-      padding:  EdgeInsets.symmetric(horizontal: 15),
+      padding: EdgeInsets.symmetric(horizontal: 15),
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('call_history')
+            .collection('calls')
+            .where('currentUserUID', isEqualTo: userUid)
             .orderBy('callDate', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
+
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
               child: Text(
@@ -199,12 +208,15 @@ class AllCallsPage extends StatelessWidget {
               final call = callHistory[index].data() as Map<String, dynamic>;
               final DateTime callDate =
                   (call['callDate'] as Timestamp?)?.toDate() ?? DateTime.now();
-
               final String formattedDate =
                   DateFormat.yMMMd(context.locale.toString()).format(callDate);
               final String formattedTime = DateFormat.Hm().format(callDate);
-              final String callType = call['type'] ?? 'voice'; // Use raw value
-              // final String localizedCallType = callType == 'video' ? tr('video') : tr('voice');
+              final String callType = call['type'] ?? 'voice';
+              final String durationStr = call['callDuration'] ?? '00:00';
+              final List<String> parts = durationStr.split(':');
+              final int minutes = int.tryParse(parts[0]) ?? 0;
+              final int seconds = int.tryParse(parts[1]) ?? 0;
+              final int callDurationInSeconds = (minutes * 60) + seconds;
 
               return CallItem(
                 name: call['callerName'] ?? '',
@@ -213,7 +225,7 @@ class AllCallsPage extends StatelessWidget {
                 callType: callType,
                 avatarUrl: call['callerImage'] ?? '',
                 callerPhoneNumber: call['callerPhoneNumber'] ?? '',
-                duration: call['duration'] ?? 0,
+                duration: callDurationInSeconds,
               );
             },
           );
@@ -320,7 +332,7 @@ class _CallItemState extends State<CallItem> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              '${widget.duration} min',
+                              '${(widget.duration ~/ 60).toString().padLeft(2, '0')}:${(widget.duration % 60).toString().padLeft(2, '0')}',
                               style: StyleText(fontSize: 13),
                             ),
                           ],

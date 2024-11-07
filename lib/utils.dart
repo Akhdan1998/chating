@@ -54,7 +54,7 @@ String tokenGroupAudio =
 
 String appIdAudio = 'fecb15824e0c4e888662459c3b74c273';
 String tokenAudio =
-    '007eJxTYHhTKPpHYcNU/Ti309s3rftxzMu+4FnT3Sn2rB3RolenqTkpMKSlJicZmloYmaQaJJukWlhYmJkZmZhaJhsnmZskG5kb75PVTm8IZGQ4V3OUlZEBAkF8NobS4tQizxQGBgDA2iBy';
+    '007eJxTYJh+O1Kib+qi2eVPpG8cPXQ5by33+8is5mk9FWUqpzZFiv9WYEhLTU4yNLUwMkk1SDZJtbCwMDMzMjG1TDZOMjdJNjI3ntmlk94QyMgQ8PQAAyMUgvhsDKXFqUWeKQwMACOTIdY=';
 
 String appIdVideo = 'be76645285084ce7a1d7d4cd2bd94dd0';
 String tokenVideo =
