@@ -138,8 +138,6 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
 
           _stopCallTimer();
 
-          print('Durasi panggilan: ${_formatDuration(_secondsElapsed)}');
-
           await _saveCallHistory();
 
           await _leaveChannel();

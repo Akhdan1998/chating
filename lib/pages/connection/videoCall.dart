@@ -131,8 +131,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         ),
       );
 
-      print('TOKEN VIDEO CALL ${tokenVideo}');
-
       await _engine.joinChannel(
         token: tokenVideo,
         channelId: channel,
