@@ -143,6 +143,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         ),
         uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
       );
+      print('NUMBER: ${widget.userProfile.phoneNumber}');
     } catch (e) {
       debugPrint("Error initializing Agora: $e");
     }

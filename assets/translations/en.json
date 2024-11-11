@@ -156,5 +156,6 @@
   "voice": "Voice",
   "other": "Notifications, Language, etc.",
   "failed_leave_group": "Failed to leave group:",
-  "failed_create_group": "Failed to create group!"
+  "failed_create_group": "Failed to create group!",
+  "typing": "Type a message..."
 }

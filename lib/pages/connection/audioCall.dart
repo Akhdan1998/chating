@@ -152,7 +152,7 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             color: Colors.red,
           );
         },
-      ));
+      ),);
 
       await _engine.joinChannel(
         token: tokenAudio,
@@ -164,6 +164,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
         ),
         uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
       );
+      // print('channelID: ${channel}');
+      print('NUMBER: ${widget.userProfile.phoneNumber}');
     } catch (e) {
       debugPrint("Error initializing Agora: $e");
     }

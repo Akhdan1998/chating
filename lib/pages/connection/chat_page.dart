@@ -882,7 +882,19 @@ class _ChatPageState extends State<ChatPage> {
             },
           ),
           inputOptions: InputOptions(
+            textCapitalization: TextCapitalization.sentences,
             alwaysShowSend: true,
+            inputDecoration: InputDecoration(
+              fillColor: Colors.grey.shade200,
+              filled: true,
+              hintText: "typing".tr(),
+              hintStyle: StyleText(color: Colors.black38),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            ),
             leading: [
               PopupMenuButton(
                 icon: Icon(
