@@ -410,46 +410,55 @@ class _MediaPageState extends State<MediaPage> {
         final mediaItems = snapshot.data!.docs.expand((doc) {
           var messages = doc['messages'] as List;
           return messages.where((msg) =>
-              msg['messageType'] == 'Image' || msg['messageType'] == 'Video');
+          msg['messageType'] == 'Image' || msg['messageType'] == 'Video');
         }).toList();
 
         return SingleChildScrollView(
-          child: LayoutGrid(
-            columnSizes: [1.fr, 1.fr],
-            rowSizes:
-                List.generate((mediaItems.length / 2).ceil(), (_) => auto),
-            rowGap: 8,
-            columnGap: 8,
-            children: [
-              for (var item in mediaItems)
-                Builder(builder: (context) {
-                  var messageType = item['messageType'];
-                  var contentUrl = item['content'];
+          child: Container(
+            padding: EdgeInsets.all(10),
+            child: LayoutGrid(
+              columnSizes: [1.fr, 1.fr],
+              rowSizes: List.generate(
+                (mediaItems.length / 2).ceil(),
+                    (_) => auto,
+              ),
+              rowGap: 12,
+              columnGap: 12,
+              children: [
+                for (var item in mediaItems)
+                  Builder(builder: (context) {
+                    var messageType = item['messageType'];
+                    var contentUrl = item['content'];
 
-                  if (messageType == 'Image') {
-                    return Container(
-                      padding: EdgeInsets.all(8.0),
-                      child: Image.network(
-                        contentUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.error, color: Colors.red);
-                        },
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(child: CircularProgressIndicator());
-                        },
-                      ),
-                    );
-                  } else if (messageType == 'Video') {
-                    return Container(
-                      padding: EdgeInsets.all(8.0),
-                      child: VideoMessage(url: contentUrl),
-                    );
-                  }
-                  return SizedBox.shrink();
-                }),
-            ],
+                    if (messageType == 'Image') {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          contentUrl,
+                          fit: BoxFit.cover,
+                          height: 200,
+                          width: double.infinity,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Icon(Icons.broken_image_sharp, color: Colors.grey),
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(child: CircularProgressIndicator());
+                          },
+                        ),
+                      );
+                    } else if (messageType == 'Video') {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: VideoMessage(url: contentUrl),
+                      );
+                    }
+                    return SizedBox.shrink();
+                  }),
+              ],
+            ),
           ),
         );
       },
@@ -497,7 +506,8 @@ class _VideoMessageState extends State<VideoMessage> {
   Widget build(BuildContext context) {
     return _controller.value.isInitialized
         ? AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
+            // aspectRatio: _controller.value.aspectRatio,
+            aspectRatio: 10 / 10.5,
             child: vp.VideoPlayer(_controller),
           )
         : Center(child: CircularProgressIndicator());
