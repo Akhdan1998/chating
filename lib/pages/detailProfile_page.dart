@@ -26,17 +26,17 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
     Fitur(
       id: '1',
       icon: Icons.call,
-      title: 'Audio',
+      title: 'audio'.tr(),
     ),
     Fitur(
       id: '2',
       icon: Icons.videocam_outlined,
-      title: 'Video',
+      title: 'video'.tr(),
     ),
     Fitur(
       id: '3',
       icon: Icons.search,
-      title: 'Search',
+      title: 'search'.tr(),
     ),
   ];
 
@@ -175,7 +175,6 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                               Text(
                                 '6',
                                 style: StyleText(
-                                  fontWeight: FontWeight.w700,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
@@ -255,7 +254,7 @@ class ButtonFitur extends StatefulWidget {
 
 class _ButtonFiturState extends State<ButtonFitur> {
   void _handleCall(String callType) async {
-    String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+    // String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
 
     if (callType == 'audio') {
       Navigator.push(
@@ -274,11 +273,11 @@ class _ButtonFiturState extends State<ButtonFitur> {
     }
   }
 
-  Future<String> _getPhoneNumber(String userId) async {
-    var firestore = FirebaseFirestore.instance;
-    var userDoc = await firestore.collection('users').doc(userId).get();
-    return userDoc.data()!['phoneNumber'] ?? '';
-  }
+  // Future<String> _getPhoneNumber(String userId) async {
+  //   var firestore = FirebaseFirestore.instance;
+  //   var userDoc = await firestore.collection('users').doc(userId).get();
+  //   return userDoc.data()!['phoneNumber'] ?? '';
+  // }
 
   @override
   Widget build(BuildContext context) {

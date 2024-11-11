@@ -155,6 +155,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       );
       print(
           'Joined channel $channel with UID: ${int.tryParse(widget.userProfile.phoneNumber ?? '') ?? 0} || TOKEN: $token');
+
     } catch (e) {
       debugPrint("Error initializing Agora: $e");
     }

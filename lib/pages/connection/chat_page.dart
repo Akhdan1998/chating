@@ -76,8 +76,8 @@ class _ChatPageState extends State<ChatPage> {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   late FirebaseMessaging _firebaseMessaging;
 
-  Future<Map<String, dynamic>?> fetchToken() async {
-    final String url = 'http://45.130.229.79:5656/vc-token?channelName=testChannel&uid=123';
+  Future<Map<String, dynamic>?> fetchToken(String channelName, int uid) async {
+    final String url = 'http://45.130.229.79:5656/vc-token?channelName=${channelName}&uid=${uid}';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -104,11 +104,11 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _startVideoCall() async {
-    Map<String, dynamic>? data = await fetchToken();
+  void _startVideoCall(String channelName, int uid) async {
+    Map<String, dynamic>? data = await fetchToken(channelName, uid);
 
     if (data != null) {
-      int uid = data['uid'] is int ? data['uid'] : int.tryParse(data['uid'].toString()) ?? 0;
+      int userUid = data['uid'] is int ? data['uid'] : int.tryParse(data['uid'].toString()) ?? 0;
 
       Navigator.push(
         context,
@@ -117,7 +117,7 @@ class _ChatPageState extends State<ChatPage> {
             userProfile: widget.chatUser,
             token: data['token'],
             channelName: data['channelName'],
-            uid: uid,
+            uid: userUid,
           ),
         ),
       );
@@ -638,7 +638,10 @@ class _ChatPageState extends State<ChatPage> {
               Icons.videocam,
               color: Colors.white,
             ),
-            onPressed: _startVideoCall,
+            onPressed: () {
+              _startVideoCall(channel,
+                  int.tryParse(widget.chatUser.phoneNumber.toString()) ?? 0);
+            },
           ),
           IconButton(
             icon: Icon(
