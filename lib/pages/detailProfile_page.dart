@@ -265,12 +265,12 @@ class _ButtonFiturState extends State<ButtonFitur> {
         ),
       );
     } else if (callType == 'video') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoCallScreen(userProfile: widget.chatUser),
-        ),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => VideoCallScreen(userProfile: widget.chatUser),
+      //   ),
+      // );
     }
   }
 

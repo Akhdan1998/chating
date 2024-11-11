@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chating/models/user_profile.dart';
@@ -39,6 +40,7 @@ import '../../service/database_service.dart';
 import 'audioCall.dart';
 import '../detailProfile_page.dart';
 import 'package:any_link_preview/any_link_preview.dart';
+import 'package:http/http.dart' as http;
 
 class ChatPage extends StatefulWidget {
   final UserProfile chatUser;
@@ -74,25 +76,75 @@ class _ChatPageState extends State<ChatPage> {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   late FirebaseMessaging _firebaseMessaging;
 
-  Future<String> _getPhoneNumber(String userId) async {
-    var firestore = FirebaseFirestore.instance;
-    var userDoc = await firestore.collection('users').doc(userId).get();
-    return userDoc.data()!['phoneNumber'] ?? '';
+  Future<Map<String, dynamic>?> fetchToken() async {
+    final String url = 'http://45.130.229.79:5656/vc-token?channelName=testChannel&uid=123';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        print('Response body: ${response.body}');
+
+        final data = jsonDecode(response.body);
+
+        print('Decoded JSON response: $data');
+
+        if (data['uid'] is String) {
+          data['uid'] = int.tryParse(data['uid']) ?? 0;
+        }
+
+        return data;
+      } else {
+        print('Error: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Exception: $e');
+      return null;
+    }
   }
 
   void _startVideoCall() async {
-    String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+    Map<String, dynamic>? data = await fetchToken();
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VideoCallScreen(userProfile: widget.chatUser),
-      ),
-    );
+    if (data != null) {
+      int uid = data['uid'] is int ? data['uid'] : int.tryParse(data['uid'].toString()) ?? 0;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoCallScreen(
+            userProfile: widget.chatUser,
+            token: data['token'],
+            channelName: data['channelName'],
+            uid: uid,
+          ),
+        ),
+      );
+    } else {
+      print('Gagal mendapatkan data');
+    }
   }
 
+  // Future<String> _getPhoneNumber(String userId) async {
+  //   var firestore = FirebaseFirestore.instance;
+  //   var userDoc = await firestore.collection('users').doc(userId).get();
+  //   return userDoc.data()!['phoneNumber'] ?? '';
+  // }
+
+  // void _startVideoCall() async {
+  //   String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+  //
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => VideoCallScreen(userProfile: widget.chatUser),
+  //     ),
+  //   );
+  // }
+
   void _startAudioCall() async {
-    String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
+    // String phoneNumber = await _getPhoneNumber(widget.chatUser.uid!);
 
     Navigator.push(
       context,

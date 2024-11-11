@@ -731,14 +731,11 @@ class _GroupPageState extends State<GroupPage> {
 
         var messages = snapshot.data!.docs;
         if (messages.isEmpty) {
-          return Container();
-        }
-        var newMessage = messages.last.data();
-
-        if (newMessage != null &&
-            newMessage['userId'] != currentUser?.id &&
-            newMessage['text'] != null) {
-          initializeNotifications(newMessage['text']);
+          var newMessage = messages.last.data();
+          if (newMessage['userId'] != currentUser?.id &&
+              newMessage['text'] != null) {
+            initializeNotifications(newMessage['text']);
+          }
         }
 
         return DashChat(
@@ -900,6 +897,17 @@ class _GroupPageState extends State<GroupPage> {
           ),
           inputOptions: InputOptions(
             alwaysShowSend: true,
+            inputDecoration: InputDecoration(
+              fillColor: Colors.grey.shade200,
+              filled: true,
+              hintText: "typing".tr(),
+              hintStyle: StyleText(color: Colors.black38),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            ),
             leading: [
               PopupMenuButton(
                 icon: Icon(
