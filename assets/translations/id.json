@@ -157,5 +157,6 @@
   "other": "Pemberitahuan, bahasa, dll.",
   "failed_leave_group": "Gagal keluar dari grup:",
   "failed_create_group": "Gagal membuat grup!",
-  "typing": "Ketik pesan..."
+  "typing": "Ketik pesan...",
+  "no_media": "Tidak ada media yang ditemukan"
 }

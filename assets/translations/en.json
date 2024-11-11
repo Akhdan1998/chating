@@ -157,5 +157,6 @@
   "other": "Notifications, Language, etc.",
   "failed_leave_group": "Failed to leave group:",
   "failed_create_group": "Failed to create group!",
-  "typing": "Type a message..."
+  "typing": "Type a message...",
+  "no_media": "No media found"
 }

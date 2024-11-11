@@ -139,7 +139,7 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MediaPage(),
+                    builder: (context) => MediaPage(chatUser: widget.chatUser),
                   ),
                 );
               },

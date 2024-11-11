@@ -157,5 +157,6 @@
   "other": "알림, 언어 등",
   "failed_leave_group": "그룹에서 탈퇴하지 못했습니다:",
   "failed_create_group": "그룹을 생성하지 못했습니다!",
-  "typing": "메시지를 입력하세요..."
+  "typing": "메시지를 입력하세요...",
+  "no_media": "미디어를 찾을 수 없습니다"
 }
