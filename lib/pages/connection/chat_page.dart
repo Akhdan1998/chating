@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:any_link_preview/any_link_preview.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chating/models/user_profile.dart';
 import 'package:chating/pages/connection/videoCall.dart';
@@ -26,9 +27,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:uuid/uuid.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'package:video_player/video_player.dart';
@@ -40,7 +39,6 @@ import '../../service/auth_service.dart';
 import '../../service/database_service.dart';
 import 'audioCall.dart';
 import '../detailProfile_page.dart';
-import 'package:any_link_preview/any_link_preview.dart';
 import 'package:http/http.dart' as http;
 
 class ChatPage extends StatefulWidget {
@@ -78,7 +76,8 @@ class _ChatPageState extends State<ChatPage> {
   late FirebaseMessaging _firebaseMessaging;
 
   Future<Map<String, dynamic>?> fetchToken(String channelName, int uid) async {
-    final String url = 'http://45.130.229.79:5656/vc-token?channelName=${channelName}&uid=${uid}';
+    final String url =
+        'http://45.130.229.79:5656/vc-token?channelName=${channelName}&uid=${uid}';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -109,7 +108,9 @@ class _ChatPageState extends State<ChatPage> {
     Map<String, dynamic>? data = await fetchToken(channelName, uid);
 
     if (data != null) {
-      int userUid = data['uid'] is int ? data['uid'] : int.tryParse(data['uid'].toString()) ?? 0;
+      int userUid = data['uid'] is int
+          ? data['uid']
+          : int.tryParse(data['uid'].toString()) ?? 0;
 
       Navigator.push(
         context,
@@ -688,7 +689,8 @@ class _ChatPageState extends State<ChatPage> {
             showOtherUsersName: false,
             showCurrentUserAvatar: false,
             showOtherUsersAvatar: false,
-            onLongPressMessage: (ChatMessage message) => _showPopup(context, message),
+            onLongPressMessage: (ChatMessage message) =>
+                _showPopup(context, message),
             messageDecorationBuilder: _messageDecorationBuilder,
             messageTextBuilder: _messageTextBuilder,
             onTapMedia: _handleMediaTap,
@@ -757,7 +759,8 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  BoxDecoration _messageDecorationBuilder(ChatMessage message, ChatMessage? prev, ChatMessage? next) {
+  BoxDecoration _messageDecorationBuilder(
+      ChatMessage message, ChatMessage? prev, ChatMessage? next) {
     bool isUser = message.user.id == currentUser!.id;
     return BoxDecoration(
       color: isUser
@@ -767,7 +770,54 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _messageTextBuilder(ChatMessage message, ChatMessage? prev, ChatMessage? next) {
+  // Widget _messageTextBuilder(ChatMessage message, ChatMessage? prev, ChatMessage? next) {
+  //   bool isURL(String text) {
+  //     final Uri? uri = Uri.tryParse(text);
+  //     return uri != null && (uri.isScheme('http') || uri.isScheme('https'));
+  //   }
+  //
+  //   void _launchURL(String url) async {
+  //     final Uri uri = Uri.parse(url);
+  //     if (!await launchUrl(uri)) throw Exception('Could not launch $uri');
+  //   }
+  //
+  //   List<TextSpan> _buildTextSpans(String text) {
+  //     final List<TextSpan> spans = [];
+  //     final RegExp urlPattern = RegExp(r'(https?://[^\s]+)');
+  //     final Iterable<Match> matches = urlPattern.allMatches(text);
+  //     int lastMatchEnd = 0;
+  //
+  //     for (final Match match in matches) {
+  //       if (match.start > lastMatchEnd) {
+  //         spans.add(TextSpan(text: text.substring(lastMatchEnd, match.start), style: StyleText(color: Colors.black87, fontSize: 15)));
+  //       }
+  //       spans.add(TextSpan(text: match.group(0), style: StyleText(color: Colors.blue), recognizer: TapGestureRecognizer()..onTap = () => _launchURL(match.group(0)!)));
+  //       lastMatchEnd = match.end;
+  //     }
+  //
+  //     if (lastMatchEnd < text.length) {
+  //       spans.add(TextSpan(text: text.substring(lastMatchEnd), style: StyleText(color: Colors.black87, fontSize: 15)));
+  //     }
+  //     return spans;
+  //   }
+  //
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       RichText(text: TextSpan(children: _buildTextSpans(message.text))),
+  //       Container(
+  //         alignment: Alignment.centerRight,
+  //         child: Text(
+  //           DateFormat('HH:mm').format(message.createdAt),
+  //           style: StyleText(color: Colors.black87, fontSize: 12),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  Widget _messageTextBuilder(
+      ChatMessage message, ChatMessage? prev, ChatMessage? next) {
     bool isURL(String text) {
       final Uri? uri = Uri.tryParse(text);
       return uri != null && (uri.isScheme('http') || uri.isScheme('https'));
@@ -786,14 +836,25 @@ class _ChatPageState extends State<ChatPage> {
 
       for (final Match match in matches) {
         if (match.start > lastMatchEnd) {
-          spans.add(TextSpan(text: text.substring(lastMatchEnd, match.start), style: StyleText(color: Colors.black87, fontSize: 15)));
+          spans.add(TextSpan(
+            text: text.substring(lastMatchEnd, match.start),
+            style: StyleText(color: Colors.black87, fontSize: 15),
+          ));
         }
-        spans.add(TextSpan(text: match.group(0), style: StyleText(color: Colors.blue), recognizer: TapGestureRecognizer()..onTap = () => _launchURL(match.group(0)!)));
+        spans.add(TextSpan(
+          text: match.group(0),
+          style: StyleText(color: Colors.blue),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () => _launchURL(match.group(0)!),
+        ));
         lastMatchEnd = match.end;
       }
 
       if (lastMatchEnd < text.length) {
-        spans.add(TextSpan(text: text.substring(lastMatchEnd), style: StyleText(color: Colors.black87, fontSize: 15)));
+        spans.add(TextSpan(
+          text: text.substring(lastMatchEnd),
+          style: StyleText(color: Colors.black87, fontSize: 15),
+        ));
       }
       return spans;
     }
@@ -801,7 +862,35 @@ class _ChatPageState extends State<ChatPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RichText(text: TextSpan(children: _buildTextSpans(message.text))),
+        isURL(message.text)
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnyLinkPreview(
+                    onTap: () => _launchURL(message.text),
+                    link: message.text,
+                    displayDirection: UIDirection.uiDirectionVertical,
+                    showMultimedia: true,
+                    bodyStyle: StyleText(fontSize: 12),
+                    errorWidget: Container(
+                      height: 100,
+                      width: MediaQuery.sizeOf(context).width,
+                      color: Colors.grey[300],
+                      child: Icon(Icons.broken_image_rounded),
+                    ),
+                    errorImage: "https://google.com/",
+                    borderRadius: 12,
+                    removeElevation: false,
+                  ),
+                  SizedBox(height: 8),
+                  RichText(
+                    text: TextSpan(children: _buildTextSpans(message.text)),
+                  ),
+                ],
+              )
+            : RichText(
+                text: TextSpan(children: _buildTextSpans(message.text)),
+              ),
         Container(
           alignment: Alignment.centerRight,
           child: Text(
@@ -825,11 +914,24 @@ class _ChatPageState extends State<ChatPage> {
 
   void _handleMediaTap(ChatMedia media) async {
     if (media.type == MediaType.image) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImageView(imageUrl: media.url, chatUser: widget.chatUser, dateTime: media.uploadedDate ?? DateTime.now())));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => FullScreenImageView(
+                  imageUrl: media.url,
+                  chatUser: widget.chatUser,
+                  dateTime: media.uploadedDate ?? DateTime.now())));
     } else if (media.type == MediaType.file) {
-      await _downloadAndOpenPDF(media.url, media.fileName, media.uploadedDate ?? DateTime.now());
+      await _downloadAndOpenPDF(
+          media.url, media.fileName, media.uploadedDate ?? DateTime.now());
     } else if (media.type == MediaType.video) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenVideoPlayer(videoUrl: media.url, chatUser: widget.chatUser, dateTime: media.uploadedDate ?? DateTime.now())));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => FullScreenVideoPlayer(
+                  videoUrl: media.url,
+                  chatUser: widget.chatUser,
+                  dateTime: media.uploadedDate ?? DateTime.now())));
     }
   }
 
@@ -1188,14 +1290,14 @@ class _ChatPageState extends State<ChatPage> {
               uid2: otherUser!.id,
             );
             String? downloadURL = await _storageService.uploadVideoToChat(
-                file: file, chatID: chatID
-            );
+                file: file, chatID: chatID);
             if (downloadURL != null) {
               ChatMessage chatMessage = ChatMessage(
                 user: currentUser!,
                 createdAt: DateTime.now(),
                 medias: [
-                  ChatMedia(url: downloadURL, fileName: "", type: MediaType.video),
+                  ChatMedia(
+                      url: downloadURL, fileName: "", type: MediaType.video),
                 ],
               );
               _sendMessage(chatMessage);

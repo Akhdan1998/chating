@@ -765,7 +765,6 @@ class _GroupPageState extends State<GroupPage> {
             },
             messageTextBuilder: (ChatMessage message,
                 ChatMessage? previousMessage, ChatMessage? nextMessage) {
-
               bool isURL(String text) {
                 final Uri? uri = Uri.tryParse(text);
                 return uri != null &&
@@ -810,13 +809,15 @@ class _GroupPageState extends State<GroupPage> {
               }
 
               if (lastMatchEnd < message.text.length) {
-                textSpans.add(TextSpan(
-                  text: message.text.substring(lastMatchEnd),
-                  style: StyleText(
-                    color: Colors.black87,
-                    fontSize: 15,
+                textSpans.add(
+                  TextSpan(
+                    text: message.text.substring(lastMatchEnd),
+                    style: StyleText(
+                      color: Colors.black87,
+                      fontSize: 15,
+                    ),
                   ),
-                ));
+                );
               }
 
               final firstURLMatch = urlPattern.firstMatch(message.text);

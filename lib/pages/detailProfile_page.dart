@@ -170,21 +170,10 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
-                          Row(
-                            children: [
-                              Text(
-                                '6',
-                                style: StyleText(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                size: 20,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ],
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ],
                       ),

@@ -1,15 +1,12 @@
-import 'package:chating/main.dart';
 import 'package:chating/pages/identitas/verifikasi_page.dart';
 import 'package:chating/utils.dart';
-import 'package:contacts_service/contacts_service.dart';
+// import 'package:contacts_service/contacts_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../consts.dart';
 import '../../service/alert_service.dart';
@@ -644,35 +641,36 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               )
                             : TextButton(
-                                onPressed: () async {
-                                  setState(() {
-                                    confirm = true;
-                                  });
-
-                                  PermissionStatus status =
-                                      await Permission.contacts.request();
-
-                                  if (status.isGranted) {
-                                    Iterable<Contact> contacts =
-                                        await ContactsService.getContacts();
-
-                                    contacts.forEach((contact) {
-                                      print(contact.displayName);
-                                      print(contact.phones);
-                                    });
-
-                                    _handleNextButtonPressed().whenComplete(() {
-                                      setState(() {
-                                        confirm = false;
-                                      });
-                                      Navigator.pop(context);
-                                    });
-                                  } else if (status.isDenied) {
-                                    print('Izin ditolak');
-                                  } else if (status.isPermanentlyDenied) {
-                                    openAppSettings();
-                                  }
-                                },
+                          onPressed: () {},
+                                // onPressed: () async {
+                                //   setState(() {
+                                //     confirm = true;
+                                //   });
+                                //
+                                //   PermissionStatus status =
+                                //       await Permission.contacts.request();
+                                //
+                                //   if (status.isGranted) {
+                                //     Iterable<Contact> contacts =
+                                //         await ContactsService.getContacts();
+                                //
+                                //     contacts.forEach((contact) {
+                                //       print(contact.displayName);
+                                //       print(contact.phones);
+                                //     });
+                                //
+                                //     _handleNextButtonPressed().whenComplete(() {
+                                //       setState(() {
+                                //         confirm = false;
+                                //       });
+                                //       Navigator.pop(context);
+                                //     });
+                                //   } else if (status.isDenied) {
+                                //     print('Izin ditolak');
+                                //   } else if (status.isPermanentlyDenied) {
+                                //     openAppSettings();
+                                //   }
+                                // },
                                 child: Text(
                                   'next'.tr(),
                                   style: StyleText(

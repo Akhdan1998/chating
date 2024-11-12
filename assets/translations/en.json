@@ -162,5 +162,6 @@
   "no_document": "No documents available",
   "failed_del": "Failed to delete message",
   "file_download": "File downloaded successfully",
-  "file_error_download": "Error downloading file"
+  "file_error_download": "Error downloading file",
+  "tautan": "Links"
 }

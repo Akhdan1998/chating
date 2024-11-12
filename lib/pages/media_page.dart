@@ -17,7 +17,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'package:video_player/video_player.dart';
-
 import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 
@@ -118,7 +117,7 @@ class _MediaPageState extends State<MediaPage> {
                                 : Colors.grey.shade200,
                           ),
                           child: Text(
-                            'Tautan',
+                            'tautan'.tr(),
                             style: StyleText(
                               fontSize: 13,
                               color: _selectedIndex == 1
@@ -179,7 +178,6 @@ class _MediaPageState extends State<MediaPage> {
   }
 
   Widget Tautan() {
-
     bool _isUrl(String text) {
       final urlPattern = RegExp(
         r'^(https?|ftp)://[^\s/$.?#].[^\s]*$',
@@ -203,7 +201,7 @@ class _MediaPageState extends State<MediaPage> {
           final linkMessages = snapshot.data!.docs.expand((doc) {
             return (doc['messages'] as List)
                 .where((msg) => msg['messageType'] == 'Text' && _isUrl(msg['content']));
-          }).toList();
+          }).toList().reversed.toList();
 
           if (linkMessages.isEmpty) {
             return Container();
@@ -233,12 +231,7 @@ class _MediaPageState extends State<MediaPage> {
                       showMultimedia: true,
                       errorBody: '',
                       bodyStyle: StyleText(fontSize: 12),
-                      errorWidget: Container(
-                        height: 100,
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.grey[300],
-                        child: Icon(Icons.image_not_supported_sharp),
-                      ),
+                      errorWidget: Container(),
                       errorImage: "https://google.com/",
                       cache: Duration(seconds: 3),
                       borderRadius: 12,
@@ -274,7 +267,7 @@ class _MediaPageState extends State<MediaPage> {
           var messages = doc['messages'] as List;
           return messages.where((msg) =>
               msg['messageType'] == 'Image' || msg['messageType'] == 'Video');
-        }).toList();
+        }).toList().reversed.toList();
 
         return SingleChildScrollView(
           child: Container(
@@ -347,7 +340,18 @@ class _MediaPageState extends State<MediaPage> {
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
-                          child: VideoMessage(url: contentUrl),
+                          child: Stack(
+                            children: [
+                              VideoMessage(url: contentUrl),
+                              Center(
+                                child: Icon(
+                                  Icons.play_circle,
+                                  color: Colors.grey,
+                                  size: 50,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }
@@ -377,7 +381,7 @@ class _MediaPageState extends State<MediaPage> {
           final documentMessages = snapshot.data!.docs.expand((doc) {
             return (doc['messages'] as List)
                 .where((msg) => msg['messageType'] == 'Document');
-          }).toList();
+          }).toList().reversed.toList();
 
           if (documentMessages.isEmpty) {
             return Container();
@@ -509,6 +513,7 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
   Widget build(BuildContext context) {
     String formattedDate =
         DateFormat('yyyy-MM-dd HH:mm').format(widget.dateTime);
+    print('DOKUMEEEEEN ${widget.filePath}');
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -564,10 +569,20 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
         ],
       ),
       body: PDFView(
+        enableSwipe: true,
+        swipeHorizontal: true,
+        autoSpacing: false,
+        pageFling: false,
+        onError: (error) {
+          print('errorrrrrr ${error}');
+        },
+        onRender: (_pages) {
+          print('Document rendered with $_pages pages');
+        },
+        onPageError: (page, error) {
+          print('$page: ${error.toString()}');
+        },
         filePath: widget.filePath,
-        onRender: (_pages) => print('Document rendered with $_pages pages'),
-        onError: (error) => print(error),
-        onPageError: (page, error) => print('$page: $error'),
       ),
     );
   }
@@ -991,98 +1006,85 @@ class _VideoPlayerState extends State<VideoPlayer> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: _controller.value.isInitialized
-                  ? Stack(
-                      children: [
-                        vp.VideoPlayer(_controller),
-                        if (_controller.value.isInitialized)
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isPlaying
-                                      ? _controller.pause()
-                                      : _controller.play();
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isPlaying
-                                      ? Colors.white.withOpacity(0.3)
-                                      : Colors.white,
-                                ),
-                                padding: const EdgeInsets.all(16.0),
-                                child: Icon(
-                                  isPlaying ? Icons.pause : Icons.play_arrow,
-                                  color: Colors.black,
-                                  size: 40.0,
-                                ),
-                              ),
+      body: Expanded(
+        child: Center(
+          child: _controller.value.isInitialized
+              ? Stack(
+                  children: [
+                    vp.VideoPlayer(_controller),
+                    if (_controller.value.isInitialized)
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isPlaying
+                                  ? _controller.pause()
+                                  : _controller.play();
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isPlaying
+                                  ? Colors.white.withOpacity(0.3)
+                                  : Colors.white,
+                            ),
+                            padding: EdgeInsets.all(16),
+                            child: Icon(
+                              isPlaying ? Icons.pause : Icons.play_arrow,
+                              color: Colors.black,
+                              size: 40.0,
                             ),
                           ),
-                        if (_controller.value.isInitialized)
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      _formatDuration(position),
-                                      style: StyleText(),
-                                    ),
-                                    Text(
-                                      _formatDuration(duration),
-                                      style: StyleText(),
-                                    ),
-                                  ],
+                        ),
+                      ),
+                    if (_controller.value.isInitialized)
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  _formatDuration(position),
+                                  style: StyleText(),
                                 ),
-                              ),
-                              ValueListenableBuilder(
-                                valueListenable: _controller,
-                                builder:
-                                    (context, VideoPlayerValue value, child) {
-                                  return Slider(
-                                    value: value.position.inSeconds
-                                        .toDouble()
-                                        .clamp(
-                                            0.0,
-                                            value.duration.inSeconds
-                                                .toDouble()),
-                                    min: 0.0,
-                                    max: value.duration.inSeconds.toDouble(),
-                                    onChanged: (newValue) {
-                                      _controller.seekTo(
-                                          Duration(seconds: newValue.toInt()));
-                                    },
-                                  );
-                                },
-                              ),
-                              // Slider(
-                              //   value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
-                              //   min: 0.0,
-                              //   max: duration.inSeconds.toDouble(),
-                              //   onChanged: (value) {
-                              //     _controller.seekTo(Duration(seconds: value.toInt()));
-                              //   },
-                              // ),
-                            ],
+                                Text(
+                                  _formatDuration(duration),
+                                  style: StyleText(),
+                                ),
+                              ],
+                            ),
                           ),
-                      ],
-                    )
-                  : CircularProgressIndicator(), // Show loading indicator
-            ),
-          ),
-        ],
+                          ValueListenableBuilder(
+                            valueListenable: _controller,
+                            builder:
+                                (context, VideoPlayerValue value, child) {
+                              return Slider(
+                                value: value.position.inSeconds
+                                    .toDouble()
+                                    .clamp(
+                                        0.0,
+                                        value.duration.inSeconds
+                                            .toDouble()),
+                                min: 0.0,
+                                max: value.duration.inSeconds.toDouble(),
+                                onChanged: (newValue) {
+                                  _controller.seekTo(
+                                      Duration(seconds: newValue.toInt()));
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                  ],
+                )
+              : CircularProgressIndicator(), // Show loading indicator
+        ),
       ),
     );
   }

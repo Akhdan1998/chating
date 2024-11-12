@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chating/models/user_profile.dart';
 import 'package:chating/pages/connection/chat_page.dart';
-import 'package:chating/pages/connection/chat_screen.dart';
 import 'package:chating/service/auth_service.dart';
 import 'package:chating/service/database_service.dart';
 import 'package:chating/service/navigation_service.dart';
 import 'package:chating/utils.dart';
 import 'package:chating/widgets/chat_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:contacts_service/contacts_service.dart';
+// import 'package:contacts_service/contacts_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -488,15 +487,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  Future<List<Contact>> _fetchContacts() async {
-    PermissionStatus status = await Permission.contacts.request();
-    if (status.isGranted) {
-      return await ContactsService.getContacts()
-          .then((contacts) => contacts.toList());
-    } else {
-      return [];
-    }
-  }
+  // Future<List<Contact>> _fetchContacts() async {
+  //   PermissionStatus status = await Permission.contacts.request();
+  //   if (status.isGranted) {
+  //     return await ContactsService.getContacts()
+  //         .then((contacts) => contacts.toList());
+  //   } else {
+  //     return [];
+  //   }
+  // }
 
   void _bottomSheetContach(BuildContext context) {
     showModalBottomSheet<void>(
@@ -518,60 +517,60 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Expanded(
-                    child: FutureBuilder<List<Contact>>(
-                      future: _fetchContacts(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return Center(
-                            child: Text(
-                              'data_available'.tr(),
-                              style: StyleText(
-                                color: Colors.grey,
-                              ),
-                            ),
-                          );
-                        } else {
-                          return ListView.builder(
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              final contact = snapshot.data![index];
-
-                              return ListTile(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChatScreen(
-                                        contact:
-                                            contact,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                leading: CircleAvatar(
-                                  child: Text(contact.initials()),
-                                ),
-                                title: Text(contact.displayName ?? '-', style: StyleText(),),
-                                subtitle: Text(
-                                  contact.phones!.isNotEmpty
-                                      ? contact.phones!.first.value ?? ''
-                                      : '', style: StyleText(),
-                                ),
-                              );
-                            },
-                          );
-                        }
-                      },
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: FutureBuilder<List<Contact>>(
+                  //     future: _fetchContacts(),
+                  //     builder: (context, snapshot) {
+                  //       if (snapshot.connectionState ==
+                  //           ConnectionState.waiting) {
+                  //         return Center(child: CircularProgressIndicator());
+                  //       } else if (snapshot.hasError) {
+                  //         return Center(child: CircularProgressIndicator());
+                  //       } else if (!snapshot.hasData ||
+                  //           snapshot.data!.isEmpty) {
+                  //         return Center(
+                  //           child: Text(
+                  //             'data_available'.tr(),
+                  //             style: StyleText(
+                  //               color: Colors.grey,
+                  //             ),
+                  //           ),
+                  //         );
+                  //       } else {
+                  //         return ListView.builder(
+                  //           itemCount: snapshot.data!.length,
+                  //           itemBuilder: (context, index) {
+                  //             final contact = snapshot.data![index];
+                  //
+                  //             return ListTile(
+                  //               onTap: () {
+                  //                 Navigator.pop(context);
+                  //                 Navigator.push(
+                  //                   context,
+                  //                   MaterialPageRoute(
+                  //                     builder: (context) => ChatScreen(
+                  //                       contact:
+                  //                           contact,
+                  //                     ),
+                  //                   ),
+                  //                 );
+                  //               },
+                  //               leading: CircleAvatar(
+                  //                 child: Text(contact.initials()),
+                  //               ),
+                  //               title: Text(contact.displayName ?? '-', style: StyleText(),),
+                  //               subtitle: Text(
+                  //                 contact.phones!.isNotEmpty
+                  //                     ? contact.phones!.first.value ?? ''
+                  //                     : '', style: StyleText(),
+                  //               ),
+                  //             );
+                  //           },
+                  //         );
+                  //       }
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
             );
@@ -962,7 +961,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                       ' ${user.name} ' +
                                       'successfully'.tr(),
                                   icon: Icons.info,
-                                  color: Colors.red,
+                                  color: Colors.orange,
                                 );
                               },
                               child: Text(
@@ -1084,7 +1083,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     group.id, _authService.user!.uid);
                                 Navigator.pop(context);
                                 _alertService.showToast(
-                                  text: 'left_group' + " ${group.name}?",
+                                  text: 'left_group' + " ${group.name}",
                                   icon: Icons.info,
                                   color: Colors.orange,
                                 );
