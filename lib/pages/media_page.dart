@@ -4,6 +4,7 @@ import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -198,10 +199,14 @@ class _MediaPageState extends State<MediaPage> {
             return Container();
           }
 
-          final linkMessages = snapshot.data!.docs.expand((doc) {
-            return (doc['messages'] as List)
-                .where((msg) => msg['messageType'] == 'Text' && _isUrl(msg['content']));
-          }).toList().reversed.toList();
+          final linkMessages = snapshot.data!.docs
+              .expand((doc) {
+                return (doc['messages'] as List).where((msg) =>
+                    msg['messageType'] == 'Text' && _isUrl(msg['content']));
+              })
+              .toList()
+              .reversed
+              .toList();
 
           if (linkMessages.isEmpty) {
             return Container();
@@ -213,20 +218,22 @@ class _MediaPageState extends State<MediaPage> {
               var document = linkMessages[index];
               var contentUrl = document['content'];
               var timestamp = (document['sentAt'] as Timestamp).toDate();
-              var formattedDate = DateFormat('dd MMM yyyy HH:mm').format(timestamp);
+              var formattedDate =
+                  DateFormat('dd MMM yyyy HH:mm').format(timestamp);
               void _launchURL(String url) async {
                 final Uri uri = Uri.parse(url);
                 if (!await launchUrl(uri)) {
                   throw Exception('Could not launch $uri');
                 }
               }
+
               return Column(
                 children: [
                   Container(
                     padding: EdgeInsets.only(left: 15, right: 15),
                     child: AnyLinkPreview(
                       displayDirection: UIDirection.uiDirectionHorizontal,
-                        link: contentUrl,
+                      link: contentUrl,
                       onTap: () => _launchURL(contentUrl),
                       showMultimedia: true,
                       errorBody: '',
@@ -263,11 +270,16 @@ class _MediaPageState extends State<MediaPage> {
             ),
           );
         }
-        final mediaItems = snapshot.data!.docs.expand((doc) {
-          var messages = doc['messages'] as List;
-          return messages.where((msg) =>
-              msg['messageType'] == 'Image' || msg['messageType'] == 'Video');
-        }).toList().reversed.toList();
+        final mediaItems = snapshot.data!.docs
+            .expand((doc) {
+              var messages = doc['messages'] as List;
+              return messages.where((msg) =>
+                  msg['messageType'] == 'Image' ||
+                  msg['messageType'] == 'Video');
+            })
+            .toList()
+            .reversed
+            .toList();
 
         return SingleChildScrollView(
           child: Container(
@@ -330,7 +342,7 @@ class _MediaPageState extends State<MediaPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => VideoPlayer(
+                              builder: (context) => VideoPlayerScreen(
                                 videoUrl: contentUrl,
                                 chatUser: widget.chatUser,
                                 formatDate: formattedDate,
@@ -378,10 +390,14 @@ class _MediaPageState extends State<MediaPage> {
             return Container();
           }
 
-          final documentMessages = snapshot.data!.docs.expand((doc) {
-            return (doc['messages'] as List)
-                .where((msg) => msg['messageType'] == 'Document');
-          }).toList().reversed.toList();
+          final documentMessages = snapshot.data!.docs
+              .expand((doc) {
+                return (doc['messages'] as List)
+                    .where((msg) => msg['messageType'] == 'Document');
+              })
+              .toList()
+              .reversed
+              .toList();
 
           if (documentMessages.isEmpty) {
             return Container();
@@ -447,7 +463,11 @@ class _MediaPageState extends State<MediaPage> {
             ],
           ),
         ),
-        Divider(height: 1, indent: 15, endIndent: 15,),
+        Divider(
+          height: 1,
+          indent: 15,
+          endIndent: 15,
+        ),
       ],
     );
   }
@@ -488,9 +508,7 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
           },
         );
         _alertService.showToast(
-            text: 'file_download'.tr(),
-            icon: Icons.check,
-            color: Colors.green);
+            text: 'file_download'.tr(), icon: Icons.check, color: Colors.green);
       } catch (e) {
         _alertService.showToast(
             text: 'file_error_download'.tr(),
@@ -812,55 +830,27 @@ class _ImageViewState extends State<ImageView> {
   }
 }
 
-class VideoPlayer extends StatefulWidget {
+class VideoPlayerScreen extends StatefulWidget {
   final String videoUrl;
   final UserProfile chatUser;
   final String formatDate;
 
-  const VideoPlayer({
+  VideoPlayerScreen({
     required this.videoUrl,
     required this.chatUser,
     required this.formatDate,
   });
 
   @override
-  _VideoPlayerState createState() => _VideoPlayerState();
+  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
 }
 
-class _VideoPlayerState extends State<VideoPlayer> {
-  late vp.VideoPlayerController _controller;
-  vp.VideoPlayerValue? _videoValue;
+class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+  late FlickManager flickManager;
   final GetIt _getIt = GetIt.instance;
   late AlertService _alertService;
   double _progress = 0.0;
   bool _isDownloading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = vp.VideoPlayerController.network(widget.videoUrl)
-      ..initialize().then((_) {
-        setState(() {
-          _controller.play();
-          _videoValue = _controller.value;
-        });
-      });
-
-    _controller.addListener(() {
-      setState(() {
-        _videoValue = _controller.value;
-      });
-    });
-
-    _alertService = _getIt.get<AlertService>();
-  }
-
-  @override
-  void dispose() {
-    _controller.removeListener(() {});
-    _controller.dispose();
-    super.dispose();
-  }
 
   Future<void> _downloadVideo(String url) async {
     try {
@@ -926,12 +916,23 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    flickManager = FlickManager(
+      videoPlayerController: VideoPlayerController.network(widget.videoUrl),
+    );
+    _alertService = _getIt.get<AlertService>();
+  }
+
+  @override
+  void dispose() {
+    flickManager.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final duration = _videoValue?.duration ?? Duration.zero;
-    final position = _videoValue?.position ?? Duration.zero;
-    final isPlaying = _videoValue?.isPlaying ?? false;
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: true,
         centerTitle: false,
@@ -974,124 +975,520 @@ class _VideoPlayerState extends State<VideoPlayer> {
               duration: Duration(milliseconds: 300),
               child: _isDownloading
                   ? Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 27,
-                          height: 27,
-                          child: CircularProgressIndicator(
-                            value: _progress / 100,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                            strokeWidth: 2.0,
-                            key: ValueKey<int>(1),
-                          ),
-                        ),
-                        Text(
-                          '${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(
-                            color: Colors.white,
-                            fontSize: 7,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    )
-                  : Icon(
-                      Icons.file_download_outlined,
-                      color: Colors.white,
-                      key: ValueKey<int>(0),
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 27,
+                    height: 27,
+                    child: CircularProgressIndicator(
+                      value: _progress / 100,
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2.0,
+                      key: ValueKey<int>(1),
                     ),
+                  ),
+                  Text(
+                    '${_progress.toStringAsFixed(0)}%',
+                    style: StyleText(
+                      color: Colors.white,
+                      fontSize: 7,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+                  : Icon(
+                Icons.file_download_outlined,
+                color: Colors.white,
+                key: ValueKey<int>(0),
+              ),
             ),
           ),
         ],
       ),
       body: Expanded(
-        child: Center(
-          child: _controller.value.isInitialized
-              ? Stack(
-                  children: [
-                    vp.VideoPlayer(_controller),
-                    if (_controller.value.isInitialized)
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isPlaying
-                                  ? _controller.pause()
-                                  : _controller.play();
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isPlaying
-                                  ? Colors.white.withOpacity(0.3)
-                                  : Colors.white,
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Icon(
-                              isPlaying ? Icons.pause : Icons.play_arrow,
-                              color: Colors.black,
-                              size: 40.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (_controller.value.isInitialized)
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _formatDuration(position),
-                                  style: StyleText(),
-                                ),
-                                Text(
-                                  _formatDuration(duration),
-                                  style: StyleText(),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ValueListenableBuilder(
-                            valueListenable: _controller,
-                            builder:
-                                (context, VideoPlayerValue value, child) {
-                              return Slider(
-                                value: value.position.inSeconds
-                                    .toDouble()
-                                    .clamp(
-                                        0.0,
-                                        value.duration.inSeconds
-                                            .toDouble()),
-                                min: 0.0,
-                                max: value.duration.inSeconds.toDouble(),
-                                onChanged: (newValue) {
-                                  _controller.seekTo(
-                                      Duration(seconds: newValue.toInt()));
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                  ],
-                )
-              : CircularProgressIndicator(), // Show loading indicator
+        child: FlickVideoPlayer(
+          flickManager: flickManager,
         ),
       ),
     );
   }
-
-  String _formatDuration(Duration duration) {
-    final int minutes = duration.inMinutes;
-    final int seconds = duration.inSeconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
 }
+
+// class VideoPlayerScreen extends StatefulWidget {
+//   final String videoUrl;
+//   final UserProfile chatUser;
+//   final String formatDate;
+//
+//   VideoPlayerScreen({
+//     required this.videoUrl,
+//     required this.chatUser,
+//     required this.formatDate,
+//   });
+//
+//   @override
+//   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+// }
+//
+// class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+//   late VideoPlayerController _videoPlayerController;
+//   ChewieController? _chewieController;
+//   final GetIt _getIt = GetIt.instance;
+//   late AlertService _alertService;
+//   double _progress = 0.0;
+//   bool _isDownloading = false;
+//
+//   Future<void> _downloadVideo(String url) async {
+//     try {
+//       setState(() {
+//         _isDownloading = true;
+//       });
+//
+//       final tempDir = await getTemporaryDirectory();
+//       final tempPath = "${tempDir.path}/temp_video.mp4";
+//
+//       await FileDownloader.downloadFile(
+//         url: url,
+//         name: "temp_video.mp4",
+//         onDownloadCompleted: (filePath) async {
+//           final compressedVideo = await VideoCompress.compressVideo(
+//             filePath,
+//             quality: VideoQuality.LowQuality,
+//             deleteOrigin: true,
+//           );
+//
+//           if (compressedVideo != null) {
+//             final downloadsDir = Directory('/storage/emulated/0/Download');
+//             final destinationPath = "${downloadsDir.path}/compressed_video.mp4";
+//
+//             await compressedVideo.file!.copy(destinationPath);
+//
+//             setState(() {
+//               _alertService.showToast(
+//                 text: 'download_video'.tr(),
+//                 icon: Icons.check,
+//                 color: Colors.green,
+//               );
+//             });
+//           } else {
+//             throw 'Video compression failed';
+//           }
+//         },
+//         onDownloadError: (error) {
+//           setState(() {
+//             _alertService.showToast(
+//               text: 'failed_download_video'.tr(),
+//               icon: Icons.error,
+//               color: Colors.red,
+//             );
+//           });
+//         },
+//       );
+//     } catch (e) {
+//       print("Error: $e");
+//       setState(() {
+//         _alertService.showToast(
+//           text: 'failed_download_video'.tr(),
+//           icon: Icons.error,
+//           color: Colors.red,
+//         );
+//       });
+//     } finally {
+//       setState(() {
+//         _isDownloading = false;
+//         _progress = 0.0;
+//       });
+//     }
+//   }
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _videoPlayerController = VideoPlayerController.network(widget.videoUrl);
+//     _chewieController = ChewieController(
+//       videoPlayerController: _videoPlayerController,
+//       autoPlay: true,
+//       looping: false,
+//       fullScreenByDefault: true,
+//     );
+//     _alertService = _getIt.get<AlertService>();
+//   }
+//
+//   @override
+//   void dispose() {
+//     _videoPlayerController.dispose();
+//     _chewieController?.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         automaticallyImplyLeading: true,
+//         centerTitle: false,
+//         backgroundColor: Theme.of(context).colorScheme.primary,
+//         leading: IconButton(
+//           icon: Icon(
+//             Icons.arrow_back,
+//             color: Colors.white,
+//           ),
+//           onPressed: () {
+//             Navigator.pop(context);
+//           },
+//         ),
+//         title: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text(
+//               widget.chatUser.name.toString(),
+//               style: StyleText(
+//                 color: Colors.white,
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//             Text(
+//               widget.formatDate,
+//               style: StyleText(
+//                 color: Colors.white,
+//                 fontSize: 10,
+//               ),
+//             ),
+//           ],
+//         ),
+//         actions: [
+//           IconButton(
+//             onPressed: () async {
+//               await _downloadVideo(widget.videoUrl);
+//             },
+//             icon: AnimatedSwitcher(
+//               duration: Duration(milliseconds: 300),
+//               child: _isDownloading
+//                   ? Stack(
+//                       alignment: Alignment.center,
+//                       children: [
+//                         Container(
+//                           width: 27,
+//                           height: 27,
+//                           child: CircularProgressIndicator(
+//                             value: _progress / 100,
+//                             valueColor:
+//                                 AlwaysStoppedAnimation<Color>(Colors.white),
+//                             strokeWidth: 2.0,
+//                             key: ValueKey<int>(1),
+//                           ),
+//                         ),
+//                         Text(
+//                           '${_progress.toStringAsFixed(0)}%',
+//                           style: StyleText(
+//                             color: Colors.white,
+//                             fontSize: 7,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       ],
+//                     )
+//                   : Icon(
+//                       Icons.file_download_outlined,
+//                       color: Colors.white,
+//                       key: ValueKey<int>(0),
+//                     ),
+//             ),
+//           ),
+//         ],
+//       ),
+//       body: Center(
+//         child: _chewieController != null &&
+//                 _chewieController!.videoPlayerController.value.isInitialized
+//             ? Chewie(controller: _chewieController!)
+//             : CircularProgressIndicator(),
+//       ),
+//     );
+//   }
+// }
+
+// class VideoPlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final UserProfile chatUser;
+//   final String formatDate;
+//
+//   const VideoPlayer({
+//     required this.videoUrl,
+//     required this.chatUser,
+//     required this.formatDate,
+//   });
+//
+//   @override
+//   _VideoPlayerState createState() => _VideoPlayerState();
+// }
+//
+// class _VideoPlayerState extends State<VideoPlayer> {
+//   late vp.VideoPlayerController _controller;
+//   vp.VideoPlayerValue? _videoValue;
+//   final GetIt _getIt = GetIt.instance;
+//   late AlertService _alertService;
+//   double _progress = 0.0;
+//   bool _isDownloading = false;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = vp.VideoPlayerController.network(widget.videoUrl)
+//       ..initialize().then((_) {
+//         setState(() {
+//           _controller.play();
+//           _videoValue = _controller.value;
+//         });
+//       });
+//
+//     _controller.addListener(() {
+//       setState(() {
+//         _videoValue = _controller.value;
+//       });
+//     });
+//
+//     _alertService = _getIt.get<AlertService>();
+//   }
+//
+//   @override
+//   void dispose() {
+//     _controller.removeListener(() {});
+//     _controller.dispose();
+//     super.dispose();
+//   }
+//
+//   Future<void> _downloadVideo(String url) async {
+//     try {
+//       setState(() {
+//         _isDownloading = true;
+//       });
+//
+//       final tempDir = await getTemporaryDirectory();
+//       final tempPath = "${tempDir.path}/temp_video.mp4";
+//
+//       await FileDownloader.downloadFile(
+//         url: url,
+//         name: "temp_video.mp4",
+//         onDownloadCompleted: (filePath) async {
+//           final compressedVideo = await VideoCompress.compressVideo(
+//             filePath,
+//             quality: VideoQuality.LowQuality,
+//             deleteOrigin: true,
+//           );
+//
+//           if (compressedVideo != null) {
+//             final downloadsDir = Directory('/storage/emulated/0/Download');
+//             final destinationPath = "${downloadsDir.path}/compressed_video.mp4";
+//
+//             await compressedVideo.file!.copy(destinationPath);
+//
+//             setState(() {
+//               _alertService.showToast(
+//                 text: 'download_video'.tr(),
+//                 icon: Icons.check,
+//                 color: Colors.green,
+//               );
+//             });
+//           } else {
+//             throw 'Video compression failed';
+//           }
+//         },
+//         onDownloadError: (error) {
+//           setState(() {
+//             _alertService.showToast(
+//               text: 'failed_download_video'.tr(),
+//               icon: Icons.error,
+//               color: Colors.red,
+//             );
+//           });
+//         },
+//       );
+//     } catch (e) {
+//       print("Error: $e");
+//       setState(() {
+//         _alertService.showToast(
+//           text: 'failed_download_video'.tr(),
+//           icon: Icons.error,
+//           color: Colors.red,
+//         );
+//       });
+//     } finally {
+//       setState(() {
+//         _isDownloading = false;
+//         _progress = 0.0;
+//       });
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final duration = _videoValue?.duration ?? Duration.zero;
+//     final position = _videoValue?.position ?? Duration.zero;
+//     final isPlaying = _videoValue?.isPlaying ?? false;
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       appBar: AppBar(
+//         automaticallyImplyLeading: true,
+//         centerTitle: false,
+//         backgroundColor: Theme.of(context).colorScheme.primary,
+//         leading: IconButton(
+//           icon: Icon(
+//             Icons.arrow_back,
+//             color: Colors.white,
+//           ),
+//           onPressed: () {
+//             Navigator.pop(context);
+//           },
+//         ),
+//         title: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text(
+//               widget.chatUser.name.toString(),
+//               style: StyleText(
+//                 color: Colors.white,
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//             Text(
+//               widget.formatDate,
+//               style: StyleText(
+//                 color: Colors.white,
+//                 fontSize: 10,
+//               ),
+//             ),
+//           ],
+//         ),
+//         actions: [
+//           IconButton(
+//             onPressed: () async {
+//               await _downloadVideo(widget.videoUrl);
+//             },
+//             icon: AnimatedSwitcher(
+//               duration: Duration(milliseconds: 300),
+//               child: _isDownloading
+//                   ? Stack(
+//                       alignment: Alignment.center,
+//                       children: [
+//                         Container(
+//                           width: 27,
+//                           height: 27,
+//                           child: CircularProgressIndicator(
+//                             value: _progress / 100,
+//                             valueColor:
+//                                 AlwaysStoppedAnimation<Color>(Colors.white),
+//                             strokeWidth: 2.0,
+//                             key: ValueKey<int>(1),
+//                           ),
+//                         ),
+//                         Text(
+//                           '${_progress.toStringAsFixed(0)}%',
+//                           style: StyleText(
+//                             color: Colors.white,
+//                             fontSize: 7,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       ],
+//                     )
+//                   : Icon(
+//                       Icons.file_download_outlined,
+//                       color: Colors.white,
+//                       key: ValueKey<int>(0),
+//                     ),
+//             ),
+//           ),
+//         ],
+//       ),
+//       body: Expanded(
+//         child: Center(
+//           child: _controller.value.isInitialized
+//               ? Stack(
+//                   children: [
+//                     vp.VideoPlayer(_controller),
+//                     if (_controller.value.isInitialized)
+//                       Center(
+//                         child: GestureDetector(
+//                           onTap: () {
+//                             setState(() {
+//                               isPlaying
+//                                   ? _controller.pause()
+//                                   : _controller.play();
+//                             });
+//                           },
+//                           child: Container(
+//                             decoration: BoxDecoration(
+//                               shape: BoxShape.circle,
+//                               color: isPlaying
+//                                   ? Colors.white.withOpacity(0.3)
+//                                   : Colors.white,
+//                             ),
+//                             padding: EdgeInsets.all(16),
+//                             child: Icon(
+//                               isPlaying ? Icons.pause : Icons.play_arrow,
+//                               color: Colors.black,
+//                               size: 40.0,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                     if (_controller.value.isInitialized)
+//                       Column(
+//                         mainAxisAlignment: MainAxisAlignment.end,
+//                         children: [
+//                           Container(
+//                             padding: EdgeInsets.symmetric(horizontal: 16.0),
+//                             child: Row(
+//                               mainAxisAlignment:
+//                                   MainAxisAlignment.spaceBetween,
+//                               children: [
+//                                 Text(
+//                                   _formatDuration(position),
+//                                   style: StyleText(),
+//                                 ),
+//                                 Text(
+//                                   _formatDuration(duration),
+//                                   style: StyleText(),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                           ValueListenableBuilder(
+//                             valueListenable: _controller,
+//                             builder:
+//                                 (context, VideoPlayerValue value, child) {
+//                               return Slider(
+//                                 value: value.position.inSeconds
+//                                     .toDouble()
+//                                     .clamp(
+//                                         0.0,
+//                                         value.duration.inSeconds
+//                                             .toDouble()),
+//                                 min: 0.0,
+//                                 max: value.duration.inSeconds.toDouble(),
+//                                 onChanged: (newValue) {
+//                                   _controller.seekTo(
+//                                       Duration(seconds: newValue.toInt()));
+//                                 },
+//                               );
+//                             },
+//                           ),
+//                         ],
+//                       ),
+//                   ],
+//                 )
+//               : CircularProgressIndicator(), // Show loading indicator
+//         ),
+//       ),
+//     );
+//   }
+//
+//   String _formatDuration(Duration duration) {
+//     final int minutes = duration.inMinutes;
+//     final int seconds = duration.inSeconds % 60;
+//     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+//   }
+// }
