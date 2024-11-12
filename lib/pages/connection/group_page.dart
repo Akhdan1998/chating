@@ -765,6 +765,7 @@ class _GroupPageState extends State<GroupPage> {
             },
             messageTextBuilder: (ChatMessage message,
                 ChatMessage? previousMessage, ChatMessage? nextMessage) {
+
               bool isURL(String text) {
                 final Uri? uri = Uri.tryParse(text);
                 return uri != null &&
@@ -829,8 +830,7 @@ class _GroupPageState extends State<GroupPage> {
                       link: firstURL,
                       showMultimedia: true,
                       onTap: () => _launchURL(firstURL),
-                      errorBody: 'link_body'.tr(),
-                      errorTitle: 'link_title'.tr(),
+                      errorBody: '',
                       bodyStyle: StyleText(fontSize: 12),
                       errorWidget: Container(
                         height: 200,

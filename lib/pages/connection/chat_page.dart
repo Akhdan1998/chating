@@ -28,6 +28,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'package:video_player/video_player.dart';
@@ -340,13 +341,13 @@ class _ChatPageState extends State<ChatPage> {
       await _databaseService.deleteMessage(
           currentUser!.id, otherUser!.id, message.user.id);
       _alertService.showToast(
-        text: 'Message deleted!',
+        text: 'del'.tr(),
         icon: Icons.check,
         color: Colors.green,
       );
     } catch (e) {
       _alertService.showToast(
-        text: 'Failed to delete message',
+        text: 'failed_del'.tr(),
         icon: Icons.error,
         color: Colors.red,
       );
@@ -655,368 +656,6 @@ class _ChatPageState extends State<ChatPage> {
       body: _buildUI(),
     );
   }
-
-  // Widget _buildUI() {
-  //   return StreamBuilder(
-  //     stream: _databaseService.getChatData(currentUser!.id, otherUser!.id),
-  //     builder: (context, snapshot) {
-  //       if (!snapshot.hasData || snapshot.data == null) {
-  //         return Container();
-  //       }
-  //
-  //       Chat? chat = snapshot.data!.data();
-  //       List<ChatMessage> messages = chat?.messages != null
-  //           ? _generateChatMessageList(chat!.messages!)
-  //           : [];
-  //
-  //       if (messages.isNotEmpty) {
-  //         ChatMessage latestMessage = messages.first;
-  //         bool isNewMessage = latestMessage.createdAt
-  //             .isAfter(DateTime.now().subtract(Duration(milliseconds: 500)));
-  //
-  //         if (isNewMessage && latestMessage.user.id != currentUser!.id) {
-  //           _showNotification(latestMessage.text);
-  //         }
-  //       }
-  //
-  //       return DashChat(
-  //         quickReplyOptions: QuickReplyOptions(),
-  //         messageListOptions: MessageListOptions(),
-  //         messageOptions: MessageOptions(
-  //           maxWidth: 250,
-  //           textBeforeMedia: true,
-  //           showOtherUsersName: false,
-  //           showCurrentUserAvatar: false,
-  //           showOtherUsersAvatar: false,
-  //           onLongPressMessage: (ChatMessage message) {
-  //             _showPopup(context, message);
-  //           },
-  //           messageDecorationBuilder: (ChatMessage message,
-  //               ChatMessage? previousMessage, ChatMessage? nextMessage) {
-  //             bool isUser = message.user.id == currentUser!.id;
-  //             return BoxDecoration(
-  //               color: isUser
-  //                   ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
-  //                   : Colors.grey[300],
-  //               borderRadius: BorderRadius.circular(12),
-  //             );
-  //           },
-  //           messageTextBuilder: (ChatMessage message,
-  //               ChatMessage? previousMessage, ChatMessage? nextMessage) {
-  //             bool isURL(String text) {
-  //               final Uri? uri = Uri.tryParse(text);
-  //               return uri != null &&
-  //                   (uri.isScheme('http') || uri.isScheme('https'));
-  //             }
-  //
-  //             void _launchURL(String url) async {
-  //               final Uri uri = Uri.parse(url);
-  //               if (!await launchUrl(uri)) {
-  //                 throw Exception('Could not launch $uri');
-  //               }
-  //             }
-  //
-  //             List<TextSpan> _buildTextSpans(String text) {
-  //               final List<TextSpan> spans = [];
-  //               final RegExp urlPattern = RegExp(r'(https?://[^\s]+)');
-  //               final Iterable<Match> matches = urlPattern.allMatches(text);
-  //               int lastMatchEnd = 0;
-  //
-  //               for (final Match match in matches) {
-  //                 if (match.start > lastMatchEnd) {
-  //                   spans.add(
-  //                     TextSpan(
-  //                       text: text.substring(lastMatchEnd, match.start),
-  //                       style: StyleText(
-  //                         color: Colors.black87,
-  //                         fontSize: 15,
-  //                       ),
-  //                     ),
-  //                   );
-  //                 }
-  //
-  //                 spans.add(
-  //                   TextSpan(
-  //                     text: match.group(0),
-  //                     style: StyleText(color: Colors.blue),
-  //                     recognizer: TapGestureRecognizer()
-  //                       ..onTap = () => _launchURL(match.group(0)!),
-  //                   ),
-  //                 );
-  //                 lastMatchEnd = match.end;
-  //               }
-  //
-  //               if (lastMatchEnd < text.length) {
-  //                 spans.add(TextSpan(
-  //                   text: text.substring(lastMatchEnd),
-  //                   style: StyleText(
-  //                     color: Colors.black87,
-  //                     fontSize: 15,
-  //                   ),
-  //                 ));
-  //               }
-  //
-  //               return spans;
-  //             }
-  //
-  //             if (message.customProperties?['audioUrl'] != null) {
-  //               String audioUrl = message.customProperties!['audioUrl'];
-  //               bool isCurrentlyPlaying =
-  //                   (isPlaying && currentAudioUrl == audioUrl);
-  //
-  //               return Column(
-  //                 children: [
-  //                   Row(
-  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                     crossAxisAlignment: CrossAxisAlignment.center,
-  //                     children: [
-  //                       GestureDetector(
-  //                         onTap: () async {
-  //                           setState(() {
-  //                             if (!isCurrentlyPlaying) {
-  //                               isPlaying = true;
-  //                               currentAudioUrl = audioUrl;
-  //                             } else {
-  //                               isPlaying = false;
-  //                             }
-  //                           });
-  //
-  //                           if (isPlaying) {
-  //                             await audioPlayer.play(UrlSource(audioUrl));
-  //                           } else {
-  //                             await audioPlayer.pause();
-  //                           }
-  //                         },
-  //                         child: Container(
-  //                           color: Colors.transparent,
-  //                           child: Icon(
-  //                             isCurrentlyPlaying
-  //                                 ? Icons.pause
-  //                                 : Icons.play_arrow,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                       Expanded(
-  //                         child: Row(
-  //                           children: [
-  //                             Container(
-  //                               height: 10,
-  //                               width: MediaQuery.of(context).size.width - 233,
-  //                               child: Slider(
-  //                                 min: 0,
-  //                                 max: duration.inSeconds.toDouble(),
-  //                                 value: isCurrentlyPlaying
-  //                                     ? position.inSeconds.toDouble()
-  //                                     : 0,
-  //                                 inactiveColor: Colors.grey,
-  //                                 onChanged: (value) async {
-  //                                   setState(() {
-  //                                     position =
-  //                                         Duration(seconds: value.toInt());
-  //                                   });
-  //                                   await audioPlayer.seek(position);
-  //                                   await audioPlayer.resume();
-  //                                 },
-  //                               ),
-  //                             ),
-  //                             Text(
-  //                               isCurrentlyPlaying
-  //                                   ? "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}"
-  //                                   : "0:00",
-  //                               style: StyleText(fontSize: 10),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   Container(
-  //                     alignment: Alignment.centerRight,
-  //                     child: Text(
-  //                       DateFormat('HH:mm').format(message.createdAt),
-  //                       style: StyleText(
-  //                         color: Colors.black87,
-  //                         fontSize: 12,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               );
-  //             } else if (isURL(message.text)) {
-  //               return Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   AnyLinkPreview(
-  //                     link: message.text,
-  //                     showMultimedia: true,
-  //                     onTap: () => _launchURL(message.text),
-  //                     errorBody: 'link_body'.tr(),
-  //                     errorTitle: 'link_title'.tr(),
-  //                     bodyStyle: StyleText(fontSize: 12),
-  //                     errorWidget: Container(
-  //                       height: 200,
-  //                       width: MediaQuery.of(context).size.width,
-  //                       color: Colors.grey[300],
-  //                       child: Icon(Icons.image_not_supported_sharp),
-  //                     ),
-  //                     errorImage: "https://google.com/",
-  //                     cache: Duration(seconds: 3),
-  //                     borderRadius: 12,
-  //                     removeElevation: false,
-  //                   ),
-  //                   SizedBox(height: 8),
-  //                   RichText(
-  //                     text: TextSpan(
-  //                       children: _buildTextSpans(message.text),
-  //                     ),
-  //                   ),
-  //                   Container(
-  //                     alignment: Alignment.centerRight,
-  //                     child: Text(
-  //                       DateFormat('HH:mm').format(message.createdAt),
-  //                       style: StyleText(
-  //                         color: Colors.black87,
-  //                         fontSize: 12,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               );
-  //             } else {
-  //               return Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   RichText(
-  //                     text: TextSpan(
-  //                       children: _buildTextSpans(message.text),
-  //                     ),
-  //                   ),
-  //                   Container(
-  //                     alignment: Alignment.centerRight,
-  //                     child: Text(
-  //                       DateFormat('HH:mm').format(message.createdAt),
-  //                       style: StyleText(
-  //                         color: Colors.black87,
-  //                         fontSize: 12,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               );
-  //             }
-  //           },
-  //           onTapMedia: (media) async {
-  //             if (media.type == MediaType.image) {
-  //               Navigator.push(
-  //                 context,
-  //                 MaterialPageRoute(
-  //                   builder: (context) => FullScreenImageView(
-  //                     imageUrl: media.url,
-  //                     chatUser: widget.chatUser,
-  //                     dateTime: media.uploadedDate ?? DateTime.now(),
-  //                   ),
-  //                 ),
-  //               );
-  //             } else if (media.type == MediaType.file) {
-  //               final Uri url = Uri.parse(media.url);
-  //               String fileName = media.fileName;
-  //               DateTime dateTime = media.uploadedDate ?? DateTime.now();
-  //               await _downloadAndOpenPDF(url.toString(), fileName, dateTime);
-  //             } else if (media.type == MediaType.video) {
-  //               Navigator.push(
-  //                 context,
-  //                 MaterialPageRoute(
-  //                   builder: (context) => FullScreenVideoPlayer(
-  //                     videoUrl: media.url,
-  //                     chatUser: widget.chatUser,
-  //                     dateTime: media.uploadedDate ?? DateTime.now(),
-  //                   ),
-  //                 ),
-  //               );
-  //             }
-  //           },
-  //         ),
-  //         inputOptions: InputOptions(
-  //           textCapitalization: TextCapitalization.sentences,
-  //           alwaysShowSend: true,
-  //           inputDecoration: InputDecoration(
-  //             fillColor: Colors.grey.shade200,
-  //             filled: true,
-  //             hintText: "typing".tr(),
-  //             hintStyle: StyleText(color: Colors.black38),
-  //             border: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(20),
-  //             borderSide: BorderSide.none,
-  //             ),
-  //             contentPadding: EdgeInsets.symmetric(horizontal: 10),
-  //           ),
-  //           leading: [
-  //             PopupMenuButton(
-  //               icon: Icon(
-  //                 Icons.add,
-  //                 color: Theme.of(context).colorScheme.primary,
-  //               ),
-  //               itemBuilder: (context) => [
-  //                 PopupMenuItem(
-  //                   child: _mediaMessageGallery(context),
-  //                 ),
-  //                 PopupMenuItem(
-  //                   child: _mediaMessageCamera(context),
-  //                 ),
-  //                 PopupMenuItem(
-  //                   child: ListTile(
-  //                     onTap: () {
-  //                       Navigator.pop(context);
-  //                       uploadFile();
-  //                     },
-  //                     title: Icon(
-  //                       Icons.file_present,
-  //                       color: Colors.blue,
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 PopupMenuItem(
-  //                   child: _mediaMessageVideoGallery(context),
-  //                 ),
-  //                 PopupMenuItem(
-  //                   child: _mediaMessageVideoCamera(context),
-  //                 ),
-  //               ],
-  //             ),
-  //             GestureDetector(
-  //               onTap: () async {
-  //                 setState(() {
-  //                   play = !play;
-  //                 });
-  //                 if (recorder.isRecording) {
-  //                   await soundStop();
-  //                   setState(() {});
-  //                 } else {
-  //                   await soundRecord();
-  //                   setState(() {});
-  //                 }
-  //               },
-  //               child: Container(
-  //                 color: Colors.transparent,
-  //                 padding: EdgeInsets.only(right: 10),
-  //                 child: Icon(
-  //                   (play == false)
-  //                       ? Icons.keyboard_voice_rounded
-  //                       : Icons.pause,
-  //                   color: Theme.of(context).colorScheme.primary,
-  //                   size: 21,
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         currentUser: currentUser!,
-  //         onSend: _sendMessage,
-  //         messages: messages,
-  //       );
-  //     },
-  //   );
-  // }
 
   Widget _buildUI() {
     return StreamBuilder(
@@ -1629,7 +1268,7 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
               _isDownloading = false;
               _progress = 0.0;
               _alertService.showToast(
-                text: 'Image downloaded successfully',
+                text: 'download_image'.tr(),
                 icon: Icons.check,
                 color: Colors.green,
               );
@@ -1638,10 +1277,11 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
         },
         onDownloadError: (error) {
           setState(() {
+            print('Error" ${error}');
             _isDownloading = false;
             _progress = 0.0;
             _alertService.showToast(
-              text: 'Failed to download image: $error',
+              text: 'failed_download_image'.tr(),
               icon: Icons.error,
               color: Colors.red,
             );
@@ -1649,12 +1289,12 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
         },
       );
     } catch (e) {
-      print(e);
+      print("Error: ${e}");
       setState(() {
         _isDownloading = false;
         _progress = 0.0;
         _alertService.showToast(
-          text: 'Failed to download image: $e',
+          text: 'failed_download_image'.tr(),
           icon: Icons.error,
           color: Colors.red,
         );
@@ -1805,7 +1445,7 @@ class _PDFViewPageState extends State<PDFViewPage> {
 
       setState(() {
         _alertService.showToast(
-          text: 'Image downloaded successfully',
+          text: 'file_download'.tr(),
           icon: Icons.check,
           color: Colors.green,
         );
@@ -1815,7 +1455,7 @@ class _PDFViewPageState extends State<PDFViewPage> {
       print('--------- $e');
       setState(() {
         _alertService.showToast(
-          text: 'Error downloading file',
+          text: 'file_error_download'.tr(),
           icon: Icons.error,
           color: Colors.red,
         );
@@ -1987,52 +1627,6 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     super.dispose();
   }
 
-  // Future<void> _downloadVideo(String url) async {
-  //   try {
-  //     setState(() {
-  //       _isDownloading = true;
-  //     });
-  //
-  //     // Unduh video dan simpan ke penyimpanan lokal
-  //     await FileDownloader.downloadFile(
-  //       url: url,
-  //       name: "downloaded_video.mp4",
-  //       onDownloadCompleted: (filePath) {
-  //         setState(() {
-  //           _alertService.showToast(
-  //             text: 'Video downloaded successfully',
-  //             icon: Icons.check,
-  //             color: Colors.green,
-  //           );
-  //         });
-  //       },
-  //       onDownloadError: (error) {
-  //         setState(() {
-  //           _alertService.showToast(
-  //             text: 'Failed to save video to gallery',
-  //             icon: Icons.error,
-  //             color: Colors.red,
-  //           );
-  //         });
-  //       },
-  //     );
-  //   } catch (e) {
-  //     print(e);
-  //     setState(() {
-  //       _alertService.showToast(
-  //         text: 'Failed to download video $e',
-  //         icon: Icons.error,
-  //         color: Colors.red,
-  //       );
-  //     });
-  //   } finally {
-  //     setState(() {
-  //       _isDownloading = false;
-  //       _progress = 0.0;
-  //     });
-  //   }
-  // }
-
   Future<void> _downloadVideo(String url) async {
     try {
       setState(() {
@@ -2060,19 +1654,21 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
 
             setState(() {
               _alertService.showToast(
-                text: 'Video berhasil dikompresi dan disimpan di Downloads',
+                text: 'download_video'.tr(),
                 icon: Icons.check,
                 color: Colors.green,
               );
             });
+            print('Video berhasil dikompresi dan disimpan di Downloads');
           } else {
             throw 'Video compression failed';
           }
         },
         onDownloadError: (error) {
           setState(() {
+            print('Error: ${error}');
             _alertService.showToast(
-              text: 'Failed to download video',
+              text: 'failed_download_video'.tr(),
               icon: Icons.error,
               color: Colors.red,
             );
@@ -2083,7 +1679,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
       print("Error: $e");
       setState(() {
         _alertService.showToast(
-          text: 'Failed to download video: $e',
+          text: 'failed_download_video'.tr(),
           icon: Icons.error,
           color: Colors.red,
         );

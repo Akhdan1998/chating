@@ -158,5 +158,9 @@
   "failed_leave_group": "Failed to leave group:",
   "failed_create_group": "Failed to create group!",
   "typing": "Type a message...",
-  "no_media": "No media found"
+  "no_media": "No media found",
+  "no_document": "No documents available",
+  "failed_del": "Failed to delete message",
+  "file_download": "File downloaded successfully",
+  "file_error_download": "Error downloading file"
 }
