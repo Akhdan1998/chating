@@ -730,7 +730,7 @@ class _GroupPageState extends State<GroupPage> {
         }
 
         var messages = snapshot.data!.docs;
-        if (messages.isEmpty) {
+        if (messages.isNotEmpty) {
           var newMessage = messages.last.data();
           if (newMessage['userId'] != currentUser?.id &&
               newMessage['text'] != null) {
@@ -765,12 +765,6 @@ class _GroupPageState extends State<GroupPage> {
             },
             messageTextBuilder: (ChatMessage message,
                 ChatMessage? previousMessage, ChatMessage? nextMessage) {
-              bool isURL(String text) {
-                final Uri? uri = Uri.tryParse(text);
-                return uri != null &&
-                    (uri.isScheme('http') || uri.isScheme('https'));
-              }
-
               void _launchURL(String url) async {
                 final Uri uri = Uri.parse(url);
                 if (!await launchUrl(uri)) {
@@ -836,7 +830,7 @@ class _GroupPageState extends State<GroupPage> {
                       errorWidget: Container(
                         height: 200,
                         width: MediaQuery.of(context).size.width,
-                        color: Colors.grey[300],
+                        color: Colors.grey,
                         child: Icon(Icons.image_not_supported_sharp),
                       ),
                       errorImage: "https://google.com/",
@@ -1199,65 +1193,6 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     }
   }
 
-  // Future<void> _downloadVideo(String url) async {
-  //   try {
-  //     var dio = Dio();
-  //     var tempDir = await getTemporaryDirectory();
-  //     String fullPath = '${tempDir.path}/video.mp4';
-  //     setState(() {
-  //       _isDownloading = true;
-  //     });
-  //     await dio.download(
-  //       url,
-  //       fullPath,
-  //       onReceiveProgress: (received, total) {
-  //         if (total != -1) {
-  //           double progress = (received / total * 100);
-  //           print("Download progress: $progress%");
-  //           setState(() {
-  //             _progress = progress;
-  //           });
-  //         }
-  //       },
-  //     );
-  //     File file = File(fullPath);
-  //     if (await file.exists()) {
-  //       final result = await ImageGallerySaver.saveFile(file.path);
-  //       if (result['isSuccess']) {
-  //         setState(() {
-  //           _alertService.showToast(
-  //             text: 'Video downloaded successfully',
-  //             icon: Icons.check,
-  //             color: Colors.green,
-  //           );
-  //         });
-  //       } else {
-  //         setState(() {
-  //           _alertService.showToast(
-  //             text: 'Failed to save video to gallery',
-  //             icon: Icons.error,
-  //             color: Colors.red,
-  //           );
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     setState(() {
-  //       _alertService.showToast(
-  //         text: 'Failed to download video $e',
-  //         icon: Icons.error,
-  //         color: Colors.red,
-  //       );
-  //     });
-  //   } finally {
-  //     setState(() {
-  //       _isDownloading = false;
-  //       _progress = 0.0;
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final duration = _videoValue?.duration ?? Duration.zero;
@@ -1265,7 +1200,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     final isPlaying = _videoValue?.isPlaying ?? false;
     DateTime date =
         DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
-    String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
+    String day = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(date);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -1417,14 +1352,6 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                                   );
                                 },
                               ),
-                              // Slider(
-                              //   value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
-                              //   min: 0.0,
-                              //   max: duration.inSeconds.toDouble(),
-                              //   onChanged: (value) {
-                              //     _controller.seekTo(Duration(seconds: value.toInt()));
-                              //   },
-                              // ),
                             ],
                           ),
                       ],
@@ -1536,74 +1463,15 @@ class _FullScreenImageState extends State<FullScreenImage> {
     }
   }
 
-  // Future<void> downloadImage(String url) async {
-  //   try {
-  //     var dio = Dio();
-  //     var tempDir = await getTemporaryDirectory();
-  //     String fullPath = tempDir.path + "/image.jpg";
-  //     setState(() {
-  //       _isDownloading = true;
-  //     });
-  //     await dio.download(
-  //       url,
-  //       fullPath,
-  //       onReceiveProgress: (received, total) {
-  //         if (total != -1) {
-  //           double progress = (received / total * 100);
-  //           print("Download progress: $progress%");
-  //           setState(() {
-  //             _progress = progress;
-  //           });
-  //         }
-  //       },
-  //     );
-  //     File file = File(fullPath);
-  //     if (await file.exists()) {
-  //       final result = await ImageGallerySaver.saveFile(file.path);
-  //       if (result['isSuccess']) {
-  //         setState(() {
-  //           _alertService.showToast(
-  //             text: 'Image downloaded successfully',
-  //             icon: Icons.check,
-  //             color: Colors.green,
-  //           );
-  //         });
-  //       } else {
-  //         setState(() {
-  //           _alertService.showToast(
-  //             text: 'Failed to save image to gallery',
-  //             icon: Icons.error,
-  //             color: Colors.red,
-  //           );
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     setState(() {
-  //       _alertService.showToast(
-  //         text: 'Failed to download image $e',
-  //         icon: Icons.error,
-  //         color: Colors.red,
-  //       );
-  //     });
-  //   } finally {
-  //     setState(() {
-  //       _isDownloading = false;
-  //       _progress = 0.0;
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     DateTime date =
         DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
-    String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
+    String day = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(date);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        centerTitle: false,
+        centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           icon: Icon(
@@ -1772,11 +1640,11 @@ class _PDFViewPageState extends State<PDFViewPage> {
   Widget build(BuildContext context) {
     DateTime date =
         DateFormat('yyyy-MM-dd hh:mm').parse(widget.dateTime.toString());
-    String day = DateFormat('yyyy-MM-dd HH:mm').format(date);
+    String day = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(date);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        centerTitle: false,
+        centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           icon: Icon(

@@ -13,15 +13,15 @@ import '../../utils.dart';
 
 class VideoCallScreen extends StatefulWidget {
   final UserProfile userProfile;
-  final String token;
-  final String channelName;
-  final int uid;
+  // final String token;
+  // final String channelName;
+  // final int uid;
 
   VideoCallScreen({
     required this.userProfile,
-    required this.token,
-    required this.channelName,
-    required this.uid,
+    // required this.token,
+    // required this.channelName,
+    // required this.uid,
   });
 
   @override
@@ -69,8 +69,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     super.initState();
     channelName = widget.userProfile.phoneNumber!;
     _alertService = _getIt.get<AlertService>();
-    // _initAgora();
-    _initAgora(widget.token, widget.channelName, widget.uid);
+    _initAgora();
+    // _initAgora(widget.token, widget.channelName, widget.uid);
   }
 
   String _formatDuration(int seconds) {
@@ -100,73 +100,13 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     // _secondsElapsed = 0;
   }
 
-  Future<void> _initAgora(String token, String channelName, int uid) async {
-    try {
-      await _requestPermissions();
-
-      _engine = await createAgoraRtcEngine();
-      await _engine.initialize(RtcEngineContext(appId: appIdVideo));
-
-      await _engine.enableVideo();
-      await _engine.startPreview();
-
-      _engine.registerEventHandler(
-        RtcEngineEventHandler(
-          onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-            setState(() {
-              _localUserJoined = true;
-            });
-            _startJoinTimeoutTimer();
-            _playWaitingAudio();
-          },
-          onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-            setState(() {
-              _remoteUid = remoteUid;
-              _startCallTimer();
-            });
-            _cancelJoinTimeoutTimer();
-            _stopWaitingAudio();
-          },
-          onUserOffline: (RtcConnection connection, int remoteUid,
-              UserOfflineReasonType reason) {
-            setState(() {
-              _remoteUid = null;
-              _stopCallTimer();
-            });
-            _endCall();
-          },
-          onError: (ErrorCodeType err, String msg) {
-            debugPrint('[onError] err: $err, msg: $msg');
-          },
-        ),
-      );
-
-      await _engine.joinChannel(
-        token: token,
-        channelId: channel,
-        options: ChannelMediaOptions(
-          autoSubscribeVideo: true,
-          autoSubscribeAudio: true,
-          publishCameraTrack: true,
-          publishMicrophoneTrack: true,
-          clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        ),
-        uid: int.tryParse(widget.userProfile.phoneNumber ?? '') ?? 0,
-      );
-      print(
-          'Joined channel $channel with UID: ${int.tryParse(widget.userProfile.phoneNumber ?? '') ?? 0} || TOKEN: $token');
-
-    } catch (e) {
-      debugPrint("Error initializing Agora: $e");
-    }
-  }
-
-  // Future<void> _initAgora() async {
+  // Future<void> _initAgora(String token, String channelName, int uid) async {
   //   try {
   //     await _requestPermissions();
   //
   //     _engine = await createAgoraRtcEngine();
   //     await _engine.initialize(RtcEngineContext(appId: appIdVideo));
+  //
   //     await _engine.enableVideo();
   //     await _engine.startPreview();
   //
@@ -202,7 +142,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   //     );
   //
   //     await _engine.joinChannel(
-  //       token: tokenVideo,
+  //       token: token,
   //       channelId: channel,
   //       options: ChannelMediaOptions(
   //         autoSubscribeVideo: true,
@@ -211,13 +151,73 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   //         publishMicrophoneTrack: true,
   //         clientRoleType: ClientRoleType.clientRoleBroadcaster,
   //       ),
-  //       uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
+  //       uid: int.tryParse(widget.userProfile.phoneNumber ?? '') ?? 0,
   //     );
-  //     print('NUMBER: ${widget.userProfile.phoneNumber}');
+  //     print(
+  //         'Joined channel $channel with UID: ${int.tryParse(widget.userProfile.phoneNumber ?? '') ?? 0} || TOKEN: $token');
+  //
   //   } catch (e) {
   //     debugPrint("Error initializing Agora: $e");
   //   }
   // }
+
+  Future<void> _initAgora() async {
+    try {
+      await _requestPermissions();
+
+      _engine = await createAgoraRtcEngine();
+      await _engine.initialize(RtcEngineContext(appId: appIdVideo));
+      await _engine.enableVideo();
+      await _engine.startPreview();
+
+      _engine.registerEventHandler(
+        RtcEngineEventHandler(
+          onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+            setState(() {
+              _localUserJoined = true;
+            });
+            _startJoinTimeoutTimer();
+            _playWaitingAudio();
+          },
+          onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+            setState(() {
+              _remoteUid = remoteUid;
+              _startCallTimer();
+            });
+            _cancelJoinTimeoutTimer();
+            _stopWaitingAudio();
+          },
+          onUserOffline: (RtcConnection connection, int remoteUid,
+              UserOfflineReasonType reason) {
+            setState(() {
+              _remoteUid = null;
+              _stopCallTimer();
+            });
+            _endCall();
+          },
+          onError: (ErrorCodeType err, String msg) {
+            debugPrint('[onError] err: $err, msg: $msg');
+          },
+        ),
+      );
+
+      await _engine.joinChannel(
+        token: tokenVideo,
+        channelId: channel,
+        options: ChannelMediaOptions(
+          autoSubscribeVideo: true,
+          autoSubscribeAudio: true,
+          publishCameraTrack: true,
+          publishMicrophoneTrack: true,
+          clientRoleType: ClientRoleType.clientRoleBroadcaster,
+        ),
+        uid: int.parse(widget.userProfile.phoneNumber!.substring(1)),
+      );
+      print('NUMBER: ${widget.userProfile.phoneNumber}');
+    } catch (e) {
+      debugPrint("Error initializing Agora: $e");
+    }
+  }
 
   void _startJoinTimeoutTimer() {
     _joinTimeoutTimer = Timer(Duration(seconds: 30), () {

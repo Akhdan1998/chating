@@ -1,25 +1,13 @@
-import 'dart:io';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_file_downloader/flutter_file_downloader.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:get_it/get_it.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:video_compress/video_compress.dart';
-import 'package:video_player/video_player.dart' as vp;
-import 'package:video_player/video_player.dart';
+import '../models/group.dart';
 import '../models/user_profile.dart';
-import '../service/alert_service.dart';
+import 'connection/detail_media.dart';
 
 class MediaPage extends StatefulWidget {
   final UserProfile chatUser;
@@ -217,9 +205,8 @@ class _MediaPageState extends State<MediaPage> {
             itemBuilder: (context, index) {
               var document = linkMessages[index];
               var contentUrl = document['content'];
-              var timestamp = (document['sentAt'] as Timestamp).toDate();
-              var formattedDate =
-                  DateFormat('dd MMM yyyy HH:mm').format(timestamp);
+              // var timestamp = (document['sentAt'] as Timestamp).toDate();
+              // var formattedDate = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(timestamp);
               void _launchURL(String url) async {
                 final Uri uri = Uri.parse(url);
                 if (!await launchUrl(uri)) {
@@ -258,6 +245,11 @@ class _MediaPageState extends State<MediaPage> {
   Widget Media() {
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection('chats').snapshots(),
+      // stream: FirebaseFirestore.instance
+      //     .collection('chats')
+      //     .where('id', isEqualTo: widget.chatUser.uid)
+      //     .orderBy('sentAt', descending: true)
+      //     .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -299,7 +291,9 @@ class _MediaPageState extends State<MediaPage> {
                     var contentUrl = item['content'];
                     var timestamp = item['sentAt'].toDate();
                     var formattedDate = timestamp != null
-                        ? DateFormat('dd MMM yyyy HH:mm').format(timestamp)
+                        ? DateFormat(
+                                'yyyy/MM/dd, HH:mm', context.locale.toString())
+                            .format(timestamp)
                         : 'No date available';
 
                     if (messageType == 'Image') {
@@ -317,7 +311,7 @@ class _MediaPageState extends State<MediaPage> {
                           );
                         },
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(8),
                           child: Image.network(
                             contentUrl,
                             fit: BoxFit.cover,
@@ -351,7 +345,7 @@ class _MediaPageState extends State<MediaPage> {
                           );
                         },
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(8),
                           child: Stack(
                             children: [
                               VideoMessage(url: contentUrl),
@@ -409,8 +403,8 @@ class _MediaPageState extends State<MediaPage> {
               var document = documentMessages[index];
               var contentUrl = document['content'];
               var timestamp = (document['sentAt'] as Timestamp).toDate();
-              var formattedDate =
-                  DateFormat('dd MMM yyyy HH:mm').format(timestamp);
+              var formattedDate = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(timestamp);
+
 
               return GestureDetector(
                 onTap: () {
@@ -425,7 +419,44 @@ class _MediaPageState extends State<MediaPage> {
                     ),
                   );
                 },
-                child: _documentListTile(contentUrl, formattedDate),
+                child: Container(
+                  color: Colors.transparent,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Icon(Icons.description, color: Colors.blue),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    contentUrl,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: StyleText(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    formattedDate,
+                                    style: StyleText(fontSize: 13, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 15,
+                        endIndent: 15,
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );
@@ -433,1062 +464,419 @@ class _MediaPageState extends State<MediaPage> {
       ),
     );
   }
-
-  Widget _documentListTile(String contentUrl, String formattedDate) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Icon(Icons.description, color: Colors.blue),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      contentUrl,
-                      overflow: TextOverflow.ellipsis,
-                      style: StyleText(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      formattedDate,
-                      style: StyleText(fontSize: 13, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Divider(
-          height: 1,
-          indent: 15,
-          endIndent: 15,
-        ),
-      ],
-    );
-  }
 }
 
-class PDFViewScreen extends StatefulWidget {
-  final String filePath;
-  final String fileName;
-  final DateTime dateTime;
+//
 
-  const PDFViewScreen({
-    required this.filePath,
-    required this.fileName,
-    required this.dateTime,
-  });
+class MediaPageGroup extends StatefulWidget {
+  final List<UserProfile> users;
+  late final Group grup;
+
+  MediaPageGroup({required this.users, required this.grup});
 
   @override
-  State<PDFViewScreen> createState() => _PDFViewScreenState();
+  State<MediaPageGroup> createState() => _MediaPageGroupState();
 }
 
-class _PDFViewScreenState extends State<PDFViewScreen> {
-  final AlertService _alertService = GetIt.instance.get<AlertService>();
-  bool _isDownloading = false;
-  double _progress = 0.0;
+class _MediaPageGroupState extends State<MediaPageGroup> {
+  int _selectedIndex = 0;
+  PageController controller = PageController();
+  List<Map<String, dynamic>> mediaList = [];
 
-  Future<void> _downloadFile(String url, String fileName) async {
-    if (await Permission.storage.request().isGranted) {
-      setState(() => _isDownloading = true);
-      try {
-        String savePath = await _getSavePath(fileName);
-        await Dio().download(
-          url,
-          savePath,
-          onReceiveProgress: (received, total) {
-            if (total != -1) {
-              setState(() => _progress = (received / total) * 100);
-            }
-          },
-        );
-        _alertService.showToast(
-            text: 'file_download'.tr(), icon: Icons.check, color: Colors.green);
-      } catch (e) {
-        _alertService.showToast(
-            text: 'file_error_download'.tr(),
-            icon: Icons.error,
-            color: Colors.red);
-      } finally {
-        setState(() => _isDownloading = false);
+  void _navigateBottomBar(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    controller.animateToPage(
+      _selectedIndex,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(initialPage: _selectedIndex);
+    fetchMediaList();
+  }
+
+  Future<void> fetchMediaList() async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('messagesGroup')
+        .where('groupId', isEqualTo: widget.grup.id)
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    List<Map<String, dynamic>> tempList = [];
+    for (var doc in snapshot.docs) {
+      if (doc['medias'] != null) {
+        for (var media in doc['medias']) {
+          tempList.add({
+            'url': media['url'],
+            'type': media['type'],
+          });
+        }
       }
     }
-  }
 
-  Future<String> _getSavePath(String fileName) async {
-    final directory = Platform.isAndroid
-        ? await getExternalStorageDirectory()
-        : await getApplicationDocumentsDirectory();
-    return '${directory!.path}/$fileName';
+    setState(() {
+      mediaList = tempList;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate =
-        DateFormat('yyyy-MM-dd HH:mm').format(widget.dateTime);
-    print('DOKUMEEEEEN ${widget.filePath}');
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        centerTitle: false,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.fileName,
-              style: StyleText(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              formattedDate,
-              style: StyleText(
-                color: Colors.white,
-                fontSize: 10,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () async =>
-                await _downloadFile(widget.filePath, widget.fileName),
-            icon: _isDownloading
-                ? Stack(
-                    alignment: Alignment.center,
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.only(top: 50),
+            color: Theme.of(context).colorScheme.primary,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(7),
+                    color: Colors.white,
+                  ),
+                  width: 310,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(2),
+                  child: Row(
                     children: [
-                      CircularProgressIndicator(
-                          value: _progress / 100,
-                          color: Colors.white,
-                          strokeWidth: 2.0),
-                      Text('${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(color: Colors.white, fontSize: 12)),
+                      GestureDetector(
+                        onTap: () => _navigateBottomBar(0),
+                        child: Container(
+                          width: 100,
+                          height: 30,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(7),
+                            color: _selectedIndex == 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey.shade200,
+                          ),
+                          child: Text(
+                            'media'.tr(),
+                            style: StyleText(
+                              fontSize: 13,
+                              color: _selectedIndex == 0
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      VerticalDivider(thickness: 2, width: 3),
+                      GestureDetector(
+                        onTap: () => _navigateBottomBar(1),
+                        child: Container(
+                          width: 100,
+                          height: 30,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(7),
+                            color: _selectedIndex == 1
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey.shade200,
+                          ),
+                          child: Text(
+                            'tautan'.tr(),
+                            style: StyleText(
+                              fontSize: 13,
+                              color: _selectedIndex == 1
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      VerticalDivider(thickness: 2, width: 3),
+                      GestureDetector(
+                        onTap: () => _navigateBottomBar(2),
+                        child: Container(
+                          width: 100,
+                          height: 30,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(7),
+                            color: _selectedIndex == 2
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey.shade200,
+                          ),
+                          child: Text(
+                            'dokumen'.tr(),
+                            style: StyleText(
+                              fontSize: 13,
+                              color: _selectedIndex == 2
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
-                  )
-                : Icon(Icons.file_download_outlined, color: Colors.white),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.more_horiz, color: Colors.white),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: controller,
+              children: [
+                MediaGroup(),
+                TautanGroup(),
+                DocumentGroup(),
+              ],
+            ),
           ),
         ],
       ),
-      body: PDFView(
-        enableSwipe: true,
-        swipeHorizontal: true,
-        autoSpacing: false,
-        pageFling: false,
-        onError: (error) {
-          print('errorrrrrr ${error}');
+    );
+  }
+
+  Widget TautanGroup() {
+    bool _isUrl(String text) {
+      final urlPattern = RegExp(
+        r'^(https?|ftp)://[^\s/$.?#].[^\s]*$',
+        caseSensitive: false,
+      );
+      return urlPattern.hasMatch(text);
+    }
+
+    Future<void> _launchURL(String url) async {
+      final Uri uri = Uri.parse(url);
+      if (!await launchUrl(uri)) {
+        throw Exception('Could not launch $uri');
+      }
+    }
+
+    return Center(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('messagesGroup')
+            .where('groupId', isEqualTo: widget.grup.id)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Container();
+          }
+
+          final linkMessages = snapshot.data!.docs
+              .where((msg) => _isUrl(msg['text']))
+              .toList()
+              .reversed
+              .toList();
+
+          if (linkMessages.isEmpty) {
+            return Container();
+          }
+
+          return ListView.builder(
+            itemCount: linkMessages.length,
+            itemBuilder: (context, index) {
+              final contentUrl = linkMessages[index]['text'];
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                child: AnyLinkPreview(
+                  displayDirection: UIDirection.uiDirectionHorizontal,
+                  link: contentUrl,
+                  onTap: () => _launchURL(contentUrl),
+                  showMultimedia: true,
+                  bodyStyle: const TextStyle(fontSize: 12),
+                  errorWidget: Container(),
+                  errorImage: "https://google.com/",
+                  cache: const Duration(seconds: 3),
+                  borderRadius: 12,
+                  removeElevation: false,
+                ),
+              );
+            },
+          );
         },
-        onRender: (_pages) {
-          print('Document rendered with $_pages pages');
-        },
-        onPageError: (page, error) {
-          print('$page: ${error.toString()}');
-        },
-        filePath: widget.filePath,
       ),
     );
   }
-}
 
-class VideoMessage extends StatefulWidget {
-  final String url;
-
-  const VideoMessage({Key? key, required this.url}) : super(key: key);
-
-  @override
-  _VideoMessageState createState() => _VideoMessageState();
-}
-
-class _VideoMessageState extends State<VideoMessage> {
-  late vp.VideoPlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = vp.VideoPlayerController.network(widget.url)
-      ..initialize().then((_) {
-        setState(() {});
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _controller.value.isInitialized
-        ? AspectRatio(
-            // aspectRatio: _controller.value.aspectRatio,
-            aspectRatio: 10 / 10.5,
-            child: vp.VideoPlayer(_controller),
-          )
-        : Center(child: CircularProgressIndicator());
-  }
-}
-
-class ImageView extends StatefulWidget {
-  final UserProfile chatUser;
-  final String imageUrl;
-  final String formatDate;
-
-  ImageView({
-    required this.chatUser,
-    required this.imageUrl,
-    required this.formatDate,
-  });
-
-  @override
-  State<ImageView> createState() => _ImageViewState();
-}
-
-class _ImageViewState extends State<ImageView> {
-  final GetIt _getIt = GetIt.instance;
-  late AlertService _alertService;
-  double _progress = 0.0;
-  bool _isDownloading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _alertService = _getIt.get<AlertService>();
-  }
-
-  Future<void> downloadImage(String url) async {
-    try {
-      setState(() {
-        _isDownloading = true;
-        _progress = 0.0;
-      });
-
-      final tempDir = await getTemporaryDirectory();
-      final tempFilePath = "${tempDir.path}/temp_image.jpg";
-
-      await FileDownloader.downloadFile(
-        url: url,
-        name: "temp_image.jpg",
-        onProgress: (fileName, progress) {
-          setState(() {
-            _progress = progress;
-            print("Download progress: $progress%");
-          });
-        },
-        onDownloadCompleted: (path) async {
-          final compressedFilePath = "${tempDir.path}/compressed_image.jpg";
-          final compressedFile = await FlutterImageCompress.compressAndGetFile(
-            path,
-            compressedFilePath,
-            quality: 70,
-          );
-
-          if (compressedFile != null) {
-            setState(() {
-              _isDownloading = false;
-              _progress = 0.0;
-              _alertService.showToast(
-                text: 'download_image'.tr(),
-                icon: Icons.check,
-                color: Colors.green,
-              );
-            });
-          }
-        },
-        onDownloadError: (error) {
-          setState(() {
-            print('Error: ${error}');
-            _isDownloading = false;
-            _progress = 0.0;
-            _alertService.showToast(
-              text: 'failed_download_image'.tr(),
-              icon: Icons.error,
-              color: Colors.red,
-            );
-          });
-        },
-      );
-    } catch (e) {
-      print(e);
-      setState(() {
-        print('Error: ${e}');
-        _isDownloading = false;
-        _progress = 0.0;
-        _alertService.showToast(
-          text: 'failed_download_image'.tr(),
-          icon: Icons.error,
-          color: Colors.red,
-        );
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        centerTitle: false,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.chatUser.name.toString(),
-              style: StyleText(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              widget.formatDate,
-              style: StyleText(
-                color: Colors.white,
-                fontSize: 10,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await downloadImage(widget.imageUrl);
-            },
-            icon: AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              child: _isDownloading
-                  ? Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 27,
-                          height: 27,
-                          child: CircularProgressIndicator(
-                            value: _progress / 100,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                            strokeWidth: 2.0,
-                            key: ValueKey<int>(1),
+  Widget MediaGroup() {
+    return mediaList.isEmpty
+        ? Center(child: CircularProgressIndicator())
+        : Container(
+            padding: EdgeInsets.all(10),
+            child: LayoutGrid(
+              columnSizes: [1.fr, 1.fr],
+              rowSizes:
+                  List.generate((mediaList.length / 2).ceil(), (index) => auto),
+              rowGap: 12,
+              columnGap: 12,
+              children: mediaList.map((media) {
+                if (media['type'] == 'video') {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VideoPlayerGroup(
+                            videoUrl: media['url'],
+                            users: widget.users,
                           ),
                         ),
-                        Text(
-                          '${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(
-                            color: Colors.white,
-                            fontSize: 7,
-                            fontWeight: FontWeight.bold,
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          VideoMessage(url: media['url']),
+                          Icon(
+                            Icons.play_circle,
+                            color: Colors.grey,
+                            size: 50,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else if (media['type'] == 'image') {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ImageViewGroup(
+                            imageUrl: media['url'],
+                            users: widget.users,
                           ),
                         ),
-                      ],
-                    )
-                  : Icon(
-                      Icons.file_download_outlined,
-                      color: Colors.white,
-                      key: ValueKey<int>(0),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        media['url'],
+                        fit: BoxFit.cover,
+                        height: 200,
+                        width: double.infinity,
+                      ),
                     ),
+                  );
+                } else {
+                  return Container();
+                }
+              }).toList(),
             ),
-          ),
-        ],
-      ),
-      body: Center(
-        child: PhotoView(
-          imageProvider: NetworkImage(widget.imageUrl),
-          backgroundDecoration: BoxDecoration(
-            color: Colors.white,
-          ),
-          minScale: PhotoViewComputedScale.contained * 0.9,
-          maxScale: PhotoViewComputedScale.covered * 2,
-        ),
-      ),
-    );
-  }
-}
-
-class VideoPlayerScreen extends StatefulWidget {
-  final String videoUrl;
-  final UserProfile chatUser;
-  final String formatDate;
-
-  VideoPlayerScreen({
-    required this.videoUrl,
-    required this.chatUser,
-    required this.formatDate,
-  });
-
-  @override
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
-}
-
-class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late FlickManager flickManager;
-  final GetIt _getIt = GetIt.instance;
-  late AlertService _alertService;
-  double _progress = 0.0;
-  bool _isDownloading = false;
-
-  Future<void> _downloadVideo(String url) async {
-    try {
-      setState(() {
-        _isDownloading = true;
-      });
-
-      final tempDir = await getTemporaryDirectory();
-      final tempPath = "${tempDir.path}/temp_video.mp4";
-
-      await FileDownloader.downloadFile(
-        url: url,
-        name: "temp_video.mp4",
-        onDownloadCompleted: (filePath) async {
-          final compressedVideo = await VideoCompress.compressVideo(
-            filePath,
-            quality: VideoQuality.LowQuality,
-            deleteOrigin: true,
           );
+  }
 
-          if (compressedVideo != null) {
-            final downloadsDir = Directory('/storage/emulated/0/Download');
-            final destinationPath = "${downloadsDir.path}/compressed_video.mp4";
-
-            await compressedVideo.file!.copy(destinationPath);
-
-            setState(() {
-              _alertService.showToast(
-                text: 'download_video'.tr(),
-                icon: Icons.check,
-                color: Colors.green,
-              );
-            });
-          } else {
-            throw 'Video compression failed';
+  Widget DocumentGroup() {
+    return Center(
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('messagesGroup')
+            .where('groupId', isEqualTo: widget.grup.id)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
           }
-        },
-        onDownloadError: (error) {
-          setState(() {
-            _alertService.showToast(
-              text: 'failed_download_video'.tr(),
-              icon: Icons.error,
-              color: Colors.red,
-            );
-          });
-        },
-      );
-    } catch (e) {
-      print("Error: $e");
-      setState(() {
-        _alertService.showToast(
-          text: 'failed_download_video'.tr(),
-          icon: Icons.error,
-          color: Colors.red,
-        );
-      });
-    } finally {
-      setState(() {
-        _isDownloading = false;
-        _progress = 0.0;
-      });
-    }
-  }
 
-  @override
-  void initState() {
-    super.initState();
-    flickManager = FlickManager(
-      videoPlayerController: VideoPlayerController.network(widget.videoUrl),
-    );
-    _alertService = _getIt.get<AlertService>();
-  }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Container();
+          }
 
-  @override
-  void dispose() {
-    flickManager.dispose();
-    super.dispose();
-  }
+          final documentImages = snapshot.data!.docs.expand((doc) {
+            final medias = doc['medias'] as List<dynamic>?;
+            return medias?.where((media) => media['type'] == 'file') ?? [];
+          }).toList();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        centerTitle: false,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.chatUser.name.toString(),
-              style: StyleText(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              widget.formatDate,
-              style: StyleText(
-                color: Colors.white,
-                fontSize: 10,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await _downloadVideo(widget.videoUrl);
+          if (documentImages.isEmpty) {
+            return Container();
+          }
+
+          return ListView.builder(
+            itemCount: documentImages.length,
+            itemBuilder: (context, index) {
+              var doc = documentImages[index];
+              var docs = doc['url'];
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DocsGroup(
+                        docu: docs,
+                        users: widget.users,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Icon(Icons.description, color: Colors.blue),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    docs,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        StyleText(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    '-',
+                                    style: StyleText(
+                                        fontSize: 13, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 15,
+                        endIndent: 15,
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
-            icon: AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              child: _isDownloading
-                  ? Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 27,
-                    height: 27,
-                    child: CircularProgressIndicator(
-                      value: _progress / 100,
-                      valueColor:
-                      AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2.0,
-                      key: ValueKey<int>(1),
-                    ),
-                  ),
-                  Text(
-                    '${_progress.toStringAsFixed(0)}%',
-                    style: StyleText(
-                      color: Colors.white,
-                      fontSize: 7,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              )
-                  : Icon(
-                Icons.file_download_outlined,
-                color: Colors.white,
-                key: ValueKey<int>(0),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Expanded(
-        child: FlickVideoPlayer(
-          flickManager: flickManager,
-        ),
+          );
+        },
       ),
     );
   }
 }
-
-// class VideoPlayerScreen extends StatefulWidget {
-//   final String videoUrl;
-//   final UserProfile chatUser;
-//   final String formatDate;
-//
-//   VideoPlayerScreen({
-//     required this.videoUrl,
-//     required this.chatUser,
-//     required this.formatDate,
-//   });
-//
-//   @override
-//   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
-// }
-//
-// class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-//   late VideoPlayerController _videoPlayerController;
-//   ChewieController? _chewieController;
-//   final GetIt _getIt = GetIt.instance;
-//   late AlertService _alertService;
-//   double _progress = 0.0;
-//   bool _isDownloading = false;
-//
-//   Future<void> _downloadVideo(String url) async {
-//     try {
-//       setState(() {
-//         _isDownloading = true;
-//       });
-//
-//       final tempDir = await getTemporaryDirectory();
-//       final tempPath = "${tempDir.path}/temp_video.mp4";
-//
-//       await FileDownloader.downloadFile(
-//         url: url,
-//         name: "temp_video.mp4",
-//         onDownloadCompleted: (filePath) async {
-//           final compressedVideo = await VideoCompress.compressVideo(
-//             filePath,
-//             quality: VideoQuality.LowQuality,
-//             deleteOrigin: true,
-//           );
-//
-//           if (compressedVideo != null) {
-//             final downloadsDir = Directory('/storage/emulated/0/Download');
-//             final destinationPath = "${downloadsDir.path}/compressed_video.mp4";
-//
-//             await compressedVideo.file!.copy(destinationPath);
-//
-//             setState(() {
-//               _alertService.showToast(
-//                 text: 'download_video'.tr(),
-//                 icon: Icons.check,
-//                 color: Colors.green,
-//               );
-//             });
-//           } else {
-//             throw 'Video compression failed';
-//           }
-//         },
-//         onDownloadError: (error) {
-//           setState(() {
-//             _alertService.showToast(
-//               text: 'failed_download_video'.tr(),
-//               icon: Icons.error,
-//               color: Colors.red,
-//             );
-//           });
-//         },
-//       );
-//     } catch (e) {
-//       print("Error: $e");
-//       setState(() {
-//         _alertService.showToast(
-//           text: 'failed_download_video'.tr(),
-//           icon: Icons.error,
-//           color: Colors.red,
-//         );
-//       });
-//     } finally {
-//       setState(() {
-//         _isDownloading = false;
-//         _progress = 0.0;
-//       });
-//     }
-//   }
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _videoPlayerController = VideoPlayerController.network(widget.videoUrl);
-//     _chewieController = ChewieController(
-//       videoPlayerController: _videoPlayerController,
-//       autoPlay: true,
-//       looping: false,
-//       fullScreenByDefault: true,
-//     );
-//     _alertService = _getIt.get<AlertService>();
-//   }
-//
-//   @override
-//   void dispose() {
-//     _videoPlayerController.dispose();
-//     _chewieController?.dispose();
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         automaticallyImplyLeading: true,
-//         centerTitle: false,
-//         backgroundColor: Theme.of(context).colorScheme.primary,
-//         leading: IconButton(
-//           icon: Icon(
-//             Icons.arrow_back,
-//             color: Colors.white,
-//           ),
-//           onPressed: () {
-//             Navigator.pop(context);
-//           },
-//         ),
-//         title: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               widget.chatUser.name.toString(),
-//               style: StyleText(
-//                 color: Colors.white,
-//                 fontSize: 18,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             Text(
-//               widget.formatDate,
-//               style: StyleText(
-//                 color: Colors.white,
-//                 fontSize: 10,
-//               ),
-//             ),
-//           ],
-//         ),
-//         actions: [
-//           IconButton(
-//             onPressed: () async {
-//               await _downloadVideo(widget.videoUrl);
-//             },
-//             icon: AnimatedSwitcher(
-//               duration: Duration(milliseconds: 300),
-//               child: _isDownloading
-//                   ? Stack(
-//                       alignment: Alignment.center,
-//                       children: [
-//                         Container(
-//                           width: 27,
-//                           height: 27,
-//                           child: CircularProgressIndicator(
-//                             value: _progress / 100,
-//                             valueColor:
-//                                 AlwaysStoppedAnimation<Color>(Colors.white),
-//                             strokeWidth: 2.0,
-//                             key: ValueKey<int>(1),
-//                           ),
-//                         ),
-//                         Text(
-//                           '${_progress.toStringAsFixed(0)}%',
-//                           style: StyleText(
-//                             color: Colors.white,
-//                             fontSize: 7,
-//                             fontWeight: FontWeight.bold,
-//                           ),
-//                         ),
-//                       ],
-//                     )
-//                   : Icon(
-//                       Icons.file_download_outlined,
-//                       color: Colors.white,
-//                       key: ValueKey<int>(0),
-//                     ),
-//             ),
-//           ),
-//         ],
-//       ),
-//       body: Center(
-//         child: _chewieController != null &&
-//                 _chewieController!.videoPlayerController.value.isInitialized
-//             ? Chewie(controller: _chewieController!)
-//             : CircularProgressIndicator(),
-//       ),
-//     );
-//   }
-// }
-
-// class VideoPlayer extends StatefulWidget {
-//   final String videoUrl;
-//   final UserProfile chatUser;
-//   final String formatDate;
-//
-//   const VideoPlayer({
-//     required this.videoUrl,
-//     required this.chatUser,
-//     required this.formatDate,
-//   });
-//
-//   @override
-//   _VideoPlayerState createState() => _VideoPlayerState();
-// }
-//
-// class _VideoPlayerState extends State<VideoPlayer> {
-//   late vp.VideoPlayerController _controller;
-//   vp.VideoPlayerValue? _videoValue;
-//   final GetIt _getIt = GetIt.instance;
-//   late AlertService _alertService;
-//   double _progress = 0.0;
-//   bool _isDownloading = false;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _controller = vp.VideoPlayerController.network(widget.videoUrl)
-//       ..initialize().then((_) {
-//         setState(() {
-//           _controller.play();
-//           _videoValue = _controller.value;
-//         });
-//       });
-//
-//     _controller.addListener(() {
-//       setState(() {
-//         _videoValue = _controller.value;
-//       });
-//     });
-//
-//     _alertService = _getIt.get<AlertService>();
-//   }
-//
-//   @override
-//   void dispose() {
-//     _controller.removeListener(() {});
-//     _controller.dispose();
-//     super.dispose();
-//   }
-//
-//   Future<void> _downloadVideo(String url) async {
-//     try {
-//       setState(() {
-//         _isDownloading = true;
-//       });
-//
-//       final tempDir = await getTemporaryDirectory();
-//       final tempPath = "${tempDir.path}/temp_video.mp4";
-//
-//       await FileDownloader.downloadFile(
-//         url: url,
-//         name: "temp_video.mp4",
-//         onDownloadCompleted: (filePath) async {
-//           final compressedVideo = await VideoCompress.compressVideo(
-//             filePath,
-//             quality: VideoQuality.LowQuality,
-//             deleteOrigin: true,
-//           );
-//
-//           if (compressedVideo != null) {
-//             final downloadsDir = Directory('/storage/emulated/0/Download');
-//             final destinationPath = "${downloadsDir.path}/compressed_video.mp4";
-//
-//             await compressedVideo.file!.copy(destinationPath);
-//
-//             setState(() {
-//               _alertService.showToast(
-//                 text: 'download_video'.tr(),
-//                 icon: Icons.check,
-//                 color: Colors.green,
-//               );
-//             });
-//           } else {
-//             throw 'Video compression failed';
-//           }
-//         },
-//         onDownloadError: (error) {
-//           setState(() {
-//             _alertService.showToast(
-//               text: 'failed_download_video'.tr(),
-//               icon: Icons.error,
-//               color: Colors.red,
-//             );
-//           });
-//         },
-//       );
-//     } catch (e) {
-//       print("Error: $e");
-//       setState(() {
-//         _alertService.showToast(
-//           text: 'failed_download_video'.tr(),
-//           icon: Icons.error,
-//           color: Colors.red,
-//         );
-//       });
-//     } finally {
-//       setState(() {
-//         _isDownloading = false;
-//         _progress = 0.0;
-//       });
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final duration = _videoValue?.duration ?? Duration.zero;
-//     final position = _videoValue?.position ?? Duration.zero;
-//     final isPlaying = _videoValue?.isPlaying ?? false;
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(
-//         automaticallyImplyLeading: true,
-//         centerTitle: false,
-//         backgroundColor: Theme.of(context).colorScheme.primary,
-//         leading: IconButton(
-//           icon: Icon(
-//             Icons.arrow_back,
-//             color: Colors.white,
-//           ),
-//           onPressed: () {
-//             Navigator.pop(context);
-//           },
-//         ),
-//         title: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               widget.chatUser.name.toString(),
-//               style: StyleText(
-//                 color: Colors.white,
-//                 fontSize: 18,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             Text(
-//               widget.formatDate,
-//               style: StyleText(
-//                 color: Colors.white,
-//                 fontSize: 10,
-//               ),
-//             ),
-//           ],
-//         ),
-//         actions: [
-//           IconButton(
-//             onPressed: () async {
-//               await _downloadVideo(widget.videoUrl);
-//             },
-//             icon: AnimatedSwitcher(
-//               duration: Duration(milliseconds: 300),
-//               child: _isDownloading
-//                   ? Stack(
-//                       alignment: Alignment.center,
-//                       children: [
-//                         Container(
-//                           width: 27,
-//                           height: 27,
-//                           child: CircularProgressIndicator(
-//                             value: _progress / 100,
-//                             valueColor:
-//                                 AlwaysStoppedAnimation<Color>(Colors.white),
-//                             strokeWidth: 2.0,
-//                             key: ValueKey<int>(1),
-//                           ),
-//                         ),
-//                         Text(
-//                           '${_progress.toStringAsFixed(0)}%',
-//                           style: StyleText(
-//                             color: Colors.white,
-//                             fontSize: 7,
-//                             fontWeight: FontWeight.bold,
-//                           ),
-//                         ),
-//                       ],
-//                     )
-//                   : Icon(
-//                       Icons.file_download_outlined,
-//                       color: Colors.white,
-//                       key: ValueKey<int>(0),
-//                     ),
-//             ),
-//           ),
-//         ],
-//       ),
-//       body: Expanded(
-//         child: Center(
-//           child: _controller.value.isInitialized
-//               ? Stack(
-//                   children: [
-//                     vp.VideoPlayer(_controller),
-//                     if (_controller.value.isInitialized)
-//                       Center(
-//                         child: GestureDetector(
-//                           onTap: () {
-//                             setState(() {
-//                               isPlaying
-//                                   ? _controller.pause()
-//                                   : _controller.play();
-//                             });
-//                           },
-//                           child: Container(
-//                             decoration: BoxDecoration(
-//                               shape: BoxShape.circle,
-//                               color: isPlaying
-//                                   ? Colors.white.withOpacity(0.3)
-//                                   : Colors.white,
-//                             ),
-//                             padding: EdgeInsets.all(16),
-//                             child: Icon(
-//                               isPlaying ? Icons.pause : Icons.play_arrow,
-//                               color: Colors.black,
-//                               size: 40.0,
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     if (_controller.value.isInitialized)
-//                       Column(
-//                         mainAxisAlignment: MainAxisAlignment.end,
-//                         children: [
-//                           Container(
-//                             padding: EdgeInsets.symmetric(horizontal: 16.0),
-//                             child: Row(
-//                               mainAxisAlignment:
-//                                   MainAxisAlignment.spaceBetween,
-//                               children: [
-//                                 Text(
-//                                   _formatDuration(position),
-//                                   style: StyleText(),
-//                                 ),
-//                                 Text(
-//                                   _formatDuration(duration),
-//                                   style: StyleText(),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           ValueListenableBuilder(
-//                             valueListenable: _controller,
-//                             builder:
-//                                 (context, VideoPlayerValue value, child) {
-//                               return Slider(
-//                                 value: value.position.inSeconds
-//                                     .toDouble()
-//                                     .clamp(
-//                                         0.0,
-//                                         value.duration.inSeconds
-//                                             .toDouble()),
-//                                 min: 0.0,
-//                                 max: value.duration.inSeconds.toDouble(),
-//                                 onChanged: (newValue) {
-//                                   _controller.seekTo(
-//                                       Duration(seconds: newValue.toInt()));
-//                                 },
-//                               );
-//                             },
-//                           ),
-//                         ],
-//                       ),
-//                   ],
-//                 )
-//               : CircularProgressIndicator(), // Show loading indicator
-//         ),
-//       ),
-//     );
-//   }
-//
-//   String _formatDuration(Duration duration) {
-//     final int minutes = duration.inMinutes;
-//     final int seconds = duration.inSeconds % 60;
-//     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-//   }
-// }

@@ -4,7 +4,6 @@ import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'auth_service.dart';
 import 'navigation_service.dart';
 

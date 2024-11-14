@@ -1,18 +1,14 @@
-import 'package:chating/main.dart';
 import 'package:chating/models/group.dart';
 import 'package:chating/utils.dart';
-import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:photo_view/photo_view.dart';
 import '../models/fitur.dart';
 import '../models/user_profile.dart';
 import '../service/alert_service.dart';
 import '../service/database_service.dart';
 import '../service/navigation_service.dart';
+import 'media_page.dart';
 import 'notifikasi_page.dart';
 
 class DetailGroupPage extends StatefulWidget {
@@ -256,7 +252,7 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
   Widget build(BuildContext context) {
     DateTime date = DateFormat('yyyy-MM-dd hh:mm:ss')
         .parse(widget.grup.createdAt.toString());
-    String date_n = DateFormat('yMMMMd').format(date);
+    String date_n = DateFormat('yMMMMd', context.locale.toString()).format(date);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -377,7 +373,17 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                 ),
                 SizedBox(height: 15),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MediaPageGroup(
+                          users: widget.users,
+                          grup: widget.grup,
+                        ),
+                      ),
+                    );
+                  },
                   child: Container(
                     padding: EdgeInsets.all(10),
                     margin: EdgeInsets.symmetric(horizontal: 20),
@@ -405,23 +411,10 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  Text(
-                                    '6',
-                                    style: StyleText(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 20,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ],
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ],
                           ),

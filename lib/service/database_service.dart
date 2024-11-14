@@ -97,7 +97,7 @@ class DatabaseService {
   Future<bool> checkChatExist(String uid1, String uid2) async {
     String chatID = genereteChatID(uid1: uid1, uid2: uid2);
     final result = await _chatCollection!.doc(chatID).get();
-    if (result != null) {
+    if (result != null && result.exists) {
       return result.exists;
     }
     return false;

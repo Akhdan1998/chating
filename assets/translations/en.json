@@ -135,7 +135,7 @@
   "as_seen": "Failed to mark status as seen",
   "hint_reply": "Reply...",
   "error": "Error",
-  "grup": "Group",
+  "grup": "Group ",
   "members": "Member",
   "clear_all_messages": "Delete All Messages from ",
   "chat_will_be_empty": "This chat will be empty, but will remain in your chat list.",
