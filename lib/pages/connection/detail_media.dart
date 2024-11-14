@@ -24,127 +24,157 @@ class PDFViewScreen extends StatefulWidget {
   final String fileName;
   final DateTime dateTime;
 
-  const PDFViewScreen({
+  PDFViewScreen({
     required this.filePath,
     required this.fileName,
     required this.dateTime,
   });
 
   @override
-  State<PDFViewScreen> createState() => _PDFViewScreenState();
+  _PDFViewScreenState createState() => _PDFViewScreenState();
 }
 
 class _PDFViewScreenState extends State<PDFViewScreen> {
-  final AlertService _alertService = GetIt.instance.get<AlertService>();
   bool _isDownloading = false;
   double _progress = 0.0;
+  final GetIt _getIt = GetIt.instance;
+  late AlertService _alertService;
 
-  Future<void> _downloadFile(String url, String fileName) async {
-    if (await Permission.storage.request().isGranted) {
-      setState(() => _isDownloading = true);
-      try {
-        String savePath = await _getSavePath(fileName);
-        await Dio().download(
-          url,
-          savePath,
-          onReceiveProgress: (received, total) {
-            if (total != -1) {
-              setState(() => _progress = (received / total) * 100);
-            }
-          },
-        );
-        _alertService.showToast(
-            text: 'file_download'.tr(), icon: Icons.check, color: Colors.green);
-      } catch (e) {
-        _alertService.showToast(
-            text: 'file_error_download'.tr(),
-            icon: Icons.error,
-            color: Colors.red);
-      } finally {
-        setState(() => _isDownloading = false);
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _alertService = _getIt.get<AlertService>();
+    print('DOK DOK DOK ${widget.filePath}');
+  }
+
+  Future<void> _downloadAndSaveFile(String url, String fileName) async {
+    try {
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
       }
+
+      Dio dio = Dio();
+      String savePath = await _getFilePath(fileName);
+
+      await dio.download(
+        url,
+        savePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            print((received / total * 100).toStringAsFixed(0) + "%");
+          }
+        },
+      );
+
+      setState(() {
+        _alertService.showToast(
+          text: 'file_download'.tr(),
+          icon: Icons.check,
+          color: Colors.green,
+        );
+      });
+      print('File berhasil diunduh dan disimpan ke $savePath');
+    } catch (e) {
+      print('--------- $e');
+      setState(() {
+        _alertService.showToast(
+          text: 'file_error_download'.tr(),
+          icon: Icons.error,
+          color: Colors.red,
+        );
+      });
     }
   }
 
-  Future<String> _getSavePath(String fileName) async {
-    final directory = Platform.isAndroid
-        ? await getExternalStorageDirectory()
-        : await getApplicationDocumentsDirectory();
-    return '${directory!.path}/$fileName';
+  Future<String> _getFilePath(String fileName) async {
+    Directory directory;
+
+    if (Platform.isAndroid) {
+      directory = (await getExternalStorageDirectory())!;
+    } else {
+      directory = await getApplicationDocumentsDirectory();
+    }
+
+    return '${directory.path}/$fileName';
   }
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate =
-        DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(widget.dateTime);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
         title: Column(
           children: [
             Text(
               widget.fileName,
-              style: StyleText(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
             Text(
-              formattedDate,
-              style: StyleText(
-                color: Colors.white,
-                fontSize: 10,
-              ),
+              DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(widget.dateTime),
+              style: TextStyle(color: Colors.white, fontSize: 10),
             ),
           ],
         ),
         actions: [
           IconButton(
-            onPressed: () async =>
-                await _downloadFile(widget.filePath, widget.fileName),
-            icon: _isDownloading
-                ? Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                          value: _progress / 100,
-                          color: Colors.white,
-                          strokeWidth: 2.0),
-                      Text('${_progress.toStringAsFixed(0)}%',
-                          style: StyleText(color: Colors.white, fontSize: 12)),
-                    ],
-                  )
-                : Icon(Icons.file_download_outlined, color: Colors.white),
+            onPressed: () async {
+              setState(() {
+                _isDownloading = true;
+              });
+              await _downloadAndSaveFile(widget.filePath, widget.fileName);
+              setState(() {
+                _isDownloading = false;
+              });
+            },
+            icon: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: _isDownloading
+                  ? Stack(
+                alignment: Alignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    value: _progress / 100,
+                    valueColor:
+                    AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 2.0,
+                    key: ValueKey<int>(1),
+                  ),
+                  Text(
+                    '${_progress.toStringAsFixed(0)}%',
+                    style: StyleText(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+                  : Icon(
+                Icons.file_download_outlined,
+                color: Colors.white,
+                key: ValueKey<int>(0),
+              ),
+            ),
           ),
         ],
       ),
       body: PDFView(
-        enableSwipe: true,
-        swipeHorizontal: true,
-        autoSpacing: false,
-        pageFling: false,
-        onError: (error) {
-          print('errorrrrrr ${error}');
-        },
-        onRender: (_pages) {
-          print('Document rendered with $_pages pages');
-        },
-        onPageError: (page, error) {
-          print('$page: ${error.toString()}');
-        },
         filePath: widget.filePath,
+        onError: (error) => print('Error: $error'),
+        onRender: (_pages) => print('Document rendered with $_pages pages'),
+        onPageError: (page, error) => print('$page: $error'),
       ),
     );
   }

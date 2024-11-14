@@ -844,7 +844,7 @@ class _ChatPageState extends State<ChatPage> {
         Container(
           alignment: Alignment.centerRight,
           child: Text(
-            DateFormat('HH:mm').format(message.createdAt),
+            DateFormat('HH:mm', context.locale.toString()).format(message.createdAt),
             style: StyleText(color: Colors.black87, fontSize: 12),
           ),
         ),
@@ -863,7 +863,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleMediaTap(ChatMedia media) async {
-    final String formattedDate = DateFormat('yyyy/MM/dd, HH:mm').format(media.uploadedDate ?? DateTime.now());
+    final String formattedDate = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(media.uploadedDate ?? DateTime.now());
 
     if (media.type == MediaType.image) {
       Navigator.push(
@@ -915,14 +915,14 @@ class _ChatPageState extends State<ChatPage> {
           } else {
             DateTime lastSeenDt = lastSeen.toDate();
             DateTime now = DateTime.now();
-            String formattedTime = DateFormat('HH:mm').format(lastSeenDt);
+            String formattedTime = DateFormat('HH:mm', context.locale.toString()).format(lastSeenDt);
 
             if (now.difference(lastSeenDt).inDays == 0) {
               lastSeenMessage = 'Last seen today at $formattedTime';
             } else if (now.difference(lastSeenDt).inDays == 1) {
               lastSeenMessage = 'Last seen yesterday at $formattedTime';
             } else {
-              String formattedDate = DateFormat('yMd').format(lastSeenDt);
+              String formattedDate = DateFormat('yMd', context.locale.toString()).format(lastSeenDt);
               lastSeenMessage = 'Last seen $formattedDate at $formattedTime';
             }
           }

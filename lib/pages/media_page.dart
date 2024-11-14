@@ -1,9 +1,11 @@
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:chating/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/group.dart';
 import '../models/user_profile.dart';
@@ -39,6 +41,31 @@ class _MediaPageState extends State<MediaPage> {
   void initState() {
     super.initState();
     controller = PageController(initialPage: _selectedIndex);
+  }
+
+  Future<void> _downloadAndOpenPDF(
+      String url, String fileName, DateTime dateTime) async {
+    try {
+      Dio dio = Dio();
+      var tempDir = await getTemporaryDirectory();
+      String tempPath = tempDir.path;
+      String filePath = '$tempPath/temp.pdf';
+
+      await dio.download(url, filePath);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PDFViewScreen(
+            filePath: filePath,
+            fileName: fileName,
+            dateTime: dateTime,
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Error saat mengunduh atau membuka file PDF: $e');
+    }
   }
 
   @override
@@ -371,6 +398,100 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
+  // Widget Document() {
+  //   return Center(
+  //     child: StreamBuilder(
+  //       stream: FirebaseFirestore.instance.collection('chats').snapshots(),
+  //       builder: (context, snapshot) {
+  //         if (snapshot.connectionState == ConnectionState.waiting) {
+  //           return CircularProgressIndicator();
+  //         }
+  //
+  //         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+  //           return Container();
+  //         }
+  //
+  //         final documentMessages = snapshot.data!.docs
+  //             .expand((doc) {
+  //               return (doc['messages'] as List)
+  //                   .where((msg) => msg['messageType'] == 'Document');
+  //             })
+  //             .toList()
+  //             .reversed
+  //             .toList();
+  //
+  //         if (documentMessages.isEmpty) {
+  //           return Container();
+  //         }
+  //
+  //         return ListView.builder(
+  //           itemCount: documentMessages.length,
+  //           itemBuilder: (context, index) {
+  //             var document = documentMessages[index];
+  //             var contentUrl = document['content'];
+  //             var timestamp = (document['sentAt'] as Timestamp).toDate();
+  //             var formattedDate = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(timestamp);
+  //
+  //
+  //             return GestureDetector(
+  //               onTap: () {
+  //                 Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(
+  //                     builder: (context) => PDFViewScreen(
+  //                       filePath: contentUrl,
+  //                       fileName: document['fileName'] ?? 'Document',
+  //                       dateTime: timestamp,
+  //                     ),
+  //                   ),
+  //                 );
+  //               },
+  //               child: Container(
+  //                 color: Colors.transparent,
+  //                 child: Column(
+  //                   children: [
+  //                     Container(
+  //                       padding: EdgeInsets.all(12),
+  //                       child: Row(
+  //                         children: [
+  //                           Icon(Icons.description, color: Colors.blue),
+  //                           SizedBox(width: 12),
+  //                           Expanded(
+  //                             child: Column(
+  //                               crossAxisAlignment: CrossAxisAlignment.start,
+  //                               children: [
+  //                                 Text(
+  //                                   contentUrl,
+  //                                   overflow: TextOverflow.ellipsis,
+  //                                   style: StyleText(fontWeight: FontWeight.bold),
+  //                                 ),
+  //                                 SizedBox(height: 4),
+  //                                 Text(
+  //                                   formattedDate,
+  //                                   style: StyleText(fontSize: 13, color: Colors.grey),
+  //                                 ),
+  //                               ],
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                     Divider(
+  //                       height: 1,
+  //                       indent: 15,
+  //                       endIndent: 15,
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             );
+  //           },
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
   Widget Document() {
     return Center(
       child: StreamBuilder(
@@ -385,10 +506,8 @@ class _MediaPageState extends State<MediaPage> {
           }
 
           final documentMessages = snapshot.data!.docs
-              .expand((doc) {
-                return (doc['messages'] as List)
-                    .where((msg) => msg['messageType'] == 'Document');
-              })
+              .expand((doc) => (doc['messages'] as List)
+              .where((msg) => msg['messageType'] == 'Document'))
               .toList()
               .reversed
               .toList();
@@ -402,61 +521,35 @@ class _MediaPageState extends State<MediaPage> {
             itemBuilder: (context, index) {
               var document = documentMessages[index];
               var contentUrl = document['content'];
+              var fileName = document['fileName'] ?? 'dokumen'.tr();
               var timestamp = (document['sentAt'] as Timestamp).toDate();
-              var formattedDate = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(timestamp);
+              var formattedDate = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString())
+                  .format(timestamp);
 
-
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PDFViewScreen(
-                        filePath: contentUrl,
-                        fileName: document['fileName'] ?? 'Document',
-                        dateTime: timestamp,
-                      ),
-                    ),
-                  );
-                },
-                child: Container(
-                  color: Colors.transparent,
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            Icon(Icons.description, color: Colors.blue),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    contentUrl,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: StyleText(fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    formattedDate,
-                                    style: StyleText(fontSize: 13, color: Colors.grey),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Divider(
-                        height: 1,
-                        indent: 15,
-                        endIndent: 15,
-                      ),
-                    ],
-                  ),
+              return ListTile(
+                leading: Icon(Icons.description, color: Colors.blue),
+                title: Text(
+                  document['fileName'] ?? 'dokumen'.tr(),
+                  style: StyleText(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
                 ),
+                subtitle: Text(
+                  formattedDate,
+                  style: StyleText(fontSize: 13, color: Colors.grey),
+                ),
+                onTap: () => _downloadAndOpenPDF(contentUrl, fileName, DateTime.now()),
+                // onTap: () {
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => PDFViewScreen(
+                //         filePath: contentUrl,
+                //         fileName: document['fileName'] ?? 'Document',
+                //         dateTime: timestamp,
+                //       ),
+                //     ),
+                //   );
+                // },
               );
             },
           );
