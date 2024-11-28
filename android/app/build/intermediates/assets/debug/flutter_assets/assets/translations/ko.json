@@ -135,7 +135,7 @@
   "as_seen": "상태를 조회한 것으로 표시하지 못했습니다.",
   "hint_reply": "회신하다...",
   "error": "오류",
-  "grup": "그룹",
+  "grup": "그룹 ",
   "members": "회원",
   "clear_all_messages": "다음에서 모든 메시지 삭제 ",
   "chat_will_be_empty": "이 채팅은 비어 있지만 채팅 목록에는 남아 있습니다.",
@@ -157,5 +157,11 @@
   "other": "알림, 언어 등",
   "failed_leave_group": "그룹에서 탈퇴하지 못했습니다:",
   "failed_create_group": "그룹을 생성하지 못했습니다!",
-  "typing": "메시지를 입력하세요..."
+  "typing": "메시지를 입력하세요...",
+  "no_media": "미디어를 찾을 수 없습니다",
+  "no_document": "사용 가능한 문서가 없습니다",
+  "failed_del": "메시지를 삭제하지 못했습니다.",
+  "file_download": "파일이 성공적으로 다운로드되었습니다.",
+  "file_error_download": "파일 다운로드 오류",
+  "tautan": "링크"
 }
