@@ -135,7 +135,7 @@
   "as_seen": "Gagal menandai status sebagai telah dilihat",
   "hint_reply": "Balas...",
   "error": "Kesalahan",
-  "grup": "Grup",
+  "grup": "Grup ",
   "members": "anggota",
   "clear_all_messages": "Hapus Semua Pesan dari ",
   "chat_will_be_empty": "Obrolan ini akan kosong, tetapi akan tetap ada di daftar obrolan Anda.",
@@ -157,5 +157,11 @@
   "other": "Pemberitahuan, bahasa, dll.",
   "failed_leave_group": "Gagal keluar dari grup:",
   "failed_create_group": "Gagal membuat grup!",
-  "typing": "Ketik pesan..."
+  "typing": "Ketik pesan...",
+  "no_media": "Tidak ada media yang ditemukan",
+  "no_document": "Tidak ada dokumen yang tersedia",
+  "failed_del": "Gagal menghapus pesan",
+  "file_download": "File berhasil diunduh",
+  "file_error_download": "Terjadi kesalahan saat mengunduh file",
+  "tautan": "Tautan"
 }

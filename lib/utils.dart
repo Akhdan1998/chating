@@ -76,10 +76,14 @@ class FirebaseApi {
   }
 
   Future<void> initNotification() async {
+    FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
     await _firebaseMessaging.requestPermission();
     final FCMToken = await _firebaseMessaging.getToken();
-    print('TOKEN: $FCMToken');
-    FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+    if (FCMToken != null) {
+      print('TOKEN: $FCMToken');
+    } else {
+      print('Gagal mendapatkan token.');
+    }
   }
 }
 
