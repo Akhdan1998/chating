@@ -24,6 +24,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 import '../../models/chat.dart';
 import '../../models/message.dart' as chat;
 import '../../models/message.dart';
@@ -39,7 +40,7 @@ import 'detail_media.dart';
 class ChatPage extends StatefulWidget {
   final UserProfile chatUser;
 
-  const ChatPage({
+    ChatPage({
     super.key,
     required this.chatUser,
   });
@@ -69,6 +70,7 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> messages = [];
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   late FirebaseMessaging _firebaseMessaging;
+  final Uuid uuid = Uuid();
 
   // Future<Map<String, dynamic>?> fetchToken(String channelName, int uid) async {
   //   final String url =
@@ -168,9 +170,9 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
 
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initializationSettings =
+      InitializationSettings initializationSettings =
         InitializationSettings(
       android: initializationSettingsAndroid,
     );
@@ -272,6 +274,41 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // Future<void> uploadToFirebase(File file) async {
+  //   try {
+  //     FirebaseStorage storage = FirebaseStorage.instance;
+  //     String fileName =
+  //         'mediaUsers/${DateTime.now().toIso8601String()}${p.extension(file.path)}';
+  //     Reference ref = storage.ref().child(fileName);
+  //     UploadTask uploadTask = ref.putFile(file);
+  //     uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+  //       print(
+  //           'Progres upload: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+  //     });
+  //
+  //     TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+  //
+  //     String downloadURL = await taskSnapshot.ref.getDownloadURL();
+  //
+  //     print('File berhasil diupload. URL unduhan: $downloadURL');
+  //
+  //     chat.Message message = chat.Message(
+  //       senderID: currentUser!.id,
+  //       content: downloadURL,
+  //       messageType: MessageType.Document,
+  //       sentAt: Timestamp.now(),
+  //       isRead: false,
+  //     );
+  //     await _databaseService.sendChatMessage(
+  //       currentUser!.id,
+  //       otherUser!.id,
+  //       message,
+  //     );
+  //   } catch (e) {
+  //     print('Error saat mengupload file: $e');
+  //   }
+  // }
+
   Future<void> uploadToFirebase(File file) async {
     try {
       FirebaseStorage storage = FirebaseStorage.instance;
@@ -287,10 +324,13 @@ class _ChatPageState extends State<ChatPage> {
       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
 
       String downloadURL = await taskSnapshot.ref.getDownloadURL();
-
       print('File berhasil diupload. URL unduhan: $downloadURL');
 
+      // Generate a unique ID for the message
+      String messageId = FirebaseFirestore.instance.collection('messages').doc().id;
+
       chat.Message message = chat.Message(
+        id: messageId,
         senderID: currentUser!.id,
         content: downloadURL,
         messageType: MessageType.Document,
@@ -332,140 +372,92 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _deleteMessage(ChatMessage message) async {
-    try {
-      await _databaseService.deleteMessage(
-          currentUser!.id, otherUser!.id, message.user.id);
-      _alertService.showToast(
-        text: 'del'.tr(),
-        icon: Icons.check,
-        color: Colors.green,
-      );
-    } catch (e) {
-      _alertService.showToast(
-        text: 'failed_del'.tr(),
-        icon: Icons.error,
-        color: Colors.red,
-      );
-    }
-  }
-
-  void _showDeleteMessageDialog(BuildContext context, ChatMessage message) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: '',
-      transitionDuration: Duration(milliseconds: 300),
-      pageBuilder: (context, anim1, anim2) {
-        return AlertDialog(
-          actionsPadding: EdgeInsets.only(top: 1, bottom: 5, right: 10),
-          title: Text(
-            'del'.tr(),
-            style: StyleText(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            'desk_del'.tr(),
-            style: StyleText(fontSize: 15),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                'no'.tr(),
-                style: StyleText(
-                  color: Colors.redAccent,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                _deleteMessage(message);
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'yes'.tr(),
-                style: StyleText(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-      transitionBuilder: (context, anim1, anim2, child) {
-        return Transform.scale(
-          scale: anim1.value,
-          child: child,
-        );
-      },
-    );
-  }
-
   void _showPopup(BuildContext context, ChatMessage message) {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: '',
-      barrierColor: Colors.black54,
-      transitionDuration: Duration(milliseconds: 300),
-      pageBuilder: (context, anim1, anim2) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
-          titlePadding: EdgeInsets.zero,
-          title: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: Text(
-                  'copy'.tr(),
-                  style: StyleText(),
+      barrierLabel: "Popup",
+      pageBuilder: (context, animation1, animation2) {
+        return Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'del'.tr(),
+                  style: StyleText(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                trailing: Icon(
-                  Icons.copy,
-                  size: 19,
+                SizedBox(height: 10),
+                Text(
+                  'desk_del'.tr(),
+                  style: StyleText(fontSize: 15),
                 ),
-                onTap: () {
-                  Clipboard.setData(ClipboardData(text: message.text))
-                      .whenComplete(() {
-                    _alertService.showToast(
-                      text: 'copy'.tr(),
-                      icon: Icons.copy,
-                      color: Colors.green,
-                    );
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-              Divider(height: 0),
-              ListTile(
-                title: Text('delete'.tr()),
-                trailing: Icon(
-                  Icons.delete,
-                  size: 20,
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(
+                        'no'.tr(),
+                        style: StyleText(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        side: BorderSide(
+                          width: 1,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        await _deleteMessage(message.user.id);
+                      },
+                      child: Text(
+                        'yes'.tr(),
+                        style: StyleText(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
                 ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showDeleteMessageDialog(context, message);
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
-      transitionBuilder: (context, anim1, anim2, child) {
-        return Transform.scale(
-          scale: anim1.value,
-          child: child,
-        );
-      },
     );
+  }
+
+  Future<void> _deleteMessage(String messageId) async {
+    if (currentUser == null || otherUser == null) return;
+
+    try {
+      await _databaseService.deleteChatMessage(
+        currentUser!.id,
+        otherUser!.id,
+        messageId,
+      );
+      print("Pesan berhasil dihapus: $messageId");
+    } catch (e) {
+      print("Error menghapus pesan: $e");
+    }
   }
 
   void deleteAllMessages() {
@@ -490,6 +482,39 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // Future<void> uploadAudioToFirebase(File file) async {
+  //   try {
+  //     FirebaseStorage storage = FirebaseStorage.instance;
+  //     String fileName =
+  //         'audio/${DateTime.now().toIso8601String()}${p.extension(file.path)}.aac';
+  //     Reference ref = storage.ref().child(fileName);
+  //     UploadTask uploadTask = ref.putFile(file);
+  //     uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+  //       print(
+  //           'Upload progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
+  //     });
+  //
+  //     TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+  //     String downloadURL = await taskSnapshot.ref.getDownloadURL();
+  //     print('Audio file uploaded successfully. Download URL: $downloadURL');
+  //
+  //     chat.Message message = chat.Message(
+  //       senderID: currentUser!.id,
+  //       content: downloadURL,
+  //       messageType: MessageType.Audio,
+  //       sentAt: Timestamp.now(),
+  //       isRead: false,
+  //     );
+  //     await _databaseService.sendChatMessage(
+  //       currentUser!.id,
+  //       otherUser!.id,
+  //       message,
+  //     );
+  //   } catch (e) {
+  //     print('Error uploading audio file: $e');
+  //   }
+  // }
+
   Future<void> uploadAudioToFirebase(File file) async {
     try {
       FirebaseStorage storage = FirebaseStorage.instance;
@@ -506,7 +531,11 @@ class _ChatPageState extends State<ChatPage> {
       String downloadURL = await taskSnapshot.ref.getDownloadURL();
       print('Audio file uploaded successfully. Download URL: $downloadURL');
 
+      // Generate a unique ID for the message
+      String messageId = FirebaseFirestore.instance.collection('messages').doc().id;
+
       chat.Message message = chat.Message(
+        id: messageId,
         senderID: currentUser!.id,
         content: downloadURL,
         messageType: MessageType.Audio,
@@ -529,11 +558,11 @@ class _ChatPageState extends State<ChatPage> {
       throw 'Microphone permissions not granted';
     }
     await recorder.openRecorder();
-    recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+    recorder.setSubscriptionDuration(  Duration(milliseconds: 500));
   }
 
   Future<void> _showNotification(String message) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
@@ -543,7 +572,7 @@ class _ChatPageState extends State<ChatPage> {
       showWhen: false,
     );
 
-    const NotificationDetails platformChannelSpecifics =
+      NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
@@ -947,62 +976,110 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _sendMessage(ChatMessage chatMessage) async {
+    if (currentUser == null || otherUser == null) {
+      print("Error: Users are not initialized");
+      return;
+    }
+
+    String messageId = uuid.v4();
+    String senderID = chatMessage.user.id ?? 'unknown_sender';
+    print('AIDI: ${messageId}');
+    chat.Message message;
+
     if (chatMessage.medias != null && chatMessage.medias!.isNotEmpty) {
-      if (chatMessage.medias!.first.type == MediaType.image) {
-        chat.Message message = chat.Message(
-          senderID: chatMessage.user.id,
-          content: chatMessage.medias!.first.url,
-          messageType: MessageType.Image,
-          sentAt: Timestamp.fromDate(chatMessage.createdAt),
-          isRead: false,
-        );
-        await _databaseService.sendChatMessage(
-          currentUser!.id,
-          otherUser!.id,
-          message,
-        );
-      } else if (chatMessage.medias!.first.type == MediaType.file) {
-        chat.Message message = chat.Message(
-          senderID: chatMessage.user.id,
-          content: chatMessage.medias!.first.url,
-          messageType: MessageType.Document,
-          sentAt: Timestamp.fromDate(chatMessage.createdAt),
-          isRead: false,
-        );
-        await _databaseService.sendChatMessage(
-          currentUser!.id,
-          otherUser!.id,
-          message,
-        );
-      } else if (chatMessage.medias!.first.type == MediaType.video) {
-        chat.Message message = chat.Message(
-          senderID: chatMessage.user.id,
-          content: chatMessage.medias!.first.url,
-          messageType: MessageType.Video,
-          sentAt: Timestamp.fromDate(chatMessage.createdAt),
-          isRead: false,
-        );
-        await _databaseService.sendChatMessage(
-          currentUser!.id,
-          otherUser!.id,
-          message,
-        );
-      }
+      MediaType type = chatMessage.medias!.first.type;
+      message = chat.Message(
+        id: messageId,
+        senderID: senderID,
+        content: chatMessage.medias!.first.url ?? '',
+        messageType: type == MediaType.image
+            ? MessageType.Image
+            : type == MediaType.video
+                ? MessageType.Video
+                : MessageType.Document,
+        sentAt: Timestamp.fromDate(chatMessage.createdAt),
+        isRead: false,
+      );
     } else {
-      chat.Message message = chat.Message(
-        senderID: currentUser!.id,
-        content: chatMessage.text,
+      String messageText = chatMessage.text ?? '';
+      message = chat.Message(
+        id: messageId,
+        senderID: senderID,
+        content: messageText,
         messageType: MessageType.Text,
         sentAt: Timestamp.fromDate(chatMessage.createdAt),
         isRead: false,
       );
+    }
+
+    try {
       await _databaseService.sendChatMessage(
         currentUser!.id,
         otherUser!.id,
         message,
       );
+    } catch (e) {
+      print("Error sending message: $e");
     }
   }
+
+  // Future<void> _sendMessage(ChatMessage chatMessage) async {
+  //   if (chatMessage.medias != null && chatMessage.medias!.isNotEmpty) {
+  //     if (chatMessage.medias!.first.type == MediaType.image) {
+  //       chat.Message message = chat.Message(
+  //         senderID: chatMessage.user.id,
+  //         content: chatMessage.medias!.first.url,
+  //         messageType: MessageType.Image,
+  //         sentAt: Timestamp.fromDate(chatMessage.createdAt),
+  //         isRead: false,
+  //       );
+  //       await _databaseService.sendChatMessage(
+  //         currentUser!.id,
+  //         otherUser!.id,
+  //         message,
+  //       );
+  //     } else if (chatMessage.medias!.first.type == MediaType.file) {
+  //       chat.Message message = chat.Message(
+  //         senderID: chatMessage.user.id,
+  //         content: chatMessage.medias!.first.url,
+  //         messageType: MessageType.Document,
+  //         sentAt: Timestamp.fromDate(chatMessage.createdAt),
+  //         isRead: false,
+  //       );
+  //       await _databaseService.sendChatMessage(
+  //         currentUser!.id,
+  //         otherUser!.id,
+  //         message,
+  //       );
+  //     } else if (chatMessage.medias!.first.type == MediaType.video) {
+  //       chat.Message message = chat.Message(
+  //         senderID: chatMessage.user.id,
+  //         content: chatMessage.medias!.first.url,
+  //         messageType: MessageType.Video,
+  //         sentAt: Timestamp.fromDate(chatMessage.createdAt),
+  //         isRead: false,
+  //       );
+  //       await _databaseService.sendChatMessage(
+  //         currentUser!.id,
+  //         otherUser!.id,
+  //         message,
+  //       );
+  //     }
+  //   } else {
+  //     chat.Message message = chat.Message(
+  //       senderID: currentUser!.id,
+  //       content: chatMessage.text,
+  //       messageType: MessageType.Text,
+  //       sentAt: Timestamp.fromDate(chatMessage.createdAt),
+  //       isRead: false,
+  //     );
+  //     await _databaseService.sendChatMessage(
+  //       currentUser!.id,
+  //       otherUser!.id,
+  //       message,
+  //     );
+  //   }
+  // }
 
   List<ChatMessage> _generateChatMessageList(List<chat.Message> messages) {
     List<ChatMessage> chatMessages = messages.map((e) {

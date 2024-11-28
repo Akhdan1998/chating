@@ -116,16 +116,60 @@ class DatabaseService {
 
   Future<void> sendChatMessage(
       String uid1, String uid2, Message message) async {
-    String ChatID = genereteChatID(uid1: uid1, uid2: uid2);
-    final docRef = _chatCollection!.doc(ChatID);
-    await docRef.update({
-      "messages": FieldValue.arrayUnion(
-        [
-          message.toJson(),
-        ],
-      ),
-    });
+    String chatID = genereteChatID(uid1: uid1, uid2: uid2);
+    final docRef = _chatCollection!.doc(chatID);
+
+    try {
+      // Cek apakah dokumen sudah ada
+      final docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        // Perbarui pesan jika dokumen ada
+        await docRef.update({
+          "messages": FieldValue.arrayUnion([message.toJson()]),
+        });
+      } else {
+        // Buat dokumen baru jika belum ada
+        await docRef.set({
+          "participants": [uid1, uid2],
+          "messages": [message.toJson()],
+        });
+      }
+    } catch (e) {
+      print("Error updating chat message: $e");
+    }
   }
+
+  Future<void> deleteChatMessage(
+      String currentUserId,
+      String otherUserId,
+      String messageId,
+      ) async {
+    try {
+      await _firebaseFirestore
+          .collection('chats')
+          .doc(currentUserId)
+          .collection('messages')
+          .doc(messageId)
+          .delete();
+      print("Pesan berhasil dihapus dari database.");
+    } catch (e) {
+      print("Error saat menghapus pesan: $e");
+      rethrow;
+    }
+  }
+
+  // Future<void> sendChatMessage(
+  //     String uid1, String uid2, Message message) async {
+  //   String ChatID = genereteChatID(uid1: uid1, uid2: uid2);
+  //   final docRef = _chatCollection!.doc(ChatID);
+  //   await docRef.update({
+  //     "messages": FieldValue.arrayUnion(
+  //       [
+  //         message.toJson(),
+  //       ],
+  //     ),
+  //   });
+  // }
 
   Stream<DocumentSnapshot<Chat>> getChatData(String uid1, String uid2) {
     String chatID = genereteChatID(uid1: uid1, uid2: uid2);

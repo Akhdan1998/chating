@@ -13,27 +13,57 @@ class Chat {
 
   factory Chat.fromJson(Map<String, dynamic> json) {
     return Chat(
-      id: json['id'],
+      id: json['id'] as String?,
       participants: List<String>.from(json['participants'] ?? []),
       messages: json['messages'] != null
-          ? List<Message>.from(json['messages'].map((x) => Message.fromJson(x)))
+          ? List<Message>.from(
+        json['messages'].map((x) {
+          try {
+            return Message.fromJson(x, id: x['id'] ?? 'unknown_id');
+          } catch (e) {
+            print('Error parsing Message: $e');
+            return Message(
+              id: 'error_id',
+              senderID: null,
+              content: null,
+              messageType: null,
+              sentAt: null,
+              isRead: false,
+            );
+          }
+        }),
+      )
           : [],
     );
   }
 
   factory Chat.fromFirestore(Map<String, dynamic> data) {
     return Chat(
-      id: data['id'],
+      id: data['id'] as String?,
       participants: List<String>.from(data['participants'] ?? []),
-      messages: (data['messages'] ?? []).map<Message>((e) => Message.fromJson(e)).toList(),
+      messages: (data['messages'] ?? []).map<Message>((e) {
+        try {
+          return Message.fromJson(e, id: e['id'] ?? 'unknown_id');
+        } catch (e) {
+          print('Error parsing Message: $e');
+          return Message(
+            id: 'error_id',
+            senderID: null,
+            content: null,
+            messageType: null,
+            sentAt: null,
+            isRead: false,
+          );
+        }
+      }).toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['participants'] = participants;
-    data['messages'] = messages!.map((e) => e.toJson()).toList();
-    return data;
+    return {
+      'id': id,
+      'participants': participants ?? [], // Pastikan null-safe
+      'messages': messages?.map((e) => e.toJson()).toList() ?? [],
+    };
   }
 }
