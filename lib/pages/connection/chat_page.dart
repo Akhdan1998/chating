@@ -40,7 +40,7 @@ import 'detail_media.dart';
 class ChatPage extends StatefulWidget {
   final UserProfile chatUser;
 
-    ChatPage({
+  ChatPage({
     super.key,
     required this.chatUser,
   });
@@ -170,10 +170,9 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
 
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-      AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-      InitializationSettings initializationSettings =
-        InitializationSettings(
+    InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -327,7 +326,8 @@ class _ChatPageState extends State<ChatPage> {
       print('File berhasil diupload. URL unduhan: $downloadURL');
 
       // Generate a unique ID for the message
-      String messageId = FirebaseFirestore.instance.collection('messages').doc().id;
+      String messageId =
+          FirebaseFirestore.instance.collection('messages').doc().id;
 
       chat.Message message = chat.Message(
         id: messageId,
@@ -532,7 +532,8 @@ class _ChatPageState extends State<ChatPage> {
       print('Audio file uploaded successfully. Download URL: $downloadURL');
 
       // Generate a unique ID for the message
-      String messageId = FirebaseFirestore.instance.collection('messages').doc().id;
+      String messageId =
+          FirebaseFirestore.instance.collection('messages').doc().id;
 
       chat.Message message = chat.Message(
         id: messageId,
@@ -558,11 +559,11 @@ class _ChatPageState extends State<ChatPage> {
       throw 'Microphone permissions not granted';
     }
     await recorder.openRecorder();
-    recorder.setSubscriptionDuration(  Duration(milliseconds: 500));
+    recorder.setSubscriptionDuration(Duration(milliseconds: 500));
   }
 
   Future<void> _showNotification(String message) async {
-      AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
@@ -572,7 +573,7 @@ class _ChatPageState extends State<ChatPage> {
       showWhen: false,
     );
 
-      NotificationDetails platformChannelSpecifics =
+    NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
@@ -873,7 +874,8 @@ class _ChatPageState extends State<ChatPage> {
         Container(
           alignment: Alignment.centerRight,
           child: Text(
-            DateFormat('HH:mm', context.locale.toString()).format(message.createdAt),
+            DateFormat('HH:mm', context.locale.toString())
+                .format(message.createdAt),
             style: StyleText(color: Colors.black87, fontSize: 12),
           ),
         ),
@@ -892,7 +894,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleMediaTap(ChatMedia media) async {
-    final String formattedDate = DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString()).format(media.uploadedDate ?? DateTime.now());
+    final String formattedDate =
+        DateFormat('yyyy/MM/dd, HH:mm', context.locale.toString())
+            .format(media.uploadedDate ?? DateTime.now());
 
     if (media.type == MediaType.image) {
       Navigator.push(
@@ -944,14 +948,18 @@ class _ChatPageState extends State<ChatPage> {
           } else {
             DateTime lastSeenDt = lastSeen.toDate();
             DateTime now = DateTime.now();
-            String formattedTime = DateFormat('HH:mm', context.locale.toString()).format(lastSeenDt);
+            String formattedTime =
+                DateFormat('HH:mm', context.locale.toString())
+                    .format(lastSeenDt);
 
             if (now.difference(lastSeenDt).inDays == 0) {
               lastSeenMessage = 'Last seen today at $formattedTime';
             } else if (now.difference(lastSeenDt).inDays == 1) {
               lastSeenMessage = 'Last seen yesterday at $formattedTime';
             } else {
-              String formattedDate = DateFormat('yMd', context.locale.toString()).format(lastSeenDt);
+              String formattedDate =
+                  DateFormat('yMd', context.locale.toString())
+                      .format(lastSeenDt);
               lastSeenMessage = 'Last seen $formattedDate at $formattedTime';
             }
           }
