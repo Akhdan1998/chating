@@ -174,7 +174,7 @@ class AllCallsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (userUid == null) {
-      return Center(child: CircularProgressIndicator());
+      return Container();
     }
 
     return Container(
