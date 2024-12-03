@@ -201,7 +201,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
               subtitle: Text(
                 DateFormat('HH:mm').format(
                   story['timestamp'].toDate(),
-                ), style: StyleText(),
+                ), style: StyleText(fontSize: 13),
               ),
               trailing: Icon(
                 Icons.remove_red_eye,

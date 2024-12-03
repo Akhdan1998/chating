@@ -55,21 +55,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
     }
   }
 
-  Future<void> printAllUsers() async {
-    try {
-      QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('users').get();
-
-      for (var doc in querySnapshot.docs) {
-        String uid = doc['uid'];
-        String name = doc['name'];
-        print('$uid === $name');
-      }
-    } catch (e) {
-      print('Failed to fetch users: $e');
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -77,8 +62,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
     _databaseService = _getIt.get<DatabaseService>();
     _authService = _getIt.get<AuthService>();
     _alertService = _getIt.get<AlertService>();
-
-    printAllUsers();
   }
 
   @override

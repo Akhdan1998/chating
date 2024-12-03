@@ -36,7 +36,7 @@ class _BoardingState extends State<Boarding> {
       case 'ko':
         return 'Korea';
       default:
-        return 'English'; // Default language
+        return 'English';
     }
   }
 
@@ -93,7 +93,7 @@ class _BoardingState extends State<Boarding> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                // Aksi ketika "Kebijakan Privasi" ditekan
+                            //` Aksi ketika "Kebijakan Privasi" ditekan
                                 print('Kebijakan Privasi ditekan');
                               },
                           ),
