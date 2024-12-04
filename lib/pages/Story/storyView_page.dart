@@ -175,16 +175,43 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getStoryViewers(String uid) async {
+    final doc = await FirebaseFirestore.instance
+        .collection('storyViews')
+        .doc(uid)
+        .get();
+
+    if (doc.exists) {
+      final data = doc.data();
+      if (data != null && data['viewers'] != null) {
+        return List<Map<String, dynamic>>.from(data['viewers']);
+      }
+    }
+    return [];
+  }
+
+  String formatTimestamp(Timestamp timestamp) {
+    final dateTime = timestamp.toDate();
+    return DateFormat('HH:mm').format(dateTime);
+  }
+
   Future<void> seenStory() async {
     _storyController.pause();
+
+    final viewers = await getStoryViewers(widget.userProfile.uid!);
 
     await showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
         return ListView.builder(
-          itemCount: _seenStories.length,
+          itemCount: viewers.length,
           itemBuilder: (context, index) {
-            final story = _seenStories[index];
+            final viewer = viewers[index];
+            final timestamp = viewer['timestamp'];
+            final formattedTimestamp = timestamp != null
+                ? formatTimestamp(timestamp)
+                : '-';
+
             return ListTile(
               leading: Container(
                 width: 40,
@@ -192,16 +219,18 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                    image: NetworkImage(widget.userProfile.pfpURL!),
+                    image: NetworkImage(viewer['pfpUrl'] ?? ''),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              title: Text(widget.userProfile.name!, style: StyleText(),),
+              title: Text(
+                viewer['name'] ?? '',
+                style: StyleText(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(
-                DateFormat('HH:mm').format(
-                  story['timestamp'].toDate(),
-                ), style: StyleText(fontSize: 13),
+                formattedTimestamp,
+                style: StyleText(fontSize: 10),
               ),
               trailing: Icon(
                 Icons.remove_red_eye,

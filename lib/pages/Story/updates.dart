@@ -38,23 +38,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
   bool _isRequestingPermission = false;
   late AlertService _alertService;
 
-  Future<void> saveStoryViewer(String storyId, String viewerUid) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('stories')
-          .doc(storyId)
-          .collection('viewers')
-          .doc(viewerUid)
-          .set({
-        'viewerUid': viewerUid,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      print('Viewer saved successfully for story: $storyId');
-    } catch (e) {
-      print('Failed to save viewer: $e');
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -62,28 +45,12 @@ class _UpdatesPageState extends State<UpdatesPage> {
     _databaseService = _getIt.get<DatabaseService>();
     _authService = _getIt.get<AuthService>();
     _alertService = _getIt.get<AlertService>();
-    printAllUsers();
   }
 
   @override
   void dispose() {
     _storyController.dispose();
     super.dispose();
-  }
-
-  Future<void> printAllUsers() async {
-    try {
-      QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('users').get();
-
-      for (var doc in querySnapshot.docs) {
-        String uid = doc['uid'];
-        String name = doc['name'];
-        print('$uid === $name');
-      }
-    } catch (e) {
-      print('Failed to fetch users: $e');
-    }
   }
 
   Future<void> _requestPermission() async {
@@ -490,12 +457,61 @@ class _UpdatesPageState extends State<UpdatesPage> {
               } else {
                 UserProfile user = users[index - 1].data();
                 return GestureDetector(
+                  // onTap: () async {
+                  //   QuerySnapshot querySnapshot = await FirebaseFirestore
+                  //       .instance
+                  //       .collection('users')
+                  //       .get();
+                  //   // for (var doc in querySnapshot.docs) {
+                  //   //   String uid = doc['uid'];
+                  //   //   String name = doc['name'];
+                  //   //   print('$uid === $name');
+                  //   // }
+                  //   final storyData = await getUserStory(user.uid!);
+                  //   if (storyData.isNotEmpty) {
+                  //     final List<String> storyUrls = storyData
+                  //         .map((story) => story['url'] as String)
+                  //         .toList();
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => OtherUser(
+                  //           userProfile: user,
+                  //           storyData: storyUrls,
+                  //         ),
+                  //       ),
+                  //     );
+                  //   } else {
+                  //     print('No story data available');
+                  //   }
+                  //   setState(() {
+                  //     clickedUIDs.add(user.uid!);
+                  //   });
+                  // },
                   onTap: () async {
+                    var userProfile = await _getUserProfile(currentUser.currentUser!.uid);
+
                     final storyData = await getUserStory(user.uid!);
                     if (storyData.isNotEmpty) {
                       final List<String> storyUrls = storyData
                           .map((story) => story['url'] as String)
                           .toList();
+
+                      await FirebaseFirestore.instance
+                          .collection('storyViews')
+                          .doc(user.uid!)
+                          .set({
+                        'viewers': FieldValue.arrayUnion([
+                          {
+                            'uid': userProfile.uid,
+                            'name': userProfile.name,
+                            'pfpUrl': userProfile.pfpURL,
+                            'timestamp': DateTime.now(),
+                          }
+                        ]),
+                        // 'timestamp': FieldValue.serverTimestamp(),
+                      }, SetOptions(merge: true));
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -508,6 +524,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     } else {
                       print('No story data available');
                     }
+
                     setState(() {
                       clickedUIDs.add(user.uid!);
                     });
