@@ -1,4 +1,4 @@
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:flutter/material.dart';
 
 class TextFieldCustom extends StatefulWidget {

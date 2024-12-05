@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../pages/connection/home_page.dart';
 import '../pages/connection/panggilan_page.dart';
-import '../pages/setting_page.dart';
+import '../pages/identitas/setting_page.dart';
 import '../pages/Story/updates.dart';
 
 class Navigasi extends StatefulWidget {

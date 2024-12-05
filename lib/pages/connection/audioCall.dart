@@ -10,7 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/user_profile.dart';
 import '../../service/alert_service.dart';
-import '../../utils.dart';
+import '../../widgets/utils.dart';
 
 class AudioCallScreen extends StatefulWidget {
   final UserProfile userProfile;

@@ -1,5 +1,5 @@
 import 'package:any_link_preview/any_link_preview.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';

@@ -1,11 +1,11 @@
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../consts.dart';
+import '../../widgets/consts.dart';
 
 class PanggilanPage extends StatefulWidget {
   @override

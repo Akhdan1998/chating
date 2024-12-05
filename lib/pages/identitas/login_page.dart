@@ -1,5 +1,5 @@
 import 'package:chating/pages/identitas/verifikasi_page.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 // import 'package:contacts_service/contacts_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../consts.dart';
+import '../../widgets/consts.dart';
 import '../../service/alert_service.dart';
 import '../../service/auth_service.dart';
 import '../../service/navigation_service.dart';

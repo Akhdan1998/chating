@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:chating/pages/Story/storyView_page.dart';
-import 'package:chating/pages/otherUserStory_page.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/pages/Story/otherUserStory_page.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -274,6 +274,15 @@ class _UpdatesPageState extends State<UpdatesPage> {
     }
   }
 
+  Future<bool> _hasViewedStory(String userId, String currentUserId) async {
+    final storyViewDoc = FirebaseFirestore.instance
+        .collection('storyViews')
+        .doc(userId);
+    final storyViewSnapshot = await storyViewDoc.get();
+    final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
+    return existingViewers.any((viewer) => viewer['uid'] == currentUserId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -456,38 +465,107 @@ class _UpdatesPageState extends State<UpdatesPage> {
                 );
               } else {
                 UserProfile user = users[index - 1].data();
+                // return GestureDetector(
+                //   onTap: () async {
+                //     var userProfile = await _getUserProfile(currentUser.currentUser!.uid);
+                //
+                //     final storyData = await getUserStory(user.uid!);
+                //     if (storyData.isNotEmpty) {
+                //       final List<String> storyUrls = storyData
+                //           .map((story) => story['url'] as String)
+                //           .toList();
+                //
+                //       final storyViewDoc = FirebaseFirestore.instance
+                //           .collection('storyViews')
+                //           .doc(user.uid!);
+                //
+                //       final storyViewSnapshot = await storyViewDoc.get();
+                //
+                //       final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
+                //       final hasViewed = existingViewers.any((viewer) =>
+                //       viewer['uid'] == userProfile.uid);
+                //
+                //       if (!hasViewed) {
+                //         await storyViewDoc.set({
+                //           'viewers': FieldValue.arrayUnion([
+                //             {
+                //               'uid': userProfile.uid,
+                //               'name': userProfile.name,
+                //               'pfpUrl': userProfile.pfpURL,
+                //               'timestamp': DateTime.now(),
+                //             }
+                //           ]),
+                //         }, SetOptions(merge: true));
+                //       }
+                //
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => OtherUser(
+                //             userProfile: user,
+                //             storyData: storyUrls,
+                //           ),
+                //         ),
+                //       );
+                //     } else {
+                //       print('No story data available');
+                //     }
+                //
+                //     setState(() {
+                //       clickedUIDs.add(user.uid!);
+                //     });
+                //   },
+                //   child: FutureBuilder<List<dynamic>>(
+                //     future: getUserStory(user.uid!),
+                //     builder: (context, snapshot) {
+                //       if (snapshot.connectionState == ConnectionState.waiting ||
+                //           snapshot.hasError) {
+                //         return Container();
+                //       } else if (snapshot.hasData &&
+                //           snapshot.data!.isNotEmpty) {
+                //         double screenWidth = MediaQuery.of(context).size.width;
+                //         double containerSize = screenWidth * 0.16;
+                //
+                //         return Container(
+                //           padding: EdgeInsets.all(screenWidth * 0.01),
+                //           width: containerSize,
+                //           child: Column(
+                //             children: [
+                //               Container(
+                //                 width: containerSize,
+                //                 height: containerSize,
+                //                 decoration: BoxDecoration(
+                //                   border: Border.all(
+                //                     color: clickedUIDs.contains(user.uid!)
+                //                         ? Colors.grey
+                //                         : Colors.blue,
+                //                     width: screenWidth * 0.005,
+                //                   ),
+                //                   shape: BoxShape.circle,
+                //                   image: DecorationImage(
+                //                     image: NetworkImage(user.pfpURL ?? ''),
+                //                     fit: BoxFit.cover,
+                //                   ),
+                //                 ),
+                //               ),
+                //               SizedBox(height: screenWidth * 0.01),
+                //               Text(
+                //                 user.name ?? '-',
+                //                 style: StyleText(
+                //                   fontSize: screenWidth * 0.03,
+                //                 ),
+                //                 overflow: TextOverflow.ellipsis,
+                //               ),
+                //             ],
+                //           ),
+                //         );
+                //       } else {
+                //         return Container();
+                //       }
+                //     },
+                //   ),
+                // );
                 return GestureDetector(
-                  // onTap: () async {
-                  //   QuerySnapshot querySnapshot = await FirebaseFirestore
-                  //       .instance
-                  //       .collection('users')
-                  //       .get();
-                  //   // for (var doc in querySnapshot.docs) {
-                  //   //   String uid = doc['uid'];
-                  //   //   String name = doc['name'];
-                  //   //   print('$uid === $name');
-                  //   // }
-                  //   final storyData = await getUserStory(user.uid!);
-                  //   if (storyData.isNotEmpty) {
-                  //     final List<String> storyUrls = storyData
-                  //         .map((story) => story['url'] as String)
-                  //         .toList();
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => OtherUser(
-                  //           userProfile: user,
-                  //           storyData: storyUrls,
-                  //         ),
-                  //       ),
-                  //     );
-                  //   } else {
-                  //     print('No story data available');
-                  //   }
-                  //   setState(() {
-                  //     clickedUIDs.add(user.uid!);
-                  //   });
-                  // },
                   onTap: () async {
                     var userProfile = await _getUserProfile(currentUser.currentUser!.uid);
 
@@ -497,20 +575,28 @@ class _UpdatesPageState extends State<UpdatesPage> {
                           .map((story) => story['url'] as String)
                           .toList();
 
-                      await FirebaseFirestore.instance
+                      final storyViewDoc = FirebaseFirestore.instance
                           .collection('storyViews')
-                          .doc(user.uid!)
-                          .set({
-                        'viewers': FieldValue.arrayUnion([
-                          {
-                            'uid': userProfile.uid,
-                            'name': userProfile.name,
-                            'pfpUrl': userProfile.pfpURL,
-                            'timestamp': DateTime.now(),
-                          }
-                        ]),
-                        // 'timestamp': FieldValue.serverTimestamp(),
-                      }, SetOptions(merge: true));
+                          .doc(user.uid!);
+
+                      final storyViewSnapshot = await storyViewDoc.get();
+
+                      final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
+                      final hasViewed = existingViewers.any((viewer) =>
+                      viewer['uid'] == userProfile.uid);
+
+                      if (!hasViewed) {
+                        await storyViewDoc.set({
+                          'viewers': FieldValue.arrayUnion([
+                            {
+                              'uid': userProfile.uid,
+                              'name': userProfile.name,
+                              'pfpUrl': userProfile.pfpURL,
+                              'timestamp': DateTime.now(),
+                            }
+                          ]),
+                        }, SetOptions(merge: true));
+                      }
 
                       Navigator.push(
                         context,
@@ -524,54 +610,58 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     } else {
                       print('No story data available');
                     }
-
-                    setState(() {
-                      clickedUIDs.add(user.uid!);
-                    });
                   },
                   child: FutureBuilder<List<dynamic>>(
                     future: getUserStory(user.uid!),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting ||
-                          snapshot.hasError) {
+                    builder: (context, storySnapshot) {
+                      if (storySnapshot.connectionState == ConnectionState.waiting ||
+                          storySnapshot.hasError) {
                         return Container();
-                      } else if (snapshot.hasData &&
-                          snapshot.data!.isNotEmpty) {
+                      } else if (storySnapshot.hasData && storySnapshot.data!.isNotEmpty) {
                         double screenWidth = MediaQuery.of(context).size.width;
                         double containerSize = screenWidth * 0.16;
 
-                        return Container(
-                          padding: EdgeInsets.all(screenWidth * 0.01),
-                          width: containerSize,
-                          child: Column(
-                            children: [
-                              Container(
-                                width: containerSize,
-                                height: containerSize,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: clickedUIDs.contains(user.uid!)
-                                        ? Colors.grey
-                                        : Colors.blue,
-                                    width: screenWidth * 0.005,
+                        return FutureBuilder<bool>(
+                          future: _hasViewedStory(user.uid!, currentUser.currentUser!.uid),
+                          builder: (context, hasViewedSnapshot) {
+                            if (hasViewedSnapshot.connectionState == ConnectionState.waiting) {
+                              return Container();
+                            }
+
+                            final hasViewed = hasViewedSnapshot.data ?? false;
+
+                            return Container(
+                              padding: EdgeInsets.all(screenWidth * 0.01),
+                              width: containerSize,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: containerSize,
+                                    height: containerSize,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: hasViewed ? Colors.grey : Colors.blue,
+                                        width: screenWidth * 0.005,
+                                      ),
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: NetworkImage(user.pfpURL ?? ''),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: NetworkImage(user.pfpURL ?? ''),
-                                    fit: BoxFit.cover,
+                                  SizedBox(height: screenWidth * 0.01),
+                                  Text(
+                                    user.name ?? '-',
+                                    style: StyleText(
+                                      fontSize: screenWidth * 0.03,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
+                                ],
                               ),
-                              SizedBox(height: screenWidth * 0.01),
-                              Text(
-                                user.name ?? '-',
-                                style: StyleText(
-                                  fontSize: screenWidth * 0.03,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         );
                       } else {
                         return Container();

@@ -1,11 +1,11 @@
 import 'package:chating/models/user_profile.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../consts.dart';
+import '../../widgets/consts.dart';
 import '../../service/alert_service.dart';
 import '../../service/auth_service.dart';
 import '../../widgets/textfield.dart';

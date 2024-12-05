@@ -8,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/group.dart';
 import '../../models/user_profile.dart';
-import '../../utils.dart';
+import '../../widgets/utils.dart';
 
 class GroupVideoCallScreen extends StatefulWidget {
   late final Group grup;

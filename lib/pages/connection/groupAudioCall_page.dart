@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/group.dart';
 import '../../models/user_profile.dart';
 import '../../service/alert_service.dart';
-import '../../utils.dart';
+import '../../widgets/utils.dart';
 
 class GroupAudioCallScreen extends StatefulWidget {
   late final Group grup;

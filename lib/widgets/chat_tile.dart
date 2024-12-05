@@ -1,4 +1,4 @@
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/user_profile.dart';

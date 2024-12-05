@@ -1,5 +1,5 @@
 import 'package:chating/pages/media_page.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../models/fitur.dart';

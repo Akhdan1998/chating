@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/user_profile.dart';
-import '../service/alert_service.dart';
-import '../service/auth_service.dart';
-import '../service/navigation_service.dart';
-import '../utils.dart';
+import '../../models/user_profile.dart';
+import '../../service/alert_service.dart';
+import '../../service/auth_service.dart';
+import '../../service/navigation_service.dart';
+import '../../widgets/utils.dart';
 
 class ProfilePage extends StatefulWidget {
   @override

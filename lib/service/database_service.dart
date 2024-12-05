@@ -1,7 +1,7 @@
 import 'package:chating/models/chat.dart';
 import 'package:chating/models/message.dart';
 import 'package:chating/models/user_profile.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';

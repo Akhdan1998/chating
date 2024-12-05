@@ -1,4 +1,4 @@
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';

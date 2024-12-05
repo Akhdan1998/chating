@@ -1,6 +1,6 @@
 import 'package:chating/service/auth_service.dart';
 import 'package:chating/service/navigation_service.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:chating/widgets/navigasi.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';

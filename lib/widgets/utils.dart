@@ -14,8 +14,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'firebase_options.dart';
-import 'main.dart';
+import '../firebase_options.dart';
+import '../main.dart';
 
 Future<void> setupFirebase() async {
   try {

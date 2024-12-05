@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get_it/get_it.dart';
-import '../../consts.dart';
+import '../../widgets/consts.dart';
 import '../../service/alert_service.dart';
 import '../../service/media_service.dart';
 import '../../widgets/textfield.dart';

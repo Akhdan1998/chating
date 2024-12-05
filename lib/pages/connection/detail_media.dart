@@ -17,7 +17,7 @@ import 'package:video_player/video_player.dart';
 
 import '../../models/user_profile.dart';
 import '../../service/alert_service.dart';
-import '../../utils.dart';
+import '../../widgets/utils.dart';
 
 class PDFViewScreen extends StatefulWidget {
   final String filePath;

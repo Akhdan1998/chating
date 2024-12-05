@@ -9,7 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../service/alert_service.dart';
-import '../../utils.dart';
+import '../../widgets/utils.dart';
 
 class VideoCallScreen extends StatefulWidget {
   final UserProfile userProfile;

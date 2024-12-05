@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';

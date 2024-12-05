@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:story_view/controller/story_controller.dart';
 import 'package:story_view/widgets/story_view.dart';
-import '../models/user_profile.dart';
-import '../service/alert_service.dart';
-import '../widgets/textfield.dart';
+import '../../models/user_profile.dart';
+import '../../service/alert_service.dart';
+import '../../widgets/textfield.dart';
 
 class OtherUser extends StatefulWidget {
   final UserProfile userProfile;

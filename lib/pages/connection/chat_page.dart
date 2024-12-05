@@ -6,7 +6,7 @@ import 'package:chating/models/user_profile.dart';
 import 'package:chating/pages/connection/videoCall.dart';
 import 'package:chating/service/media_service.dart';
 import 'package:chating/service/storage_service.dart';
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:dio/dio.dart';

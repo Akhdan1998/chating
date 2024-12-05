@@ -1,4 +1,4 @@
-import 'package:chating/utils.dart';
+import 'package:chating/widgets/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -450,8 +450,9 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          //munculkan total storyViews disini
                           Text(
-                            '${_seenStories.length}',
+                            '2',
                             style: StyleText(color: Colors.white),
                           ),
                           SizedBox(width: 5),
