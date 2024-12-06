@@ -65,7 +65,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
         } else {
           setState(() {
             _timestamp = dateTime != null
-                ? DateFormat('HH:mm, dd MMM yyyy').format(dateTime)
+                ? DateFormat('HH:mm').format(dateTime)
                 : '-';
           });
         }
@@ -245,6 +245,19 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
     });
   }
 
+  Future<int> getTotalViews(String uid) async {
+    final doc = await FirebaseFirestore.instance
+        .collection('storyViews')
+        .doc(uid)
+        .get();
+
+    if (doc.exists) {
+      final data = doc.data();
+      return data?['totalViews'] as int? ?? 0;
+    }
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -276,7 +289,6 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
             final storyUrl = story['url'];
             if (storyUrl != null) {
               return StoryItem.pageImage(
-                // imageFit: BoxFit.cover,
                 url: storyUrl ?? 'https://via.placeholder.com/150',
                 controller: _storyController,
                 loadingWidget: Center(
@@ -286,7 +298,6 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
               );
             } else {
               return StoryItem.pageImage(
-                // imageFit: BoxFit.cover,
                 url: 'https://via.placeholder.com/150',
                 controller: _storyController,
                 loadingWidget: Center(
@@ -318,15 +329,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                     children: [
                       Row(
                         children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
+                          BackButton(color: Colors.white),
                           CircleAvatar(
                             backgroundImage:
                                 NetworkImage(widget.userProfile.pfpURL!),
@@ -442,26 +445,46 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                     onTap: () {
                       seenStory();
                     },
-                    child: Container(
-                      alignment: Alignment.center,
-                      color: Colors.black.withOpacity(0.2),
-                      width: MediaQuery.of(context).size.width,
-                      height: 40,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          //munculkan total storyViews disini
-                          Text(
-                            '2',
-                            style: StyleText(color: Colors.white),
+                    child: FutureBuilder(
+                      future: getTotalViews(widget.userProfile.uid!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container();
+                        } else if (snapshot.hasData) {
+                          return Container(
+                            alignment: Alignment.center,
+                            color: Colors.black.withOpacity(0.2),
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width,
+                            height: 40,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                //munculkan total storyViews disini
+                                Text(
+                                  snapshot.data.toString(),
+                                  style: StyleText(color: Colors.white),
+                                ),
+                                SizedBox(width: 5),
+                                Icon(
+                                  Icons.remove_red_eye,
+                                  color: Colors.white,
+                                )
+                              ],
+                            ),
+                          );
+                        } else {
+                          return Center(
+                              child: Text(
+                            'No Views',
+                            style: StyleText(color: Colors.grey),
                           ),
-                          SizedBox(width: 5),
-                          Icon(
-                            Icons.remove_red_eye,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),

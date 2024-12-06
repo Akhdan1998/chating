@@ -46,15 +46,7 @@ class _DetailprofilePageState extends State<DetailprofilePage> {
         automaticallyImplyLeading: true,
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: BackButton(color: Colors.white),
         title: Text(
           'contact_info'.tr(),
           overflow: TextOverflow.ellipsis,

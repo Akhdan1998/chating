@@ -581,7 +581,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
 
                       final storyViewSnapshot = await storyViewDoc.get();
 
-                      final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
+                      final existingViewers = storyViewSnapshot.data()!['viewers'] ?? [];
                       final hasViewed = existingViewers.any((viewer) =>
                       viewer['uid'] == userProfile.uid);
 
@@ -595,6 +595,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                               'timestamp': DateTime.now(),
                             }
                           ]),
+                          'totalViews': FieldValue.increment(1),
                         }, SetOptions(merge: true));
                       }
 
@@ -610,6 +611,10 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     } else {
                       print('No story data available');
                     }
+
+                    setState(() {
+                      clickedUIDs.add(user.uid!);
+                    });
                   },
                   child: FutureBuilder<List<dynamic>>(
                     future: getUserStory(user.uid!),
@@ -628,8 +633,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
                               return Container();
                             }
 
-                            final hasViewed = hasViewedSnapshot.data ?? false;
-
                             return Container(
                               padding: EdgeInsets.all(screenWidth * 0.01),
                               width: containerSize,
@@ -640,7 +643,9 @@ class _UpdatesPageState extends State<UpdatesPage> {
                                     height: containerSize,
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                        color: hasViewed ? Colors.grey : Colors.blue,
+                                        color: clickedUIDs.contains(user.uid!)
+                                            ? Colors.grey
+                                            : Colors.blue,
                                         width: screenWidth * 0.005,
                                       ),
                                       shape: BoxShape.circle,

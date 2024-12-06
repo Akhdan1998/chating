@@ -592,15 +592,7 @@ class _ChatPageState extends State<ChatPage> {
         automaticallyImplyLeading: true,
         centerTitle: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: BackButton(color: Colors.white),
         title: GestureDetector(
           onTap: () {
             Navigator.push(

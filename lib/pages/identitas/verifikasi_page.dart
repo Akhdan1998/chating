@@ -164,12 +164,7 @@ class _VerifikasiState extends State<Verifikasi> {
       appBar: AppBar(
         leading: (isName)
             ? Container()
-            : IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.arrow_back),
-              ),
+            : BackButton(color: Colors.white),
         actions: [
           (isName)
               ? IconButton(

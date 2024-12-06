@@ -104,15 +104,7 @@ class _EditPageState extends State<EditPage> {
         automaticallyImplyLeading: true,
         centerTitle: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: BackButton(color: Colors.white),
         title: Container(
           child: Text(
             'edit'.tr(),

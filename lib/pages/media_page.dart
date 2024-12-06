@@ -80,12 +80,7 @@ class _MediaPageState extends State<MediaPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
+                BackButton(color: Colors.white),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(7),

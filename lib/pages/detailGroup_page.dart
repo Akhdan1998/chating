@@ -258,12 +258,7 @@ class _DetailGroupPageState extends State<DetailGroupPage> {
         automaticallyImplyLeading: true,
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: BackButton(color: Colors.white),
         actions: [
           PopupMenuButton(
             icon: Icon(Icons.more_vert, color: Colors.white),
