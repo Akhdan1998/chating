@@ -42,7 +42,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
   Future<void> checkAndDeleteExpiredStories() async {
     try {
       QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('stories').get();
+          await FirebaseFirestore.instance.collection('stories').get();
 
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
         Timestamp timestamp = doc['timestamp'];
@@ -195,7 +195,8 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
     }
 
     final timestamp = snapshot.docs.first['timestamp'] as Timestamp;
-    return DateFormat('HH:mm',context.locale.toString()).format(timestamp.toDate());
+    return DateFormat('HH:mm', context.locale.toString())
+        .format(timestamp.toDate());
   }
 
   Widget _buildReplyBar() {
