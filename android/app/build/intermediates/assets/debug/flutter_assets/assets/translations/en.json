@@ -163,5 +163,6 @@
   "failed_del": "Failed to delete message",
   "file_download": "File downloaded successfully",
   "file_error_download": "Error downloading file",
-  "tautan": "Links"
+  "tautan": "Links",
+  "try_call": "No calls have been made yet."
 }

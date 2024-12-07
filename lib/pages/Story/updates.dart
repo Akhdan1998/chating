@@ -275,9 +275,8 @@ class _UpdatesPageState extends State<UpdatesPage> {
   }
 
   Future<bool> _hasViewedStory(String userId, String currentUserId) async {
-    final storyViewDoc = FirebaseFirestore.instance
-        .collection('storyViews')
-        .doc(userId);
+    final storyViewDoc =
+        FirebaseFirestore.instance.collection('storyViews').doc(userId);
     final storyViewSnapshot = await storyViewDoc.get();
     final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
     return existingViewers.any((viewer) => viewer['uid'] == currentUserId);
@@ -567,7 +566,8 @@ class _UpdatesPageState extends State<UpdatesPage> {
                 // );
                 return GestureDetector(
                   onTap: () async {
-                    var userProfile = await _getUserProfile(currentUser.currentUser!.uid);
+                    var userProfile =
+                        await _getUserProfile(currentUser.currentUser!.uid);
 
                     final storyData = await getUserStory(user.uid!);
                     if (storyData.isNotEmpty) {
@@ -581,9 +581,10 @@ class _UpdatesPageState extends State<UpdatesPage> {
 
                       final storyViewSnapshot = await storyViewDoc.get();
 
-                      final existingViewers = storyViewSnapshot.data()!['viewers'] ?? [];
-                      final hasViewed = existingViewers.any((viewer) =>
-                      viewer['uid'] == userProfile.uid);
+                      final existingViewers =
+                          storyViewSnapshot.data()!['viewers'] ?? [];
+                      final hasViewed = existingViewers
+                          .any((viewer) => viewer['uid'] == userProfile.uid);
 
                       if (!hasViewed) {
                         await storyViewDoc.set({
@@ -619,17 +620,21 @@ class _UpdatesPageState extends State<UpdatesPage> {
                   child: FutureBuilder<List<dynamic>>(
                     future: getUserStory(user.uid!),
                     builder: (context, storySnapshot) {
-                      if (storySnapshot.connectionState == ConnectionState.waiting ||
+                      if (storySnapshot.connectionState ==
+                              ConnectionState.waiting ||
                           storySnapshot.hasError) {
                         return Container();
-                      } else if (storySnapshot.hasData && storySnapshot.data!.isNotEmpty) {
+                      } else if (storySnapshot.hasData &&
+                          storySnapshot.data!.isNotEmpty) {
                         double screenWidth = MediaQuery.of(context).size.width;
                         double containerSize = screenWidth * 0.16;
 
                         return FutureBuilder<bool>(
-                          future: _hasViewedStory(user.uid!, currentUser.currentUser!.uid),
+                          future: _hasViewedStory(
+                              user.uid!, currentUser.currentUser!.uid),
                           builder: (context, hasViewedSnapshot) {
-                            if (hasViewedSnapshot.connectionState == ConnectionState.waiting) {
+                            if (hasViewedSnapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return Container();
                             }
 

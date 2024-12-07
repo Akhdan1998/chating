@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:story_view/story_view.dart';
 
 import '../../models/user_profile.dart';
@@ -64,9 +63,8 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
           });
         } else {
           setState(() {
-            _timestamp = dateTime != null
-                ? DateFormat('HH:mm').format(dateTime)
-                : '-';
+            _timestamp =
+                dateTime != null ? DateFormat('HH:mm',context.locale.toString()).format(dateTime) : '-';
           });
         }
       } else {
@@ -125,9 +123,9 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
 
       List<Map<String, dynamic>> stories = querySnapshot.docs
           .map((doc) => {
-        'url': doc['url'],
-        'timestamp': doc['timestamp'],
-      })
+                'url': doc['url'],
+                'timestamp': doc['timestamp'],
+              })
           .toList();
 
       return stories;
@@ -192,7 +190,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
 
   String formatTimestamp(Timestamp timestamp) {
     final dateTime = timestamp.toDate();
-    return DateFormat('HH:mm').format(dateTime);
+    return DateFormat('HH:mm',context.locale.toString()).format(dateTime);
   }
 
   Future<void> seenStory() async {
@@ -208,9 +206,8 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
           itemBuilder: (context, index) {
             final viewer = viewers[index];
             final timestamp = viewer['timestamp'];
-            final formattedTimestamp = timestamp != null
-                ? formatTimestamp(timestamp)
-                : '-';
+            final formattedTimestamp =
+                timestamp != null ? formatTimestamp(timestamp) : '-';
 
             return ListTile(
               leading: Container(
@@ -294,7 +291,10 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                 loadingWidget: Center(
                   child: CircularProgressIndicator(),
                 ),
-                errorWidget: Text('failed_story'.tr(), style: StyleText(),),
+                errorWidget: Text(
+                  'failed_story'.tr(),
+                  style: StyleText(),
+                ),
               );
             } else {
               return StoryItem.pageImage(
@@ -303,7 +303,10 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                 loadingWidget: Center(
                   child: CircularProgressIndicator(),
                 ),
-                errorWidget: Text('failed_story'.tr(), style: StyleText(),),
+                errorWidget: Text(
+                  'failed_story'.tr(),
+                  style: StyleText(),
+                ),
               );
             }
           }).toList();
@@ -341,13 +344,17 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                             children: [
                               Text(
                                 'my_story'.tr(),
-                                style: StyleText(color: Colors.white,
-                                  fontSize: 15,),
+                                style: StyleText(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
                               ),
                               Text(
                                 _timestamp,
-                                style: StyleText(color: Colors.white,
-                                  fontSize: 12,),
+                                style: StyleText(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
                               ),
                             ],
                           ),
@@ -382,7 +389,8 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                                 barrierDismissible: false,
                                 barrierLabel: "Delete Story",
                                 transitionDuration: Duration(milliseconds: 300),
-                                pageBuilder: (context, animation, secondaryAnimation) {
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) {
                                   return AlertDialog(
                                     actions: [
                                       TextButton(
@@ -392,8 +400,10 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                                         },
                                         child: Text(
                                           'no'.tr(),
-                                          style: StyleText(color: Colors.redAccent,
-                                            fontWeight: FontWeight.bold,),
+                                          style: StyleText(
+                                            color: Colors.redAccent,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       TextButton(
@@ -406,10 +416,12 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                                         },
                                         child: Text(
                                           'yes'.tr(),
-                                          style: StyleText(color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                            fontWeight: FontWeight.bold,),
+                                          style: StyleText(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -419,9 +431,12 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                                     ),
                                   );
                                 },
-                                transitionBuilder: (context, animation, secondaryAnimation, child) {
+                                transitionBuilder: (context, animation,
+                                    secondaryAnimation, child) {
                                   return ScaleTransition(
-                                    scale: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+                                    scale: CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.easeInOut),
                                     child: child,
                                   );
                                 },
@@ -455,15 +470,11 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                           return Container(
                             alignment: Alignment.center,
                             color: Colors.black.withOpacity(0.2),
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width,
+                            width: MediaQuery.of(context).size.width,
                             height: 40,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                //munculkan total storyViews disini
                                 Text(
                                   snapshot.data.toString(),
                                   style: StyleText(color: Colors.white),
@@ -478,10 +489,10 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                           );
                         } else {
                           return Center(
-                              child: Text(
-                            'No Views',
-                            style: StyleText(color: Colors.grey),
-                          ),
+                            child: Text(
+                              'story_view'.tr(),
+                              style: StyleText(color: Colors.grey),
+                            ),
                           );
                         }
                       },

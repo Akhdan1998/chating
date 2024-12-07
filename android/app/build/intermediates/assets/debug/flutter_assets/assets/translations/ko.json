@@ -163,5 +163,6 @@
   "failed_del": "메시지를 삭제하지 못했습니다.",
   "file_download": "파일이 성공적으로 다운로드되었습니다.",
   "file_error_download": "파일 다운로드 오류",
-  "tautan": "링크"
+  "tautan": "링크",
+  "try_call": "아직 전화가 걸려오지 않았습니다."
 }

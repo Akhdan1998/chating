@@ -163,5 +163,7 @@
   "failed_del": "Gagal menghapus pesan",
   "file_download": "File berhasil diunduh",
   "file_error_download": "Terjadi kesalahan saat mengunduh file",
-  "tautan": "Tautan"
+  "tautan": "Tautan",
+  "try_call": "Belum ada panggilan yang dilakukan.",
+  "story_view": "Belum ada yang melihat ini."
 }

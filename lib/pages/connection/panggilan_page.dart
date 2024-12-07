@@ -174,7 +174,12 @@ class AllCallsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (userUid == null) {
-      return Container();
+      return Center(
+        child: Text(
+          'try_call'.tr(),
+          style: StyleText(color: Colors.grey),
+        ),
+      );
     }
 
     return Container(

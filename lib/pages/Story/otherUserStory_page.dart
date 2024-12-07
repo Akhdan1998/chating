@@ -36,6 +36,33 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _focusNode.addListener(_handleFocusChange);
+    checkAndDeleteExpiredStories();
+  }
+
+  Future<void> checkAndDeleteExpiredStories() async {
+    try {
+      QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('stories').get();
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        Timestamp timestamp = doc['timestamp'];
+        DateTime uploadTime = timestamp.toDate();
+        DateTime currentTime = DateTime.now();
+
+        if (currentTime.difference(uploadTime).inHours >= 24) {
+          String fileUrl = doc['url'];
+
+          Reference fileRef = FirebaseStorage.instance.refFromURL(fileUrl);
+          await fileRef.delete();
+
+          await doc.reference.delete();
+
+          print('Expired story deleted for uid: ${doc['uid']}');
+        }
+      }
+    } catch (e) {
+      print('Failed to delete expired stories: $e');
+    }
   }
 
   @override
@@ -63,7 +90,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
   Future<void> _sendReply() async {
     final replyText = replyController.text.trim();
     if (replyText.isEmpty) {
-      _showErrorToast('reply'.tr());
+      print('ERRORRRRRRR');
       return;
     }
 
@@ -75,23 +102,15 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
         'timestamp': Timestamp.now(),
       });
 
-      _alertService.showToast(
-        text: 'reply_send'.tr(),
-        icon: Icons.check,
-        color: Colors.green,
-      );
+      // _alertService.showToast(
+      //   text: 'reply_send'.tr(),
+      //   icon: Icons.check,
+      //   color: Colors.green,
+      // );
       replyController.clear();
     } catch (e) {
-      _showErrorToast('reply_error'.tr());
+      print('ERRORRRRRRR ${e}');
     }
-  }
-
-  void _showErrorToast(String message) {
-    _alertService.showToast(
-      text: message,
-      icon: Icons.error,
-      color: Colors.red,
-    );
   }
 
   @override
@@ -176,7 +195,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
     }
 
     final timestamp = snapshot.docs.first['timestamp'] as Timestamp;
-    return DateFormat('HH:mm').format(timestamp.toDate());
+    return DateFormat('HH:mm',context.locale.toString()).format(timestamp.toDate());
   }
 
   Widget _buildReplyBar() {
