@@ -163,18 +163,18 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
                 widget.userProfile.name ?? '-',
                 style: StyleText(color: Colors.white, fontSize: 15),
               ),
-              FutureBuilder<String>(
-                future: _getLastStoryTime(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return SizedBox.shrink();
-                  }
-                  return Text(
-                    snapshot.data ?? '-',
-                    style: StyleText(color: Colors.white, fontSize: 12),
-                  );
-                },
-              ),
+              // FutureBuilder<String>(
+              //   future: _getLastStoryTime(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.connectionState == ConnectionState.waiting) {
+              //       return SizedBox.shrink();
+              //     }
+              //     return Text(
+              //       snapshot.data ?? '-',
+              //       style: StyleText(color: Colors.white, fontSize: 12),
+              //     );
+              //   },
+              // ),
             ],
           ),
         ],
@@ -182,22 +182,22 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
     );
   }
 
-  Future<String> _getLastStoryTime() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('stories')
-        .where('uid', isEqualTo: widget.userProfile.uid)
-        .orderBy('timestamp', descending: true)
-        .limit(1)
-        .get();
-
-    if (snapshot.docs.isEmpty) {
-      return '-';
-    }
-
-    final timestamp = snapshot.docs.first['timestamp'] as Timestamp;
-    return DateFormat('HH:mm', context.locale.toString())
-        .format(timestamp.toDate());
-  }
+  // Future<String> _getLastStoryTime() async {
+  //   final snapshot = await FirebaseFirestore.instance
+  //       .collection('stories')
+  //       .where('uid', isEqualTo: widget.userProfile.uid)
+  //       .orderBy('timestamp', descending: true)
+  //       .limit(1)
+  //       .get();
+  //
+  //   if (snapshot.docs.isEmpty) {
+  //     return '-';
+  //   }
+  //
+  //   final timestamp = snapshot.docs.first['timestamp'] as Timestamp;
+  //   return DateFormat('HH:mm', context.locale.toString())
+  //       .format(timestamp.toDate());
+  // }
 
   Widget _buildReplyBar() {
     return Positioned(

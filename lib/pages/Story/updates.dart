@@ -106,6 +106,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
               'type': 'video',
               'uid': currentUser.currentUser!.uid,
               'timestamp': localTimestamp,
+              'serverTimestamp': FieldValue.serverTimestamp(),
             },
           );
 
@@ -167,6 +168,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
               'type': 'image',
               'uid': currentUser.currentUser!.uid,
               'timestamp': localTimestamp,
+              'serverTimestamp': FieldValue.serverTimestamp(),
             },
           );
 
@@ -594,6 +596,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                               'name': userProfile.name,
                               'pfpUrl': userProfile.pfpURL,
                               'timestamp': DateTime.now(),
+                              // 'serverTime': FieldValue.serverTimestamp(),
                             }
                           ]),
                           'totalViews': FieldValue.increment(1),
