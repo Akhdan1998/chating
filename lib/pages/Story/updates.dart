@@ -201,14 +201,14 @@ class _UpdatesPageState extends State<UpdatesPage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Wrap(
-          children: <Widget>[
+        return Column(
+          children: [
             ListTile(
               leading: Icon(
                 Icons.camera_alt,
                 color: Colors.green,
               ),
-              title: Text('take_photo'.tr()),
+              title: Text('take_photo'.tr(), style: StyleText(),),
               onTap: () async {
                 Navigator.pop(context);
                 context.loaderOverlay.show();
@@ -276,13 +276,13 @@ class _UpdatesPageState extends State<UpdatesPage> {
     }
   }
 
-  Future<bool> _hasViewedStory(String userId, String currentUserId) async {
-    final storyViewDoc =
-        FirebaseFirestore.instance.collection('storyViews').doc(userId);
-    final storyViewSnapshot = await storyViewDoc.get();
-    final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
-    return existingViewers.any((viewer) => viewer['uid'] == currentUserId);
-  }
+  // Future<bool> _hasViewedStory(String userId, String currentUserId) async {
+  //   final storyViewDoc =
+  //       FirebaseFirestore.instance.collection('storyViews').doc(userId);
+  //   final storyViewSnapshot = await storyViewDoc.get();
+  //   final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
+  //   return existingViewers.any((viewer) => viewer['uid'] == currentUserId);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -466,110 +466,9 @@ class _UpdatesPageState extends State<UpdatesPage> {
                 );
               } else {
                 UserProfile user = users[index - 1].data();
-                // return GestureDetector(
-                //   onTap: () async {
-                //     var userProfile = await _getUserProfile(currentUser.currentUser!.uid);
-                //
-                //     final storyData = await getUserStory(user.uid!);
-                //     if (storyData.isNotEmpty) {
-                //       final List<String> storyUrls = storyData
-                //           .map((story) => story['url'] as String)
-                //           .toList();
-                //
-                //       final storyViewDoc = FirebaseFirestore.instance
-                //           .collection('storyViews')
-                //           .doc(user.uid!);
-                //
-                //       final storyViewSnapshot = await storyViewDoc.get();
-                //
-                //       final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
-                //       final hasViewed = existingViewers.any((viewer) =>
-                //       viewer['uid'] == userProfile.uid);
-                //
-                //       if (!hasViewed) {
-                //         await storyViewDoc.set({
-                //           'viewers': FieldValue.arrayUnion([
-                //             {
-                //               'uid': userProfile.uid,
-                //               'name': userProfile.name,
-                //               'pfpUrl': userProfile.pfpURL,
-                //               'timestamp': DateTime.now(),
-                //             }
-                //           ]),
-                //         }, SetOptions(merge: true));
-                //       }
-                //
-                //       Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //           builder: (context) => OtherUser(
-                //             userProfile: user,
-                //             storyData: storyUrls,
-                //           ),
-                //         ),
-                //       );
-                //     } else {
-                //       print('No story data available');
-                //     }
-                //
-                //     setState(() {
-                //       clickedUIDs.add(user.uid!);
-                //     });
-                //   },
-                //   child: FutureBuilder<List<dynamic>>(
-                //     future: getUserStory(user.uid!),
-                //     builder: (context, snapshot) {
-                //       if (snapshot.connectionState == ConnectionState.waiting ||
-                //           snapshot.hasError) {
-                //         return Container();
-                //       } else if (snapshot.hasData &&
-                //           snapshot.data!.isNotEmpty) {
-                //         double screenWidth = MediaQuery.of(context).size.width;
-                //         double containerSize = screenWidth * 0.16;
-                //
-                //         return Container(
-                //           padding: EdgeInsets.all(screenWidth * 0.01),
-                //           width: containerSize,
-                //           child: Column(
-                //             children: [
-                //               Container(
-                //                 width: containerSize,
-                //                 height: containerSize,
-                //                 decoration: BoxDecoration(
-                //                   border: Border.all(
-                //                     color: clickedUIDs.contains(user.uid!)
-                //                         ? Colors.grey
-                //                         : Colors.blue,
-                //                     width: screenWidth * 0.005,
-                //                   ),
-                //                   shape: BoxShape.circle,
-                //                   image: DecorationImage(
-                //                     image: NetworkImage(user.pfpURL ?? ''),
-                //                     fit: BoxFit.cover,
-                //                   ),
-                //                 ),
-                //               ),
-                //               SizedBox(height: screenWidth * 0.01),
-                //               Text(
-                //                 user.name ?? '-',
-                //                 style: StyleText(
-                //                   fontSize: screenWidth * 0.03,
-                //                 ),
-                //                 overflow: TextOverflow.ellipsis,
-                //               ),
-                //             ],
-                //           ),
-                //         );
-                //       } else {
-                //         return Container();
-                //       }
-                //     },
-                //   ),
-                // );
                 return GestureDetector(
                   onTap: () async {
-                    var userProfile =
-                        await _getUserProfile(currentUser.currentUser!.uid);
+                    var userProfile = await _getUserProfile(currentUser.currentUser!.uid);
 
                     final storyData = await getUserStory(user.uid!);
                     if (storyData.isNotEmpty) {
@@ -583,10 +482,8 @@ class _UpdatesPageState extends State<UpdatesPage> {
 
                       final storyViewSnapshot = await storyViewDoc.get();
 
-                      final existingViewers =
-                          storyViewSnapshot.data()!['viewers'] ?? [];
-                      final hasViewed = existingViewers
-                          .any((viewer) => viewer['uid'] == userProfile.uid);
+                      final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
+                      final hasViewed = existingViewers.any((viewer) => viewer['uid'] == userProfile.uid);
 
                       if (!hasViewed) {
                         await storyViewDoc.set({
@@ -596,7 +493,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
                               'name': userProfile.name,
                               'pfpUrl': userProfile.pfpURL,
                               'timestamp': DateTime.now(),
-                              // 'serverTime': FieldValue.serverTimestamp(),
                             }
                           ]),
                           'totalViews': FieldValue.increment(1),
@@ -622,59 +518,47 @@ class _UpdatesPageState extends State<UpdatesPage> {
                   },
                   child: FutureBuilder<List<dynamic>>(
                     future: getUserStory(user.uid!),
-                    builder: (context, storySnapshot) {
-                      if (storySnapshot.connectionState ==
-                              ConnectionState.waiting ||
-                          storySnapshot.hasError) {
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting ||
+                          snapshot.hasError) {
                         return Container();
-                      } else if (storySnapshot.hasData &&
-                          storySnapshot.data!.isNotEmpty) {
+                      } else if (snapshot.hasData &&
+                          snapshot.data!.isNotEmpty) {
                         double screenWidth = MediaQuery.of(context).size.width;
                         double containerSize = screenWidth * 0.16;
 
-                        return FutureBuilder<bool>(
-                          future: _hasViewedStory(
-                              user.uid!, currentUser.currentUser!.uid),
-                          builder: (context, hasViewedSnapshot) {
-                            if (hasViewedSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Container();
-                            }
-
-                            return Container(
-                              padding: EdgeInsets.all(screenWidth * 0.01),
-                              width: containerSize,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: containerSize,
-                                    height: containerSize,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: clickedUIDs.contains(user.uid!)
-                                            ? Colors.grey
-                                            : Colors.blue,
-                                        width: screenWidth * 0.005,
-                                      ),
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                        image: NetworkImage(user.pfpURL ?? ''),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                        return Container(
+                          padding: EdgeInsets.all(screenWidth * 0.01),
+                          width: containerSize,
+                          child: Column(
+                            children: [
+                              Container(
+                                width: containerSize,
+                                height: containerSize,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: clickedUIDs.contains(user.uid!)
+                                        ? Colors.grey
+                                        : Colors.blue,
+                                    width: screenWidth * 0.005,
                                   ),
-                                  SizedBox(height: screenWidth * 0.01),
-                                  Text(
-                                    user.name ?? '-',
-                                    style: StyleText(
-                                      fontSize: screenWidth * 0.03,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: NetworkImage(user.pfpURL ?? ''),
+                                    fit: BoxFit.cover,
                                   ),
-                                ],
+                                ),
                               ),
-                            );
-                          },
+                              SizedBox(height: screenWidth * 0.01),
+                              Text(
+                                user.name ?? '-',
+                                style: StyleText(
+                                  fontSize: screenWidth * 0.03,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         );
                       } else {
                         return Container();
@@ -682,6 +566,118 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     },
                   ),
                 );
+                // return GestureDetector(
+                //   onTap: () async {
+                //     var userProfile =
+                //         await _getUserProfile(currentUser.currentUser!.uid);
+                //
+                //     final storyData = await getUserStory(user.uid!);
+                //     if (storyData.isNotEmpty) {
+                //       final List<String> storyUrls = storyData
+                //           .map((story) => story['url'] as String)
+                //           .toList();
+                //
+                //       final storyViewDoc = FirebaseFirestore.instance
+                //           .collection('storyViews')
+                //           .doc(user.uid!);
+                //
+                //       final storyViewSnapshot = await storyViewDoc.get();
+                //       final existingViewers = storyViewSnapshot.data()!['viewers'] ?? [];
+                //       final hasViewed = existingViewers.any((viewer) => viewer['uid'] == userProfile.uid);
+                //
+                //       if (!hasViewed) {
+                //         await storyViewDoc.set({
+                //           'viewers': FieldValue.arrayUnion([
+                //             {
+                //               'uid': userProfile.uid,
+                //               'name': userProfile.name,
+                //               'pfpUrl': userProfile.pfpURL,
+                //               'timestamp': DateTime.now(),
+                //             }
+                //           ]),
+                //           'totalViews': FieldValue.increment(1),
+                //         }, SetOptions(merge: true));
+                //       }
+                //
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => OtherUser(
+                //             userProfile: user,
+                //             storyData: storyUrls,
+                //           ),
+                //         ),
+                //       );
+                //     } else {
+                //       print('No story data available');
+                //     }
+                //
+                //     setState(() {
+                //       clickedUIDs.add(user.uid!);
+                //     });
+                //   },
+                //   child: FutureBuilder<List<dynamic>>(
+                //     future: getUserStory(user.uid!),
+                //     builder: (context, storySnapshot) {
+                //       if (storySnapshot.connectionState ==
+                //               ConnectionState.waiting ||
+                //           storySnapshot.hasError) {
+                //         return Container();
+                //       } else if (storySnapshot.hasData &&
+                //           storySnapshot.data!.isNotEmpty) {
+                //         double screenWidth = MediaQuery.of(context).size.width;
+                //         double containerSize = screenWidth * 0.16;
+                //
+                //         return FutureBuilder<bool>(
+                //           future: _hasViewedStory(
+                //               user.uid!, currentUser.currentUser!.uid),
+                //           builder: (context, hasViewedSnapshot) {
+                //             if (hasViewedSnapshot.connectionState ==
+                //                 ConnectionState.waiting) {
+                //               return Container();
+                //             }
+                //
+                //             return Container(
+                //               padding: EdgeInsets.all(screenWidth * 0.01),
+                //               width: containerSize,
+                //               child: Column(
+                //                 children: [
+                //                   Container(
+                //                     width: containerSize,
+                //                     height: containerSize,
+                //                     decoration: BoxDecoration(
+                //                       border: Border.all(
+                //                         color: clickedUIDs.contains(user.uid!)
+                //                             ? Colors.grey
+                //                             : Colors.blue,
+                //                         width: screenWidth * 0.005,
+                //                       ),
+                //                       shape: BoxShape.circle,
+                //                       image: DecorationImage(
+                //                         image: NetworkImage(user.pfpURL ?? ''),
+                //                         fit: BoxFit.cover,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                   SizedBox(height: screenWidth * 0.01),
+                //                   Text(
+                //                     user.name ?? '-',
+                //                     style: StyleText(
+                //                       fontSize: screenWidth * 0.03,
+                //                     ),
+                //                     overflow: TextOverflow.ellipsis,
+                //                   ),
+                //                 ],
+                //               ),
+                //             );
+                //           },
+                //         );
+                //       } else {
+                //         return Container();
+                //       }
+                //     },
+                //   ),
+                // );
               }
             },
           );
