@@ -230,7 +230,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
               child: Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.send, color: Colors.white),

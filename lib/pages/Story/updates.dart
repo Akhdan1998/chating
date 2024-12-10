@@ -19,6 +19,8 @@ import '../../service/database_service.dart';
 import '../../service/navigation_service.dart';
 import 'package:image/image.dart' as img;
 
+import '../../widgets/camera.dart';
+
 class UpdatesPage extends StatefulWidget {
   const UpdatesPage({super.key});
 
@@ -32,7 +34,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
   final GetIt _getIt = GetIt.instance;
   late DatabaseService _databaseService;
   late AuthService _authService;
-
   final currentUser = FirebaseAuth.instance;
   Set<String> clickedUIDs = {};
   bool _isRequestingPermission = false;
@@ -106,7 +107,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
               'type': 'video',
               'uid': currentUser.currentUser!.uid,
               'timestamp': localTimestamp,
-              'serverTimestamp': FieldValue.serverTimestamp(),
+              // 'serverTimestamp': FieldValue.serverTimestamp(),
             },
           );
 
@@ -168,7 +169,6 @@ class _UpdatesPageState extends State<UpdatesPage> {
               'type': 'image',
               'uid': currentUser.currentUser!.uid,
               'timestamp': localTimestamp,
-              'serverTimestamp': FieldValue.serverTimestamp(),
             },
           );
 
@@ -208,7 +208,10 @@ class _UpdatesPageState extends State<UpdatesPage> {
                 Icons.camera_alt,
                 color: Colors.green,
               ),
-              title: Text('take_photo'.tr(), style: StyleText(),),
+              title: Text(
+                'take_photo'.tr(),
+                style: StyleText(),
+              ),
               onTap: () async {
                 Navigator.pop(context);
                 context.loaderOverlay.show();
@@ -332,7 +335,13 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        _chooseStory(context);
+                        // _chooseStory(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CameraScreen(),
+                          ),
+                        );
                       },
                       icon: Icon(Icons.camera_alt),
                       iconSize: MediaQuery.of(context).size.width * 0.06,
@@ -468,7 +477,8 @@ class _UpdatesPageState extends State<UpdatesPage> {
                 UserProfile user = users[index - 1].data();
                 return GestureDetector(
                   onTap: () async {
-                    var userProfile = await _getUserProfile(currentUser.currentUser!.uid);
+                    var userProfile =
+                        await _getUserProfile(currentUser.currentUser!.uid);
 
                     final storyData = await getUserStory(user.uid!);
                     if (storyData.isNotEmpty) {
@@ -482,8 +492,10 @@ class _UpdatesPageState extends State<UpdatesPage> {
 
                       final storyViewSnapshot = await storyViewDoc.get();
 
-                      final existingViewers = storyViewSnapshot.data()?['viewers'] ?? [];
-                      final hasViewed = existingViewers.any((viewer) => viewer['uid'] == userProfile.uid);
+                      final existingViewers =
+                          storyViewSnapshot.data()?['viewers'] ?? [];
+                      final hasViewed = existingViewers
+                          .any((viewer) => viewer['uid'] == userProfile.uid);
 
                       if (!hasViewed) {
                         await storyViewDoc.set({

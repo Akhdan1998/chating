@@ -165,5 +165,6 @@
   "file_error_download": "Error downloading file",
   "tautan": "Links",
   "try_call": "No calls have been made yet.",
-  "story_view": "Nobody has seen this yet."
+  "story_view": "Nobody has seen this yet.",
+  "hint_caption": "Add description..."
 }
