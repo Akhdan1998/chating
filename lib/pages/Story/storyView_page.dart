@@ -63,8 +63,10 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
           });
         } else {
           setState(() {
-            _timestamp =
-                dateTime != null ? DateFormat('HH:mm',context.locale.toString()).format(dateTime) : '-';
+            _timestamp = dateTime != null
+                ? DateFormat('HH:mm', context.locale.toString())
+                    .format(dateTime)
+                : '-';
           });
         }
       } else {
@@ -190,7 +192,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
 
   String formatTimestamp(Timestamp timestamp) {
     final dateTime = timestamp.toDate();
-    return DateFormat('HH:mm',context.locale.toString()).format(dateTime);
+    return DateFormat('HH:mm', context.locale.toString()).format(dateTime);
   }
 
   Future<void> seenStory() async {
@@ -262,6 +264,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
         stream: FirebaseFirestore.instance
             .collection('stories')
             .where('uid', isEqualTo: widget.userProfile.uid!)
+            .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -282,6 +285,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
           }
 
           final stories = snapshot.data!.docs;
+
           final storyItems = stories.map((story) {
             final storyUrl = story['url'];
             if (storyUrl != null) {
@@ -310,7 +314,6 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
               );
             }
           }).toList();
-
           return Stack(
             children: [
               StoryView(
@@ -460,42 +463,67 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
                     onTap: () {
                       seenStory();
                     },
-                    child: FutureBuilder(
-                      future: getTotalViews(widget.userProfile.uid!),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Container();
-                        } else if (snapshot.hasData) {
-                          return Container(
-                            alignment: Alignment.center,
-                            color: Colors.black.withOpacity(0.2),
-                            width: MediaQuery.of(context).size.width,
-                            height: 40,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  snapshot.data.toString(),
-                                  style: StyleText(color: Colors.white),
-                                ),
-                                SizedBox(width: 5),
-                                Icon(
-                                  Icons.remove_red_eye,
-                                  color: Colors.white,
-                                )
-                              ],
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Colors.transparent,
+                      width: MediaQuery.of(context).size.width,
+                      height: 104,
+                      child: Column(
+                        children: [
+                          Text(
+                            '',
+                            style: StyleText(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
                             ),
-                          );
-                        } else {
-                          return Center(
-                            child: Text(
-                              'story_view'.tr(),
-                              style: StyleText(color: Colors.grey),
+                          ),
+                          Divider(
+                            indent: 20,
+                            endIndent: 20,
+                            height: 1,
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.keyboard_arrow_up,
+                              color: Colors.white,
                             ),
-                          );
-                        }
-                      },
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              FutureBuilder(
+                                future: getTotalViews(
+                                    widget.userProfile.uid!),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Container();
+                                  } else if (snapshot.hasData) {
+                                    return Text(
+                                      snapshot.data.toString(),
+                                      style: StyleText(color: Colors.white),
+                                    );
+                                  }  else {
+                                    return Center(
+                                      child: Text(
+                                        'story_view'.tr(),
+                                        style: StyleText(color: Colors.grey),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              SizedBox(width: 5),
+                              Icon(
+                                Icons.remove_red_eye,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

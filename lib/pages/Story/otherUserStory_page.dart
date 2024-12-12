@@ -141,6 +141,7 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
             onComplete: () => Navigator.pop(context),
           ),
           _buildTopBar(context),
+          _buildStatus(),
           _buildReplyBar(),
         ],
       ),
@@ -207,12 +208,13 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
       bottom: 10,
       left: 0,
       right: 0,
-      child: Padding(
+      child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Row(
           children: [
             Expanded(
               child: TextField(
+                focusNode: _focusNode,
                 controller: replyController,
                 style: StyleText(color: Colors.white),
                 decoration: InputDecoration(
@@ -239,6 +241,20 @@ class _OtherUserState extends State<OtherUser> with WidgetsBindingObserver {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatus() {
+    return Positioned(
+        bottom: 70,
+        left: 0,
+        right: 0,
+        child: Column(
+          children: [
+            Text('wkwk', style: StyleText(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white,),),
+            Divider(),
+          ],
+        ),
     );
   }
 }
