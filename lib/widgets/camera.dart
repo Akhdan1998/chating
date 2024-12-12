@@ -34,6 +34,9 @@ class _CameraScreenState extends State<CameraScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _selectedImage;
 
+  double _currentZoomLevel = 1.0;
+  double _maxZoomLevel = 1.0;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +52,8 @@ class _CameraScreenState extends State<CameraScreen> {
         ResolutionPreset.high,
       );
       await _cameraController.initialize();
+
+      _maxZoomLevel = await _cameraController.getMaxZoomLevel();
       setState(() {
         _isCameraInitialized = true;
       });
@@ -59,6 +64,24 @@ class _CameraScreenState extends State<CameraScreen> {
   void dispose() {
     _cameraController.dispose();
     super.dispose();
+  }
+
+  void _zoomIn() {
+    if (_currentZoomLevel < _maxZoomLevel) {
+      setState(() {
+        _currentZoomLevel += 0.1;
+        _cameraController.setZoomLevel(_currentZoomLevel);
+      });
+    }
+  }
+
+  void _zoomOut() {
+    if (_currentZoomLevel > 1.0) {
+      setState(() {
+        _currentZoomLevel -= 0.1;
+        _cameraController.setZoomLevel(_currentZoomLevel);
+      });
+    }
   }
 
   Future<void> _takePicture() async {
@@ -206,6 +229,13 @@ class _CameraScreenState extends State<CameraScreen> {
                         left: 15, right: 15, top: 10, bottom: 10),
                     child: Column(
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(onPressed: _zoomOut, icon: Icon(Icons.zoom_out, color: Colors.white, size: 20,),),
+                            IconButton(onPressed: _zoomIn, icon: Icon(Icons.zoom_in, color: Colors.white, size: 20,),),
+                          ],
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
