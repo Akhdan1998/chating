@@ -164,5 +164,7 @@
   "file_download": "파일이 성공적으로 다운로드되었습니다.",
   "file_error_download": "파일 다운로드 오류",
   "tautan": "링크",
-  "try_call": "아직 전화가 걸려오지 않았습니다."
+  "try_call": "아직 전화가 걸려오지 않았습니다.",
+  "story_view": "아직 이것을 본 사람은 없습니다.",
+  "hint_caption": "정보 추가..."
 }
