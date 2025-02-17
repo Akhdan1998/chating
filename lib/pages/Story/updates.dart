@@ -381,14 +381,20 @@ class _UpdatesPageState extends State<UpdatesPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => StoryViewerScreen(
-                            userProfile: userProfile,
-                            requestPermission: _requestPermission,
-                            pickAndUploadMedia: (ImageSource source) =>
-                                _pickAndUploadMedia(source, false),
-                          ),
+                          builder: (context) => CameraScreen(),
                         ),
                       );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => StoryViewerScreen(
+                      //       userProfile: userProfile,
+                      //       requestPermission: _requestPermission,
+                      //       pickAndUploadMedia: (ImageSource source) =>
+                      //           _pickAndUploadMedia(source, false),
+                      //     ),
+                      //   ),
+                      // );
                     } else {
                       if (!_isRequestingPermission) {
                         await _requestPermission().then((_) async {
@@ -409,8 +415,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                       }
 
                       var userProfile = UserProfile.fromMap(
-                          snapshot.data!.docs[0].data()
-                              as Map<String, dynamic>);
+                          snapshot.data!.docs[0].data() as Map<String, dynamic>);
                       bool hasUploadedStory = userProfile.hasUploadedStory;
                       double screenWidth = MediaQuery.of(context).size.width;
                       double screenHeight = MediaQuery.of(context).size.height;

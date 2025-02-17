@@ -250,7 +250,8 @@ class _CameraScreenState extends State<CameraScreen> {
                                 'Camera',
                                 style: StyleText(
                                   color: Colors.white,
-                                  fontSize: 12,
+                                  fontSize: _isVideo ? 11 : 13,
+                                  fontWeight: _isVideo ? FontWeight.normal : FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -265,7 +266,8 @@ class _CameraScreenState extends State<CameraScreen> {
                                 'Video',
                                 style: StyleText(
                                   color: Colors.white,
-                                  fontSize: 12,
+                                  fontSize: _isVideo ? 13 : 11,
+                                  fontWeight: _isVideo ? FontWeight.bold : FontWeight.normal,
                                 ),
                               ),
                             ),
@@ -611,9 +613,21 @@ class _VideoPreviewWidgetState extends State<VideoPreviewWidget> {
     return FlickVideoPlayer(
       flickManager: flickManager,
       flickVideoWithControls: FlickVideoWithControls(
-        // controls: FlickPortraitControls(
-        //   progressBarSettings: FlickProgressBarSettings(),
-        // ), // Kontrol video default
+        willVideoPlayerControllerChange: true, closedCaptionTextStyle: StyleText(color: Colors.transparent),
+        textStyle: StyleText(color: Colors.transparent),
+        videoFit: BoxFit.cover,
+        backgroundColor: Colors.transparent,
+        iconThemeData: IconThemeData(color: Colors.transparent, applyTextScaling: true,
+        ),
+        controls: FlickPortraitControls(
+          fontSize: 0,
+          progressBarSettings: FlickProgressBarSettings(
+            backgroundColor: Colors.transparent,
+            playedColor: Colors.transparent,
+            bufferedColor: Colors.transparent,
+            handleColor: Colors.transparent,
+          ),
+        ),
       ),
     );
   }

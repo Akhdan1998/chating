@@ -22,6 +22,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../widgets/camera.dart';
 import '../../widgets/consts.dart';
 import '../../models/group.dart';
 import '../../service/alert_service.dart';
@@ -56,143 +57,143 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final ImagePicker _picker = ImagePicker();
   final currentUser = FirebaseAuth.instance;
 
-  Future<void> _pickAndUploadMedia(ImageSource source, bool isVideo) async {
-    final ImagePicker _picker = ImagePicker();
-
-    XFile? pickedFile;
-
-    if (isVideo) {
-      pickedFile = await _picker.pickVideo(source: source);
-    } else {
-      pickedFile = await _picker.pickImage(source: source);
-    }
-
-    if (pickedFile == null) {
-      context.loaderOverlay.hide();
-      print('No media selected');
-      return;
-    }
-
-    File file = File(pickedFile.path);
-
-    if (isVideo) {
-      print('Uploading video: ${file.path}');
-
-      // Nama file untuk video
-      String fileName =
-          'stories/videos/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
-
-      try {
-        UploadTask uploadTask = FirebaseStorage.instance
-            .ref()
-            .child(fileName)
-            .putFile(file);
-
-        TaskSnapshot taskSnapshot = await uploadTask;
-        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-        DateTime localTimestamp = DateTime.now();
-        await FirebaseFirestore.instance.runTransaction((transaction) async {
-          transaction.set(
-            FirebaseFirestore.instance.collection('stories').doc(),
-            {
-              'url': downloadUrl,
-              'type': 'video',
-              'serverTimestamp': FieldValue.serverTimestamp(),
-              'localTimestamp': localTimestamp,
-              'uid': currentUser.currentUser!.uid,
-              'timestamp': localTimestamp,
-            },
-          );
-
-          transaction.update(
-            FirebaseFirestore.instance
-                .collection('users')
-                .doc(currentUser.currentUser!.uid),
-            {
-              'hasUploadedStory': true,
-              'latestStoryUrl': downloadUrl,
-            },
-          );
-        });
-
-        context.loaderOverlay.hide();
-        print('Video upload successful: $downloadUrl');
-      } catch (e) {
-        context.loaderOverlay.hide();
-        _alertService.showToast(
-          text: e.toString(),
-          icon: Icons.error,
-          color: Colors.red,
-        );
-        print('Failed to upload video: $e');
-      }
-    } else {
-      print('File size before compression: ${file.lengthSync()} bytes');
-
-      final img.Image? image = img.decodeImage(await file.readAsBytes());
-      if (image == null) {
-        context.loaderOverlay.hide();
-        print('Failed to decode image');
-        return;
-      }
-
-      final compressedImage = img.encodeJpg(image, quality: 50);
-      final String compressedFilePath = '${file.path}.jpg';
-      await File(compressedFilePath).writeAsBytes(compressedImage);
-      print('File size after compression: ${compressedImage.length} bytes');
-
-      String fileName =
-          'stories/images/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
-
-      try {
-        UploadTask uploadTask = FirebaseStorage.instance
-            .ref()
-            .child(fileName)
-            .putFile(File(
-                compressedFilePath)); // Unggah file gambar yang telah dikompresi
-
-        TaskSnapshot taskSnapshot = await uploadTask;
-        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-        DateTime localTimestamp = DateTime.now();
-        await FirebaseFirestore.instance.runTransaction((transaction) async {
-          transaction.set(
-            FirebaseFirestore.instance.collection('stories').doc(),
-            {
-              'url': downloadUrl,
-              'type': 'image',
-              'serverTimestamp': FieldValue.serverTimestamp(),
-              'localTimestamp': localTimestamp,
-              'uid': currentUser.currentUser!.uid,
-              'timestamp': localTimestamp,
-            },
-          );
-
-          transaction.update(
-            FirebaseFirestore.instance
-                .collection('users')
-                .doc(currentUser.currentUser!.uid),
-            {
-              'hasUploadedStory': true,
-              'latestStoryUrl': downloadUrl,
-            },
-          );
-        });
-
-        context.loaderOverlay.hide();
-        print('Image upload successful: $downloadUrl');
-      } catch (e) {
-        context.loaderOverlay.hide();
-        _alertService.showToast(
-          text: e.toString(),
-          icon: Icons.error,
-          color: Colors.red,
-        );
-        print('Failed to upload image: $e');
-      }
-    }
-  }
+  // Future<void> _pickAndUploadMedia(ImageSource source, bool isVideo) async {
+  //   final ImagePicker _picker = ImagePicker();
+  //
+  //   XFile? pickedFile;
+  //
+  //   if (isVideo) {
+  //     pickedFile = await _picker.pickVideo(source: source);
+  //   } else {
+  //     pickedFile = await _picker.pickImage(source: source);
+  //   }
+  //
+  //   if (pickedFile == null) {
+  //     context.loaderOverlay.hide();
+  //     print('No media selected');
+  //     return;
+  //   }
+  //
+  //   File file = File(pickedFile.path);
+  //
+  //   if (isVideo) {
+  //     print('Uploading video: ${file.path}');
+  //
+  //     // Nama file untuk video
+  //     String fileName =
+  //         'stories/videos/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+  //
+  //     try {
+  //       UploadTask uploadTask = FirebaseStorage.instance
+  //           .ref()
+  //           .child(fileName)
+  //           .putFile(file);
+  //
+  //       TaskSnapshot taskSnapshot = await uploadTask;
+  //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+  //
+  //       DateTime localTimestamp = DateTime.now();
+  //       await FirebaseFirestore.instance.runTransaction((transaction) async {
+  //         transaction.set(
+  //           FirebaseFirestore.instance.collection('stories').doc(),
+  //           {
+  //             'url': downloadUrl,
+  //             'type': 'video',
+  //             'serverTimestamp': FieldValue.serverTimestamp(),
+  //             'localTimestamp': localTimestamp,
+  //             'uid': currentUser.currentUser!.uid,
+  //             'timestamp': localTimestamp,
+  //           },
+  //         );
+  //
+  //         transaction.update(
+  //           FirebaseFirestore.instance
+  //               .collection('users')
+  //               .doc(currentUser.currentUser!.uid),
+  //           {
+  //             'hasUploadedStory': true,
+  //             'latestStoryUrl': downloadUrl,
+  //           },
+  //         );
+  //       });
+  //
+  //       context.loaderOverlay.hide();
+  //       print('Video upload successful: $downloadUrl');
+  //     } catch (e) {
+  //       context.loaderOverlay.hide();
+  //       _alertService.showToast(
+  //         text: e.toString(),
+  //         icon: Icons.error,
+  //         color: Colors.red,
+  //       );
+  //       print('Failed to upload video: $e');
+  //     }
+  //   } else {
+  //     print('File size before compression: ${file.lengthSync()} bytes');
+  //
+  //     final img.Image? image = img.decodeImage(await file.readAsBytes());
+  //     if (image == null) {
+  //       context.loaderOverlay.hide();
+  //       print('Failed to decode image');
+  //       return;
+  //     }
+  //
+  //     final compressedImage = img.encodeJpg(image, quality: 50);
+  //     final String compressedFilePath = '${file.path}.jpg';
+  //     await File(compressedFilePath).writeAsBytes(compressedImage);
+  //     print('File size after compression: ${compressedImage.length} bytes');
+  //
+  //     String fileName =
+  //         'stories/images/${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+  //
+  //     try {
+  //       UploadTask uploadTask = FirebaseStorage.instance
+  //           .ref()
+  //           .child(fileName)
+  //           .putFile(File(
+  //               compressedFilePath)); // Unggah file gambar yang telah dikompresi
+  //
+  //       TaskSnapshot taskSnapshot = await uploadTask;
+  //       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+  //
+  //       DateTime localTimestamp = DateTime.now();
+  //       await FirebaseFirestore.instance.runTransaction((transaction) async {
+  //         transaction.set(
+  //           FirebaseFirestore.instance.collection('stories').doc(),
+  //           {
+  //             'url': downloadUrl,
+  //             'type': 'image',
+  //             'serverTimestamp': FieldValue.serverTimestamp(),
+  //             'localTimestamp': localTimestamp,
+  //             'uid': currentUser.currentUser!.uid,
+  //             'timestamp': localTimestamp,
+  //           },
+  //         );
+  //
+  //         transaction.update(
+  //           FirebaseFirestore.instance
+  //               .collection('users')
+  //               .doc(currentUser.currentUser!.uid),
+  //           {
+  //             'hasUploadedStory': true,
+  //             'latestStoryUrl': downloadUrl,
+  //           },
+  //         );
+  //       });
+  //
+  //       context.loaderOverlay.hide();
+  //       print('Image upload successful: $downloadUrl');
+  //     } catch (e) {
+  //       context.loaderOverlay.hide();
+  //       _alertService.showToast(
+  //         text: e.toString(),
+  //         icon: Icons.error,
+  //         color: Colors.red,
+  //       );
+  //       print('Failed to upload image: $e');
+  //     }
+  //   }
+  // }
 
   Future<void> _requestPermission() async {
     if (await Permission.camera.request().isGranted &&
@@ -505,6 +506,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
+              width: MediaQuery.of(context).size.width,
               height: 850,
               padding: EdgeInsets.only(top: 20),
               child: Column(
@@ -580,47 +582,47 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  void _chooseStory(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: Icon(
-                Icons.camera_alt,
-                color: Colors.green,
-              ),
-              title: Text(
-                'take_photo'.tr(),
-                style: StyleText(),
-              ),
-              onTap: () async {
-                Navigator.pop(context);
-                context.loaderOverlay.show();
-                await _pickAndUploadMedia(ImageSource.camera, false);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.photo_library,
-                color: Colors.redAccent,
-              ),
-              title: Text(
-                'choose_photo'.tr(),
-                style: StyleText(),
-              ),
-              onTap: () async {
-                Navigator.pop(context);
-                context.loaderOverlay.show();
-                await _pickAndUploadMedia(ImageSource.gallery, false);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _chooseStory(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Wrap(
+  //         children: [
+  //           ListTile(
+  //             leading: Icon(
+  //               Icons.camera_alt,
+  //               color: Colors.green,
+  //             ),
+  //             title: Text(
+  //               'take_photo'.tr(),
+  //               style: StyleText(),
+  //             ),
+  //             onTap: () async {
+  //               Navigator.pop(context);
+  //               context.loaderOverlay.show();
+  //               await _pickAndUploadMedia(ImageSource.camera, false);
+  //             },
+  //           ),
+  //           ListTile(
+  //             leading: Icon(
+  //               Icons.photo_library,
+  //               color: Colors.redAccent,
+  //             ),
+  //             title: Text(
+  //               'choose_photo'.tr(),
+  //               style: StyleText(),
+  //             ),
+  //             onTap: () async {
+  //               Navigator.pop(context);
+  //               context.loaderOverlay.show();
+  //               await _pickAndUploadMedia(ImageSource.gallery, false);
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -685,7 +687,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         onPressed: () async {
                           await _requestPermission().whenComplete(() async {
                             // await _pickAndUploadMedia(ImageSource.camera);
-                            _chooseStory(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CameraScreen(),
+                              ),
+                            );
+                            // _chooseStory(context);
                           });
                         },
                         icon: Icon(
